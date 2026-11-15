@@ -8,6 +8,7 @@ import { bestLane, breakevens, computeAll, defaultInputs, type Inputs } from './
 import { matchPreset, PRESETS, type PresetId } from './presets'
 import MapTab from './tabs/MapTab'
 import NetbacksTab from './tabs/NetbacksTab'
+import RankingsTab from './tabs/RankingsTab'
 
 const TABS = ['map', 'netbacks', 'rankings', 'egress', 'method'] as const
 type Tab = (typeof TABS)[number]
@@ -154,7 +155,8 @@ function Shell({ data }: { data: Data }) {
             <MapTab data={data} theme={theme} results={results} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} />
           )}
           {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} />}
-          {tab !== 'map' && tab !== 'netbacks' && (
+          {tab === 'rankings' && <RankingsTab data={data} results={results} />}
+          {(tab === 'egress' || tab === 'method') && (
             <div className="grid h-full place-items-center p-8 text-center">
               <div>
                 <h2 className="text-[17px] font-semibold">{TAB_LABEL[tab]}</h2>
