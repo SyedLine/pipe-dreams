@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo, useRef } from 'react'
-import { card, Money } from '../components/ui'
+import { card, header, Money } from '../components/ui'
+import type { Theme } from '../hooks'
 import type { Data } from '../data'
 import { useReducedMotion } from '../hooks'
 import type { LaneId } from '../lanes'
@@ -8,6 +9,7 @@ import { computeAll, defaultInputs, ranked, type LaneResult, type Results } from
 interface Props {
   data: Data
   results: Results
+  theme: Theme
 }
 
 /** Up/down move: green/red + arrow (never colour alone). */
@@ -24,7 +26,7 @@ function Move({ n, money = false }: { n: number; money?: boolean }) {
   )
 }
 
-export default function RankingsTab({ data, results }: Props) {
+export default function RankingsTab({ data, results, theme }: Props) {
   const reduce = useReducedMotion()
   const today = useMemo(() => computeAll(data, defaultInputs(data)), [data])
   const todayOrder = useMemo(() => ranked(today).map((r) => r.lane.id), [today])
@@ -57,7 +59,7 @@ export default function RankingsTab({ data, results }: Props) {
   return (
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-4xl px-4 py-6 md:px-6">
-        <h1 className="text-[22px] font-semibold tracking-tight">Rankings</h1>
+        <h1 className={header}>Rankings</h1>
         <p className="mt-1 max-w-xl text-[13px] text-muted">
           All lanes ranked by best netback to Hardisty. Move a slider or pick a scenario: rows slide to their new rank, with the change
           against Today.
@@ -65,7 +67,7 @@ export default function RankingsTab({ data, results }: Props) {
 
         <div className={`${card} mt-5 overflow-hidden`}>
           {/* Header */}
-          <div className="grid grid-cols-[1.75rem_1fr_6.5rem] items-center gap-3 border-b border-line px-4 py-2.5 text-[11px] font-medium uppercase tracking-wide text-subtle sm:grid-cols-[2.5rem_3rem_1fr_6rem_6.5rem_5.5rem]">
+          <div className="grid grid-cols-[1.75rem_1fr_6.5rem] items-center gap-3 border-b border-line px-4 py-2.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-accent sm:grid-cols-[2.5rem_3rem_1fr_6rem_6.5rem_5.5rem]">
             <span>#</span>
             <span className="hidden sm:block">Move</span>
             <span>Lane</span>
@@ -87,7 +89,7 @@ export default function RankingsTab({ data, results }: Props) {
                     if (el) refs.current.set(r.lane.id, el)
                     else refs.current.delete(r.lane.id)
                   }}
-                  className={`relative grid grid-cols-[1.75rem_1fr_6.5rem] items-center gap-3 border-b border-line bg-surface px-4 py-3.5 last:border-b-0 sm:grid-cols-[2.5rem_3rem_1fr_6rem_6.5rem_5.5rem] ${
+                  className={`relative grid grid-cols-[1.75rem_1fr_6.5rem] items-center gap-3 border-b border-line bg-surface px-4 py-2 last:border-b-0 sm:grid-cols-[2.5rem_3rem_1fr_6rem_6.5rem_5.5rem] ${
                     r.offline ? 'opacity-50' : ''
                   }`}
                 >
@@ -98,7 +100,8 @@ export default function RankingsTab({ data, results }: Props) {
                   </span>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="truncate text-[14px] font-medium">{r.lane.name}</span>
+                      <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: r.lane.color[theme] }} />
+                      <span className="truncate text-[13px] font-medium">{r.lane.name}</span>
                       {r.offline && <span className="rounded-md bg-sunken px-1.5 py-0.5 text-[11px] text-muted">Offline</span>}
                     </div>
                     <div className="truncate text-[12px] text-muted">

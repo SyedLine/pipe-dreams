@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { SourceList } from '../components/Footer'
-import { card, Money } from '../components/ui'
+import { card, Delta, Money } from '../components/ui'
 import type { Benchmark, Data } from '../data'
 import { signedUsd, usd } from '../data'
 import { LANES } from '../lanes'
@@ -17,7 +17,7 @@ const BENCH: Record<Benchmark, string> = { wti: 'WTI', brent: 'Brent', ans: 'ANS
 function Section({ id, title, children }: { id: string; title: string; children: ReactNode }) {
   return (
     <section aria-labelledby={id} className="space-y-3">
-      <h2 id={id} className="text-[17px] font-semibold tracking-tight">
+      <h2 id={id} className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent">
         {title}
       </h2>
       <div className="space-y-3 text-[14px] leading-relaxed text-muted [&_strong]:font-medium [&_strong]:text-fg">{children}</div>
@@ -39,7 +39,7 @@ export default function MethodTab({ data, inputs, bestR }: Props) {
     <div className="h-full overflow-y-auto">
       <article className="mx-auto max-w-3xl space-y-10 px-4 py-8 md:px-6">
         <header>
-          <h1 className="text-[28px] font-semibold tracking-tight">Method</h1>
+          <h1 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent">Method</h1>
           <p className="mt-2 text-[15px] leading-relaxed text-muted">
             Pipe Dreams asks one question: <strong className="font-medium text-fg">where should a barrel of Western Canadian Select at Hardisty go this month, and what is it worth?</strong>{' '}
             Here is how every number is built, where it comes from, and what&rsquo;s assumed.
@@ -96,7 +96,7 @@ export default function MethodTab({ data, inputs, bestR }: Props) {
             </div>
             <div className="flex items-baseline justify-between gap-4 px-4 py-2.5">
               <span className="text-muted">vs selling WCS at Hardisty (WTI − diff = {usd(inputs.wti - inputs.wcsDiff)})</span>
-              <Money value={d.uplift} signed className="text-fg" />
+              <Delta value={d.uplift} />
             </div>
           </div>
           <p className="text-[13px]">Move any slider in the Inputs drawer and this example updates.</p>

@@ -1,11 +1,14 @@
 import { useMemo, useRef, useState } from 'react'
-import { card, Money, SourceTag, tipFor } from '../components/ui'
+import { card, header, Money, SourceTag, tipFor } from '../components/ui'
+import type { Theme } from '../hooks'
+import { laneById } from '../lanes'
 import type { Data, Throughput } from '../data'
 import { formatAsOf, usd } from '../data'
 import type { Inputs } from '../netback'
 
 interface Props {
   data: Data
+  theme: Theme
   inputs: Inputs
   pipeParity: number
   railParity: number
@@ -14,17 +17,17 @@ interface Props {
 const TIGHT = 95
 const MONTHS = 24
 
-export default function EgressTab({ data, inputs, pipeParity, railParity }: Props) {
+export default function EgressTab({ data, theme, inputs, pipeParity, railParity }: Props) {
   const pipes = [
-    { key: 'mainline', name: 'Enbridge Mainline', note: 'Exports at the ex-Gretna border point, all products', t: data.throughput.mainline },
-    { key: 'tmx', name: 'Trans Mountain', note: 'System throughput, committed + uncommitted', t: data.throughput.tmx },
+    { key: 'mainline', name: 'Enbridge Mainline', note: 'Exports at the ex-Gretna border point, all products', t: data.throughput.mainline, color: laneById['mainline-chicago'].color[theme] },
+    { key: 'tmx', name: 'Trans Mountain', note: 'System throughput, committed + uncommitted', t: data.throughput.tmx, color: laneById['tmx-uswc'].color[theme] },
   ] as const
 
   return (
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 md:px-6">
         <header>
-          <h1 className="text-[22px] font-semibold tracking-tight">Egress</h1>
+          <h1 className={header}>Egress</h1>
           <p className="mt-1 max-w-2xl text-[13px] text-muted">
             How close are the export pipes to full? When they&rsquo;re tight, the next barrel out of Alberta has to move by rail, and the WCS
             discount at Hardisty widens toward the cost of rail.
@@ -33,7 +36,7 @@ export default function EgressTab({ data, inputs, pipeParity, railParity }: Prop
 
         <section className="grid gap-4 md:grid-cols-2">
           {pipes.map((p) => (
-            <PipeCard key={p.key} name={p.name} note={p.note} t={p.t} />
+            <PipeCard key={p.key} name={p.name} note={p.note} t={p.t} color={p.color} />
           ))}
         </section>
 
@@ -48,7 +51,7 @@ export default function EgressTab({ data, inputs, pipeParity, railParity }: Prop
 }
 
 // ── Throughput vs capacity, one chart per pipe ──────────────────────────────
-function PipeCard({ name, note, t }: { name: string; note: string; t: Throughput }) {
+function PipeCard({ name, note, t, color }: { name: string; note: string; t: Throughput; color: string }) {
   const svgRef = useRef<SVGSVGElement>(null)
   const [hover, setHover] = useState<number | null>(null)
   const pts = useMemo(
@@ -76,7 +79,7 @@ function PipeCard({ name, note, t }: { name: string; note: string; t: Throughput
   const hp = hover != null ? pts[hover] : null
 
   return (
-    <article className={`${card} p-5`}>
+    <article className={`${card} p-4`}>
       <div className="flex items-start justify-between gap-3">
         <div>
           <h2 className="text-[15px] font-semibold">{name}</h2>
@@ -116,13 +119,13 @@ function PipeCard({ name, note, t }: { name: string; note: string; t: Throughput
               {formatAsOf(pts[i].month)}
             </text>
           ))}
-          <path d={area} fill="var(--accent)" opacity="0.14" />
-          <path d={line('throughputKbd')} fill="none" stroke="var(--accent)" strokeWidth="2" strokeLinejoin="round" />
+          <path d={area} fill={color} opacity="0.14" />
+          <path d={line('throughputKbd')} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" />
           <path d={line('capacityKbd')} fill="none" stroke="var(--muted)" strokeWidth="1.5" strokeDasharray="4 3" />
           {hp && (
             <>
               <line x1={x(hover!)} x2={x(hover!)} y1={PAD.t} y2={H - PAD.b} stroke="var(--border-strong)" />
-              <circle cx={x(hover!)} cy={y(hp.throughputKbd)} r="4" fill="var(--accent)" stroke="var(--surface)" strokeWidth="2" />
+              <circle cx={x(hover!)} cy={y(hp.throughputKbd)} r="4" fill={color} stroke="var(--surface)" strokeWidth="2" />
             </>
           )}
         </svg>
@@ -144,7 +147,7 @@ function PipeCard({ name, note, t }: { name: string; note: string; t: Throughput
         <div className="flex items-center gap-4 text-muted">
           <span className="inline-flex items-center gap-1.5">
             <svg width="16" height="6" aria-hidden>
-              <line x1="1" y1="3" x2="15" y2="3" stroke="var(--accent)" strokeWidth="2" />
+              <line x1="1" y1="3" x2="15" y2="3" stroke={color} strokeWidth="2" />
             </svg>
             Throughput
           </span>

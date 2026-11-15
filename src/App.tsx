@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import DrawerContent from './components/Drawer'
 import AppFooter, { SourceList } from './components/Footer'
-import { Money } from './components/ui'
+import { Delta, Money } from './components/ui'
 import { loadData, type Data } from './data'
 import { useHashTab, useMedia, useTheme } from './hooks'
-import { bestLane, breakevens, computeAll, defaultInputs, type Inputs } from './netback'
+import { bestLane, breakevens, computeAll, defaultInputs, ranked, type Inputs } from './netback'
+import type { LaneId } from './lanes'
 import { matchPreset, PRESETS, type PresetId } from './presets'
 import MapTab from './tabs/MapTab'
 import NetbacksTab from './tabs/NetbacksTab'
@@ -58,6 +59,12 @@ function Shell({ data }: { data: Data }) {
   const preset = matchPreset(data, inputs)
   const applyPreset = (id: PresetId) => setInputs(PRESETS.find((p) => p.id === id)!.apply(data))
   const bestR = results[best]
+  // Today's ranking: the reference for ▲▼ rank moves and $ deltas
+  const todayRank = useMemo(() => {
+    const out: Partial<Record<LaneId, number>> = {}
+    ranked(computeAll(data, defaults)).forEach((r, i) => (out[r.lane.id] = i + 1))
+    return out
+  }, [data, defaults])
 
   // Drawer: docked column on wide screens, overlay at tablet size, bottom sheet on phones.
   useEffect(() => setDrawerOpen(isWide), [isWide])
@@ -98,8 +105,8 @@ function Shell({ data }: { data: Data }) {
               e.preventDefault()
               setTab(t)
             }}
-            className={`whitespace-nowrap rounded-lg px-3 py-1.5 text-[13px] font-medium transition-colors ${
-              tab === t ? 'bg-sunken text-fg' : 'text-muted hover:text-fg'
+            className={`whitespace-nowrap border-b-2 px-3 py-2 text-[13px] font-medium transition-colors ${
+              tab === t ? 'border-accent text-fg' : 'border-transparent text-muted hover:text-fg'
             }`}
           >
             {TAB_LABEL[t]}
@@ -122,7 +129,7 @@ function Shell({ data }: { data: Data }) {
                 <Icon d={SLIDERS} />
               </button>
             )}
-            <span className="truncate text-[17px] font-semibold tracking-tight">Pipe Dreams</span>
+            <span className="truncate text-[16px] font-bold uppercase tracking-[0.06em] text-accent">Pipe Dreams</span>
           </div>
           {!isPhone && <div className="flex shrink-0 justify-center">{tabsNav}</div>}
           <div className="flex flex-1 items-center justify-end gap-1">
@@ -142,7 +149,7 @@ function Shell({ data }: { data: Data }) {
         Best now: <span className="font-semibold text-fg">{bestR.lane.name}</span>
         {bestR.dests.length > 1 && <> ({bestR.best.dest.name})</>} at{' '}
         <Money value={bestR.best.netback} className="font-semibold text-accent" extra="Best netback to Hardisty, US$/bbl" tipPos="below" />
-        /bbl, <Money value={bestR.best.uplift} signed extra="vs selling WCS at Hardisty (WTI − diff)" tipPos="below" /> vs Hardisty
+        /bbl, <Delta value={bestR.best.uplift} extra="vs selling WCS at Hardisty (WTI − diff)" tipPos="below" /> vs Hardisty
       </div>
 
       {/* ── Body: drawer + view ── */}
@@ -157,11 +164,11 @@ function Shell({ data }: { data: Data }) {
         )}
         <main className="relative min-w-0 flex-1">
           {tab === 'map' && (
-            <MapTab data={data} theme={theme} results={results} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} />
+            <MapTab data={data} theme={theme} results={results} todayRank={todayRank} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} />
           )}
-          {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} />}
-          {tab === 'rankings' && <RankingsTab data={data} results={results} />}
-          {tab === 'egress' && <EgressTab data={data} inputs={inputs} pipeParity={pipeParity} railParity={railParity} />}
+          {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} theme={theme} />}
+          {tab === 'rankings' && <RankingsTab data={data} results={results} theme={theme} />}
+          {tab === 'egress' && <EgressTab data={data} theme={theme} inputs={inputs} pipeParity={pipeParity} railParity={railParity} />}
           {tab === 'method' && <MethodTab data={data} inputs={inputs} bestR={bestR} />}
         </main>
 
@@ -170,7 +177,7 @@ function Shell({ data }: { data: Data }) {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className={`absolute ${tab === 'map' ? 'bottom-[150px]' : 'bottom-4'} right-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-medium text-on-accent shadow-lg`}
+            className={`absolute ${tab === 'map' ? 'top-3' : 'bottom-4'} right-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-medium text-on-accent shadow-lg`}
           >
             <Icon d={SLIDERS} size={16} /> Inputs
           </button>

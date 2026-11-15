@@ -1,7 +1,8 @@
 import type { Data } from '../data'
+import type { Theme } from '../hooks'
 import type { DestResult, Inputs, LaneResult } from '../netback'
 import { defaultTankerFreight } from '../netback'
-import { floating, Money, Slider, SourceTag } from './ui'
+import { Delta, floating, Money, Slider, SourceTag } from './ui'
 
 export function LaneTag({ tag }: { tag: NonNullable<LaneResult['lane']['tag']> }) {
   return (
@@ -12,13 +13,19 @@ export function LaneTag({ tag }: { tag: NonNullable<LaneResult['lane']['tag']> }
 }
 
 // ── Hover / tap preview ─────────────────────────────────────────────────────
+function Swatch({ color }: { color: string }) {
+  return <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: color }} />
+}
+
 export function PreviewCard({
   r,
+  theme,
   isBest,
   at,
   onOpen,
 }: {
   r: LaneResult
+  theme: Theme
   isBest: boolean
   /** Viewport position (desktop hover). Omit to dock (touch). */
   at?: { x: number; y: number }
@@ -28,18 +35,20 @@ export function PreviewCard({
     ? { left: Math.min(at.x + 16, window.innerWidth - 284), top: Math.max(64, Math.min(at.y + 16, window.innerHeight - 60 - 30 * r.dests.length - 120)) }
     : undefined
   return (
-    <div role="status" className={`${floating} ${at ? 'pointer-events-none fixed w-[17rem]' : ''} z-30 p-3.5`} style={style}>
+    <div role="status" className={`${floating} ${at ? 'pointer-events-none fixed w-[17rem]' : ''} z-30 p-3`} style={style}>
       <div className="flex items-center gap-2">
-        <h3 className="flex-1 truncate text-[14px] font-semibold">{r.lane.name}</h3>
+        <Swatch color={r.lane.color[theme]} />
+        <h3 className="flex-1 truncate text-[13px] font-semibold">{r.lane.name}</h3>
         {isBest && <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent">Best</span>}
         {r.offline && <span className="rounded-md bg-sunken px-1.5 py-0.5 text-[11px] font-medium text-muted">Offline</span>}
       </div>
       {r.lane.tag && <p className="mt-0.5 text-[12px] text-muted">{r.lane.tag.label}</p>}
-      <ul className="mt-2.5 space-y-1">
+      <ul className="mt-2 divide-y divide-line">
         {r.dests.map((d) => (
-          <li key={d.dest.id} className="flex items-baseline gap-2 text-[13px]">
+          <li key={d.dest.id} className="flex items-baseline gap-2 py-1 text-[12.5px]">
             <span className={`flex-1 truncate ${d === r.best ? 'text-fg' : 'text-muted'}`}>{d.dest.name}</span>
             <Money value={d.netback} className={d === r.best ? 'font-semibold' : 'text-muted'} />
+            <Delta value={d.uplift} className="w-[4.6rem] justify-end text-[11.5px]" />
           </li>
         ))}
       </ul>
@@ -57,6 +66,7 @@ export function PreviewCard({
 // ── Side panel ──────────────────────────────────────────────────────────────
 interface PanelProps {
   r: LaneResult
+  theme: Theme
   isBest: boolean
   data: Data
   inputs: Inputs
@@ -64,16 +74,17 @@ interface PanelProps {
   onClose: () => void
 }
 
-export function LanePanel({ r, isBest, data, inputs, setInputs, onClose }: PanelProps) {
+export function LanePanel({ r, theme, isBest, data, inputs, setInputs, onClose }: PanelProps) {
   return (
     <aside
       aria-label={`${r.lane.name} details`}
       className={`${floating} pointer-events-auto absolute inset-x-2 bottom-2 z-40 flex max-h-[75%] flex-col md:inset-x-auto md:bottom-3 md:right-3 md:top-3 md:max-h-none md:w-[24rem]`}
     >
-      <header className="flex items-start gap-3 border-b border-line p-4">
+      <header className="flex items-start gap-3 border-b border-line p-3.5">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-[17px] font-semibold tracking-tight">{r.lane.name}</h2>
+            <Swatch color={r.lane.color[theme]} />
+            <h2 className="text-[16px] font-semibold tracking-tight">{r.lane.name}</h2>
             {isBest && <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent">Best</span>}
             {r.offline && <span className="rounded-md bg-sunken px-1.5 py-0.5 text-[11px] font-medium text-muted">Offline</span>}
           </div>
@@ -91,7 +102,7 @@ export function LanePanel({ r, isBest, data, inputs, setInputs, onClose }: Panel
         </button>
       </header>
 
-      <div className="flex-1 space-y-3 overflow-y-auto p-4">
+      <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {r.dests.map((d) => (
           <DestBlock key={d.dest.id} d={d} best={r.dests.length > 1 && d === r.best} data={data} inputs={inputs} setInputs={setInputs} />
         ))}
@@ -117,7 +128,7 @@ function DestBlock({
   setInputs: (fn: (i: Inputs) => Inputs) => void
 }) {
   return (
-    <article className={`rounded-xl border p-3.5 ${best ? 'border-accent' : 'border-line'}`}>
+    <article className={`rounded-md border p-3 ${best ? 'border-accent' : 'border-line'}`}>
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-[14px] font-semibold">
@@ -137,7 +148,7 @@ function DestBlock({
         <div className="text-right">
           <Money value={d.netback} className="text-[18px] font-semibold tracking-tight" extra="Netback to Hardisty, US$/bbl" tipPos="left" />
           <div className="whitespace-nowrap text-[12px] text-muted">
-            <Money value={d.uplift} signed extra="Netback minus WCS at Hardisty (WTI − diff)" tipPos="left" /> vs Hardisty
+            <Delta value={d.uplift} extra="Netback minus WCS at Hardisty (WTI − diff)" tipPos="left" /> vs Hardisty
           </div>
         </div>
       </div>

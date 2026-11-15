@@ -183,7 +183,7 @@
       "label": "WTI Cushing spot (monthly average)",
       "source": "U.S. EIA, series RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
-      "fetchedAt": "2026-11-15T02:32:36.259Z",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
       "stale": false
     },
     "brent": {
@@ -243,10 +243,10 @@
       "label": "Brent spot (monthly average)",
       "source": "U.S. EIA, series RBRTE",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
-      "fetchedAt": "2026-11-15T02:32:36.259Z",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
       "stale": false,
-      "spreadToWti": 21.86,
-      "spreadMonth": "2026-10"
+      "spreadToWti": 3.24,
+      "spreadMonth": "2026-11-02..2026-11-11"
     },
     "ans": {
       "value": 81.45,
@@ -305,7 +305,7 @@
       "label": "Alaska North Slope first purchase price",
       "source": "U.S. EIA, series F005071__3",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
-      "fetchedAt": "2026-11-15T02:32:36.259Z",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
       "stale": false,
       "spreadToWti": -2.45,
       "spreadMonth": "2026-08"
@@ -320,7 +320,7 @@
     "source": "Government of Alberta, Economic Dashboard — Oil prices",
     "sourceUrl": "https://economicdashboard.alberta.ca/OilPrice",
     "updatedLocally": true,
-    "fetchedAt": "2026-11-15T02:32:36.259Z",
+    "fetchedAt": "2026-11-15T03:26:21.300Z",
     "stale": false
   },
   "fx": {
@@ -330,7 +330,7 @@
     "label": "USD/CAD (monthly average)",
     "source": "Bank of Canada, Valet API series FXMUSDCAD",
     "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
-    "fetchedAt": "2026-11-15T02:32:36.259Z",
+    "fetchedAt": "2026-11-15T03:26:21.300Z",
     "stale": false
   },
   "quality": {
@@ -344,7 +344,7 @@
     "label": "Western Canadian Select — most recent sample",
     "source": "Crude Quality Inc., CrudeMonitor.ca",
     "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
-    "fetchedAt": "2026-11-15T02:32:36.259Z",
+    "fetchedAt": "2026-11-15T03:26:21.300Z",
     "stale": false
   },
   "throughput": {
@@ -535,7 +535,7 @@
       "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-15T02:32:36.259Z",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
       "stale": false
     },
     "tmx": {
@@ -675,9 +675,24 @@
       "label": "Trans Mountain, system throughput vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-15T02:32:36.259Z",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
       "stale": false
     }
   },
-  "generatedAt": "2026-11-15T02:32:36.259Z"
+  "generatedAt": "2026-11-15T03:26:21.300Z",
+  "spreads": {
+    "brentWti": {
+      "value": 3.24,
+      "unit": "US$/bbl",
+      "asOf": "2026-11-11",
+      "from": "2026-11-02",
+      "to": "2026-11-11",
+      "days": 8,
+      "label": "Brent − WTI, average of 8 daily spreads 2026-11-02 to 2026-11-11",
+      "source": "U.S. EIA daily spot prices, series RBRTE − RWTC",
+      "sourceUrl": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm",
+      "fetchedAt": "2026-11-15T03:26:21.300Z",
+      "stale": false
+    }
+  }
 }

@@ -212,8 +212,52 @@ async function cerThroughput(kind) {
 }
 
 // ── main ───────────────────────────────────────────────────────────────────
+/**
+ * Brent − WTI from *daily* EIA prices: the current month-to-date average once it
+ * has ≥5 paired trading days, otherwise the last full month. Monthly averages
+ * can lag a fast-moving spread badly (Oct 2026 averaged +$21.86; by mid-Nov it
+ * was back near +$3), so the spread tracks the most recent data instead.
+ */
+async function brentWtiDaily() {
+  const key = process.env.EIA_API_KEY
+  if (!key) throw new Error('EIA_API_KEY not set')
+  const now = new Date()
+  const start = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1)).toISOString().slice(0, 10)
+  const url =
+    `https://api.eia.gov/v2/petroleum/pri/spt/data/?api_key=${key}&frequency=daily&data[0]=value` +
+    `&facets[series][]=RBRTE&facets[series][]=RWTC&start=${start}&sort[0][column]=period&sort[0][direction]=asc&length=200`
+  const rows = (await get(url))?.response?.data ?? []
+  const byDay = new Map()
+  for (const r of rows) {
+    const v = Number(r.value)
+    if (!Number.isFinite(v)) continue
+    byDay.set(r.period, { ...byDay.get(r.period), [r.series]: v })
+  }
+  const pairs = [...byDay.entries()]
+    .filter(([, v]) => v.RBRTE != null && v.RWTC != null)
+    .map(([day, v]) => ({ day, spread: v.RBRTE - v.RWTC }))
+  if (!pairs.length) throw new Error('EIA daily Brent/WTI: no paired days')
+  const months = [...new Set(pairs.map((p) => p.day.slice(0, 7)))].sort()
+  const latest = months.at(-1)
+  const pick = pairs.filter((p) => p.day.startsWith(latest)).length >= 5 ? latest : months.at(-2) ?? latest
+  const sel = pairs.filter((p) => p.day.startsWith(pick))
+  const avg = sel.reduce((s, p) => s + p.spread, 0) / sel.length
+  return {
+    value: round(avg),
+    unit: 'US$/bbl',
+    asOf: sel.at(-1).day,
+    from: sel[0].day,
+    to: sel.at(-1).day,
+    days: sel.length,
+    label: `Brent − WTI, average of ${sel.length} daily spreads ${sel[0].day} to ${sel.at(-1).day}`,
+    source: 'U.S. EIA daily spot prices, series RBRTE − RWTC',
+    sourceUrl: 'https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm',
+  }
+}
+
 const JOBS = {
   'prices.wti': () => eiaMonthly('pri/spt', 'RWTC', 'WTI Cushing spot (monthly average)'),
+  'spreads.brentWti': brentWtiDaily,
   'prices.brent': () => eiaMonthly('pri/spt', 'RBRTE', 'Brent spot (monthly average)'),
   'prices.ans': () => eiaMonthly('pri/dfp1', 'F005071__3', 'Alaska North Slope first purchase price'),
   wcsDiff: albertaDiff,
@@ -254,7 +298,7 @@ let eiaQueue = Promise.resolve()
 const results = await Promise.all(
   Object.entries(JOBS).map(([path, fn]) => {
     if (IN_CI && LOCAL_ONLY.has(path)) return { status: 'skipped' }
-    if (!path.startsWith('prices.')) return settle(fn)
+    if (!path.startsWith('prices.') && !path.startsWith('spreads.')) return settle(fn)
     const run = eiaQueue.then(() => settle(fn))
     eiaQueue = run
     return run
@@ -291,6 +335,11 @@ for (const key of ['brent', 'ans']) {
     b.spreadToWti = round(b.value - w.value)
     b.spreadMonth = b.asOf
   }
+}
+// Brent uses the recent daily spread (see brentWtiDaily) when available.
+if (data.prices?.brent && data.spreads?.brentWti) {
+  data.prices.brent.spreadToWti = data.spreads.brentWti.value
+  data.prices.brent.spreadMonth = `${data.spreads.brentWti.from}..${data.spreads.brentWti.to}`
 }
 
 data.generatedAt = now

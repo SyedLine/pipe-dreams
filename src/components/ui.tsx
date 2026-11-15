@@ -41,12 +41,51 @@ export function Money({
   )
 }
 
+/**
+ * A gain/loss: green ▲ for gains, red ▼ for losses, grey for ~zero.
+ * Arrow + sign mean it never relies on colour alone.
+ */
+export function Delta({
+  value,
+  extra,
+  source,
+  dp = 2,
+  className = '',
+  tipPos,
+}: {
+  value: number
+  extra?: string
+  source?: Sourced
+  dp?: number
+  className?: string
+  tipPos?: 'below' | 'left'
+}) {
+  const v = useTween(value)
+  const flat = Math.abs(v) < 0.005
+  const up = v > 0
+  return (
+    <span
+      className={`num inline-flex items-baseline gap-0.5 whitespace-nowrap ${flat ? 'text-subtle' : up ? 'text-up' : 'text-down'} ${className}`}
+      data-tip={source ? tipFor(source, extra) : extra}
+      data-tip-pos={tipPos}
+      tabIndex={source || extra ? 0 : undefined}
+    >
+      {!flat && (
+        <span aria-hidden className="text-[0.8em]">
+          {up ? '▲' : '▼'}
+        </span>
+      )}
+      {flat ? `$${(0).toFixed(dp)}` : `${up ? '+' : '−'}$${Math.abs(v).toFixed(dp)}`}
+    </span>
+  )
+}
+
 /** "as of Oct 2026" with link; amber dot + "stale" when out of date. */
 export function SourceTag({ s, className = '' }: { s: Sourced; className?: string }) {
   const stale = isStale(s)
   const body = (
     <>
-      {stale && <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-stale" />}
+      {stale && <span aria-hidden>⚠</span>}
       <span>
         {s.asOf ? `as of ${formatAsOf(s.asOf)}` : 'assumption'}
         {stale && <span className="text-stale"> · stale</span>}
@@ -133,7 +172,9 @@ export function Slider({ label, value, min, max, step, format = (n) => usd(n), o
 }
 
 /** Card surface used across tabs and overlays */
-export const card = 'rounded-2xl border border-line bg-surface'
+export const card = 'rounded-md border border-line bg-surface'
 /** Floating surface over the map (slightly translucent) */
 export const floating =
-  'rounded-2xl border border-line bg-surface/85 shadow-[0_8px_32px_rgb(0_0_0/0.12)] backdrop-blur-xl backdrop-saturate-150'
+  'rounded-md border border-line-strong bg-surface/90 shadow-[0_8px_32px_rgb(0_0_0/0.18)] backdrop-blur-xl backdrop-saturate-150'
+/** Amber section header, terminal style */
+export const header = 'text-[11px] font-semibold uppercase tracking-[0.08em] text-accent'

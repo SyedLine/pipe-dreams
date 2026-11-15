@@ -47,6 +47,8 @@ export interface Data {
     densityKgM35y: number | null
   }
   throughput: { mainline: Throughput; tmx: Throughput }
+  /** Recent daily Brent − WTI (preferred over the monthly spread) */
+  spreads?: { brentWti?: Sourced & { value: number; from: string; to: string; days: number } }
   tolls: {
     mainlineChicago: Toll
     mainlineUsgc: Toll

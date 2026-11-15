@@ -3,6 +3,7 @@ import {
   Map as MapLibreMap,
   NavigationControl,
   setWorkerUrl,
+  type LngLatBoundsLike,
   type MapLayerMouseEvent,
   type MapMouseEvent,
 } from 'maplibre-gl'
@@ -23,11 +24,20 @@ const STYLE: Record<Theme, string> = {
 const FONT = ['Montserrat Medium', 'Open Sans Regular', 'Noto Sans Regular']
 const FONT_BOLD = ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular']
 
-/** Map palette per theme: neutral greys + the one accent. */
-const PAL: Record<Theme, { muted: string; active: string; accent: string; halo: string; label: string; labelHalo: string }> = {
-  dark: { muted: '#6e6e76', active: '#f5f5f7', accent: '#0a84ff', halo: '#0b0b0c', label: '#e5e5ea', labelHalo: '#0b0b0c' },
-  light: { muted: '#a8a8b0', active: '#1d1d1f', accent: '#0071e3', halo: '#ffffff', label: '#1d1d1f', labelHalo: '#ffffff' },
+const PAL: Record<Theme, { origin: string; halo: string; label: string }> = {
+  dark: { origin: '#ececee', halo: '#050506', label: '#ececee' },
+  light: { origin: '#111113', halo: '#ffffff', label: '#111113' },
 }
+
+/** Default frame: the North American network. Asia only when TMX → Asia is selected. */
+const NORTH_AMERICA: LngLatBoundsLike = [
+  [-127.5, 27.5],
+  [-86.5, 56],
+]
+const WITH_ASIA: LngLatBoundsLike = [
+  [-242, 19],
+  [-86.5, 58],
+]
 
 export interface Padding {
   top: number
@@ -39,10 +49,12 @@ export interface Padding {
 interface Props {
   theme: Theme
   best: LaneId
-  /** Hovered or selected lane: drawn in the foreground colour with its city labels */
+  /** Hovered or selected lane: drawn thicker with its city labels */
   active: LaneId | null
+  /** Frame the Pacific crossing (TMX → Asia selected) */
+  showAsia: boolean
   offline: LaneId[]
-  /** Screen space covered by overlays; Hardisty is centred in what's left. */
+  /** Screen space covered by overlays */
   padding: Padding
   /** Pointer position is in viewport (client) coordinates. */
   onHover: (id: LaneId | null, at?: { x: number; y: number }) => void
@@ -55,7 +67,7 @@ function laneFeatures(): FeatureCollection<LineString> {
     features: LANES.flatMap((lane) =>
       lane.segments.map((s) => ({
         type: 'Feature' as const,
-        properties: { lane: lane.id, mode: s.mode, offset: lane.offset },
+        properties: { lane: lane.id, mode: s.mode, offset: lane.offset, cd: lane.color.dark, cl: lane.color.light },
         geometry: { type: 'LineString' as const, coordinates: s.coords },
       })),
     ),
@@ -66,7 +78,7 @@ function pointFeatures(): FeatureCollection<Point> {
   const dests = LANES.flatMap((lane) =>
     lane.destinations.map((d) => ({
       type: 'Feature' as const,
-      properties: { lane: lane.id, kind: 'dest', label: d.name },
+      properties: { lane: lane.id, kind: 'dest', label: d.name, cd: lane.color.dark, cl: lane.color.light },
       geometry: { type: 'Point' as const, coordinates: d.coord },
     })),
   )
@@ -75,34 +87,15 @@ function pointFeatures(): FeatureCollection<Point> {
     { label: 'Edmonton', coord: EDMONTON, lane: 'tmx' },
   ].map((h) => ({
     type: 'Feature' as const,
-    properties: { lane: h.lane, kind: 'origin', label: h.label },
+    properties: { lane: h.lane, kind: 'origin', label: h.label, cd: '', cl: '' },
     geometry: { type: 'Point' as const, coordinates: h.coord },
   }))
   return { type: 'FeatureCollection', features: [...dests, ...origins] }
 }
 
-/** Zoom that keeps Hardisty centred while fitting every lane on screen. */
-function fitZoom(el: HTMLElement, p: Padding): number {
-  const coords = LANES.flatMap((l) => l.segments.flatMap((s) => s.coords))
-  const mercY = (lat: number) => (1 - Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) / Math.PI) / 2
-  const cy = mercY(HARDISTY[1])
-  let dx = 0
-  let dy = 0
-  for (const [lon, lat] of coords) {
-    dx = Math.max(dx, Math.abs(lon - HARDISTY[0]) / 360)
-    dy = Math.max(dy, Math.abs(mercY(lat) - cy))
-  }
-  const pad = 40
-  const w = el.clientWidth - p.left - p.right
-  const h = el.clientHeight - p.top - p.bottom
-  const zx = Math.log2((w / 2 - pad) / (dx * 512))
-  const zy = Math.log2((h / 2 - pad) / (dy * 512))
-  return Math.max(0, Math.min(zx, zy, 4))
-}
-
 const isLane = (id: string | null): ExpressionSpecification => ['==', ['get', 'lane'], id ?? '__none__']
 
-export default function MapView({ theme, best, active, offline, padding, onHover, onSelect }: Props) {
+export default function MapView({ theme, best, active, showAsia, offline, padding, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const readyRef = useRef(false)
@@ -117,16 +110,19 @@ export default function MapView({ theme, best, active, offline, padding, onHover
     if (!map || !readyRef.current) return
     const { theme, best, active, offline } = latest.current
     const p = PAL[theme]
+    const color: ExpressionSpecification = ['get', theme === 'dark' ? 'cd' : 'cl']
     const off: ExpressionSpecification = ['in', ['get', 'lane'], ['literal', offline]]
-    const color: ExpressionSpecification = ['case', isLane(active), p.active, isLane(best), p.accent, p.muted]
-    const width: ExpressionSpecification = ['case', ['any', isLane(active), isLane(best)], 2.6, 1.4]
-    const opacity: ExpressionSpecification = ['case', off, 0.18, 1]
+    const width: ExpressionSpecification = ['case', isLane(active), 3.6, isLane(best), 2.8, 2]
+    // Every lane keeps its colour; when one is in focus the rest step back a little.
+    const opacity: ExpressionSpecification = active
+      ? ['case', off, 0.15, isLane(active), 1, 0.4]
+      : ['case', off, 0.15, 0.95]
     for (const id of ['lanes-pipe', 'lanes-tanker', 'lanes-rail', 'lanes-transfer']) {
       map.setPaintProperty(id, 'line-color', color)
       map.setPaintProperty(id, 'line-width', width)
       map.setPaintProperty(id, 'line-opacity', opacity)
     }
-    map.setPaintProperty('lanes-glow', 'line-color', p.accent)
+    map.setPaintProperty('lanes-glow', 'line-color', color)
     map.setFilter('lanes-glow', ['all', isLane(best), ['!', off]])
     // Hardisty always; Edmonton when a TMX lane is active; destinations only for the active lane.
     const tmxActive = active === 'tmx-uswc' || active === 'tmx-asia'
@@ -138,10 +134,10 @@ export default function MapView({ theme, best, active, offline, padding, onHover
     ]
     map.setFilter('points-label', show)
     map.setFilter('points-circle', show)
-    map.setPaintProperty('points-circle', 'circle-color', p.active)
+    map.setPaintProperty('points-circle', 'circle-color', ['case', ['==', ['get', 'kind'], 'origin'], p.origin, color])
     map.setPaintProperty('points-circle', 'circle-stroke-color', p.halo)
     map.setPaintProperty('points-label', 'text-color', p.label)
-    map.setPaintProperty('points-label', 'text-halo-color', p.labelHalo)
+    map.setPaintProperty('points-label', 'text-halo-color', p.halo)
   }
 
   /** (Re)install sources and layers — runs on first load and after every theme switch. */
@@ -155,7 +151,7 @@ export default function MapView({ theme, best, active, offline, padding, onHover
       source: 'lanes',
       filter: isLane(null),
       layout: { 'line-cap': 'round', 'line-join': 'round' },
-      paint: { 'line-width': 14, 'line-blur': 10, 'line-opacity': 0.4, 'line-offset': offset },
+      paint: { 'line-width': 10, 'line-blur': 8, 'line-opacity': 0.35, 'line-offset': offset },
     })
     const modes = [
       { mode: 'pipe', dash: undefined },
@@ -183,7 +179,7 @@ export default function MapView({ theme, best, active, offline, padding, onHover
       id: 'points-circle',
       type: 'circle',
       source: 'points',
-      paint: { 'circle-radius': ['match', ['get', 'kind'], 'origin', 4.5, 3.5], 'circle-stroke-width': 1.5 },
+      paint: { 'circle-radius': ['match', ['get', 'kind'], 'origin', 4.5, 4], 'circle-stroke-width': 1.5 },
     })
     map.addLayer({
       id: 'points-label',
@@ -210,15 +206,14 @@ export default function MapView({ theme, best, active, offline, padding, onHover
     const map = new MapLibreMap({
       container: el,
       style: STYLE[latest.current.theme],
-      center: HARDISTY,
-      zoom: fitZoom(el, padding),
+      bounds: showAsia ? WITH_ASIA : NORTH_AMERICA,
+      fitBoundsOptions: { padding },
       minZoom: 0,
       maxZoom: 9,
       attributionControl: { compact: true },
       dragRotate: false,
       pitchWithRotate: false,
     })
-    map.setPadding(padding)
     map.touchZoomRotate.disableRotation()
     map.addControl(new NavigationControl({ showCompass: false }), 'bottom-right')
     mapRef.current = map
@@ -265,15 +260,19 @@ export default function MapView({ theme, best, active, offline, padding, onHover
     map.setStyle(STYLE[theme])
   }, [theme])
 
-  // Re-fit when the uncovered area changes (drawer open/close, layout switch).
-  const padKey = `${padding.top},${padding.right},${padding.bottom},${padding.left}`
+  // Reframe when Asia comes in/out of view or the uncovered area changes.
+  const frameKey = `${showAsia}|${padding.top},${padding.right},${padding.bottom},${padding.left}`
+  const firstFrame = useRef(true)
   useEffect(() => {
     const map = mapRef.current
-    const el = containerRef.current
-    if (!map || !el) return
-    map.easeTo({ center: HARDISTY, zoom: fitZoom(el, padding), padding, duration: 300 })
+    if (!map) return
+    if (firstFrame.current) {
+      firstFrame.current = false
+      return
+    }
+    map.fitBounds(showAsia ? WITH_ASIA : NORTH_AMERICA, { padding, duration: 600 })
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [padKey])
+  }, [frameKey])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(restyle, [best, active, offline.join(','), theme])

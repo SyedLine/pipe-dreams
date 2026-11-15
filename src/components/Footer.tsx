@@ -9,7 +9,8 @@ const YEAR = new Date().getFullYear()
 export function sourceRows(d: Data): { what: string; s: Sourced }[] {
   return [
     { what: 'WTI (Cushing spot)', s: d.prices.wti },
-    { what: 'Brent (spread to WTI)', s: d.prices.brent },
+    { what: 'Brent (monthly)', s: d.prices.brent },
+    ...(d.spreads?.brentWti ? [{ what: 'Brent − WTI spread (daily)', s: d.spreads.brentWti as Sourced }] : []),
     { what: 'ANS (spread to WTI)', s: d.prices.ans },
     { what: 'WTI–WCS differential', s: d.wcsDiff },
     { what: 'USD/CAD', s: d.fx },

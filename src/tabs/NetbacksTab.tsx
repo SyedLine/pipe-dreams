@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
-import { card, Money, tipFor } from '../components/ui'
+import { card, Delta, header, Money, tipFor } from '../components/ui'
+import type { Theme } from '../hooks'
 import type { DestResult, Inputs, LaneResult, Results } from '../netback'
 
 interface Props {
   results: Results
   inputs: Inputs
+  theme: Theme
 }
 
 interface Row {
@@ -20,7 +22,7 @@ type Sort = 'netback' | 'uplift'
  * All cards share one $ scale so their positions are comparable; no bar is
  * drawn from zero, so the axis can start near the prices without distorting length.
  */
-export default function NetbacksTab({ results, inputs }: Props) {
+export default function NetbacksTab({ results, inputs, theme }: Props) {
   const [sort, setSort] = useState<Sort>('netback')
   const hardisty = inputs.wti - inputs.wcsDiff
 
@@ -52,7 +54,7 @@ export default function NetbacksTab({ results, inputs }: Props) {
       <div className="mx-auto max-w-6xl px-4 py-6 md:px-6">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h1 className="text-[22px] font-semibold tracking-tight">Netbacks</h1>
+            <h1 className={header}>Netbacks</h1>
             <p className="mt-1 max-w-xl text-[13px] text-muted">
               Every destination, from benchmark price to what the barrel is worth back at Hardisty. Dashed line: WCS at Hardisty (
               <Money value={hardisty} extra="WTI − WTI–WCS differential" />
@@ -79,10 +81,10 @@ export default function NetbacksTab({ results, inputs }: Props) {
           </div>
         </div>
 
-        <ol className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ol className="mt-4 grid grid-cols-1 gap-2 md:grid-cols-2 xl:grid-cols-3">
           {rows.map(({ lane, d }, i) => (
             <li key={`${lane.lane.id}:${d.dest.id}`}>
-              <DestCard lane={lane} d={d} rank={lane.offline ? null : i + 1} top={d === topNetback} lo={lo} hi={hi} hardisty={hardisty} />
+              <DestCard lane={lane} d={d} theme={theme} rank={lane.offline ? null : i + 1} top={d === topNetback} lo={lo} hi={hi} hardisty={hardisty} />
             </li>
           ))}
         </ol>
@@ -97,6 +99,7 @@ export default function NetbacksTab({ results, inputs }: Props) {
 function DestCard({
   lane,
   d,
+  theme,
   rank,
   top,
   lo,
@@ -105,6 +108,7 @@ function DestCard({
 }: {
   lane: LaneResult
   d: DestResult
+  theme: Theme
   rank: number | null
   top: boolean
   lo: number
@@ -117,12 +121,13 @@ function DestCard({
   const steps = d.steps.map((s, i) => ({ s, from: i === 0 ? s.value : totals[i - 1], to: totals[i] }))
 
   return (
-    <article className={`${card} h-full p-4 ${lane.offline ? 'opacity-50' : ''} ${top ? 'border-accent' : ''}`}>
+    <article className={`${card} h-full p-3 ${lane.offline ? 'opacity-50' : ''} ${top ? 'border-accent' : ''}`}>
       <header className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             {rank != null && <span className="num text-[12px] font-medium text-subtle">#{rank}</span>}
-            <h2 className="truncate text-[15px] font-semibold">{d.dest.name}</h2>
+            <span aria-hidden className="h-2.5 w-2.5 shrink-0 rounded-[2px]" style={{ backgroundColor: lane.lane.color[theme] }} />
+            <h2 className="truncate text-[14px] font-semibold">{d.dest.name}</h2>
             {top && <span className="rounded-md bg-accent-soft px-1.5 py-0.5 text-[11px] font-semibold text-accent">Best</span>}
             {lane.offline && <span className="rounded-md bg-sunken px-1.5 py-0.5 text-[11px] font-medium text-muted">Offline</span>}
           </div>
@@ -132,15 +137,15 @@ function DestCard({
           </p>
         </div>
         <div className="text-right">
-          <Money value={d.netback} className={`text-[20px] font-semibold tracking-tight ${top ? 'text-accent' : ''}`} extra="Netback to Hardisty, US$/bbl" tipPos="left" />
+          <Money value={d.netback} className={`text-[18px] font-semibold ${top ? 'text-accent' : ''}`} extra="Netback to Hardisty, US$/bbl" tipPos="left" />
           <div className="whitespace-nowrap text-[12px] text-muted">
-            <Money value={d.uplift} signed extra="Netback minus WCS at Hardisty" tipPos="left" /> vs Hardisty
+            <Delta value={d.uplift} extra="Netback minus WCS at Hardisty" tipPos="left" /> vs Hardisty
           </div>
         </div>
       </header>
 
       {/* Waterfall */}
-      <div className="mt-4 space-y-1.5" role="list" aria-label={`${d.dest.name} netback build-up`}>
+      <div className="mt-3 space-y-1" role="list" aria-label={`${d.dest.name} netback build-up`}>
         {steps.map(({ s, from, to }, i) => {
           const first = i === 0
           const left = Math.min(from, to)

@@ -1,16 +1,18 @@
 import { useState } from 'react'
 import MapView, { type Padding } from '../components/MapView'
 import { LanePanel, PreviewCard } from '../components/LaneCards'
-import { floating, Money } from '../components/ui'
+import { Delta, floating, header, Money } from '../components/ui'
 import type { Data } from '../data'
 import type { Theme } from '../hooks'
-import { LANES, type LaneId } from '../lanes'
-import type { Inputs, Results } from '../netback'
+import type { LaneId } from '../lanes'
+import { ranked, type Inputs, type LaneResult, type Results } from '../netback'
 
 interface Props {
   data: Data
   theme: Theme
   results: Results
+  /** Rank of each lane under Today's inputs (1 = best) */
+  todayRank: Partial<Record<LaneId, number>>
   best: LaneId
   inputs: Inputs
   setInputs: (fn: (i: Inputs) => Inputs) => void
@@ -20,7 +22,18 @@ interface Props {
 
 type Hover = { id: LaneId; at?: { x: number; y: number } } | null
 
-export default function MapTab({ data, theme, results, best, inputs, setInputs, isTouch, isPhone }: Props) {
+export function RankMove({ now, was }: { now: number | null; was: number | undefined }) {
+  if (now == null || was == null || was === now) return <span className="num text-subtle">–</span>
+  const up = was > now
+  return (
+    <span className={`num whitespace-nowrap text-[11px] ${up ? 'text-up' : 'text-down'}`} data-tip={`Today: #${was}`}>
+      {up ? '▲' : '▼'}
+      {Math.abs(was - now)}
+    </span>
+  )
+}
+
+export default function MapTab({ data, theme, results, todayRank, best, inputs, setInputs, isTouch, isPhone }: Props) {
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
   const active = selected ?? hover?.id ?? null
@@ -39,8 +52,12 @@ export default function MapTab({ data, theme, results, best, inputs, setInputs, 
     setHover(null)
   }
 
-  const padding: Padding = isPhone ? { top: 0, right: 0, bottom: 140, left: 0 } : { top: 0, right: 0, bottom: 0, left: 0 }
+  const padding: Padding = isPhone
+    ? { top: 24, right: 24, bottom: 200, left: 24 }
+    : { top: 40, right: selected ? 420 : 460, bottom: 40, left: 40 }
   const hovered = hover && !selected ? results[hover.id] : null
+  const order = ranked(results)
+  const rows: LaneResult[] = [...order, ...(Object.values(results) as LaneResult[]).filter((r) => r.offline)]
 
   return (
     <div className="relative h-full">
@@ -48,40 +65,60 @@ export default function MapTab({ data, theme, results, best, inputs, setInputs, 
         theme={theme}
         best={best}
         active={active}
+        showAsia={selected === 'tmx-asia'}
         offline={inputs.offline}
         padding={padding}
         onHover={onHover}
         onSelect={onSelect}
       />
 
-      {/* Lane list */}
+      {/* Lane board: sorted by netback */}
       {!selected && (
         <nav
-          aria-label="Lanes"
-          className={`${floating} absolute z-10 p-1.5 ${isPhone ? 'inset-x-2 bottom-2 max-h-[132px] overflow-y-auto' : 'right-3 top-3 w-[20rem]'}`}
+          aria-label="Lanes by netback"
+          className={`${floating} absolute z-10 ${isPhone ? 'inset-x-2 bottom-2 max-h-[188px] overflow-y-auto' : 'right-3 top-3 w-[27rem]'}`}
         >
-          <ul>
-            {LANES.map((lane) => {
-              const r = results[lane.id]
-              const isBest = lane.id === best
+          <div className="grid grid-cols-[2.6rem_1fr_4.6rem_5.4rem] items-center gap-2 border-b border-line px-3 py-1.5">
+            <span className={header}>#</span>
+            <span className={header}>Lane</span>
+            <span className={`${header} text-right`}>Netback</span>
+            <span className={`${header} text-right`}>vs Hardisty</span>
+          </div>
+          <ul className="divide-y divide-line">
+            {rows.map((r) => {
+              const rank = r.offline ? null : order.indexOf(r) + 1
+              const isBest = r.lane.id === best
               return (
-                <li key={lane.id}>
+                <li key={r.lane.id}>
                   <button
                     type="button"
-                    onMouseEnter={() => !isTouch && setHover({ id: lane.id })}
+                    onMouseEnter={() => !isTouch && setHover({ id: r.lane.id })}
                     onMouseLeave={() => !isTouch && setHover(null)}
-                    onClick={() => open(lane.id)}
-                    className={`flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors ${
-                      active === lane.id ? 'bg-sunken' : 'hover:bg-sunken'
-                    } ${r.offline ? 'opacity-50' : ''}`}
+                    onClick={() => open(r.lane.id)}
+                    className={`grid w-full grid-cols-[2.6rem_1fr_4.6rem_5.4rem] items-center gap-2 px-3 py-[7px] text-left text-[12.5px] transition-colors ${
+                      active === r.lane.id ? 'bg-sunken' : 'hover:bg-sunken'
+                    } ${r.offline ? 'opacity-45' : ''}`}
                   >
-                    <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${isBest ? 'bg-accent' : 'bg-line-strong'}`} />
-                    <span className="min-w-0 flex-1 truncate">{lane.name}</span>
+                    <span className="flex items-baseline gap-1.5">
+                      <span className="num text-[12px] text-muted">{rank ?? '—'}</span>
+                      <RankMove now={rank} was={todayRank[r.lane.id]} />
+                    </span>
+                    <span className="flex min-w-0 items-center gap-2">
+                      <span
+                        aria-hidden
+                        className="h-2.5 w-2.5 shrink-0 rounded-[2px]"
+                        style={{ backgroundColor: r.lane.color[theme], boxShadow: isBest ? `0 0 8px ${r.lane.color[theme]}` : undefined }}
+                      />
+                      <span className={`truncate ${isBest ? 'font-semibold' : ''}`}>{isPhone ? r.lane.short : r.lane.name}</span>
+                    </span>
                     {r.offline ? (
-                      <span className="text-[12px] text-subtle">offline</span>
+                      <span className="text-right text-[11px] text-subtle">offline</span>
                     ) : (
-                      <Money value={r.best.netback} className={isBest ? 'font-semibold text-accent' : 'text-muted'} />
+                      <Money value={r.best.netback} className="text-right" extra={`Best netback via ${r.best.dest.name}`} tipPos="left" />
                     )}
+                    <span className="text-right">
+                      {r.offline ? <span className="text-subtle">—</span> : <Delta value={r.best.uplift} extra="Netback minus WCS at Hardisty (WTI − diff)" tipPos="left" />}
+                    </span>
                   </button>
                 </li>
               )
@@ -93,15 +130,16 @@ export default function MapTab({ data, theme, results, best, inputs, setInputs, 
       {hovered &&
         (isTouch ? (
           <div className="absolute inset-x-2 top-2 z-30">
-            <PreviewCard r={hovered} isBest={hovered.lane.id === best} onOpen={() => open(hovered.lane.id)} />
+            <PreviewCard r={hovered} theme={theme} isBest={hovered.lane.id === best} onOpen={() => open(hovered.lane.id)} />
           </div>
         ) : hover?.at ? (
-          <PreviewCard r={hovered} isBest={hovered.lane.id === best} at={hover.at} />
+          <PreviewCard r={hovered} theme={theme} isBest={hovered.lane.id === best} at={hover.at} />
         ) : null)}
 
       {selected && (
         <LanePanel
           r={results[selected]}
+          theme={theme}
           isBest={selected === best}
           data={data}
           inputs={inputs}

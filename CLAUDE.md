@@ -70,3 +70,10 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Every number is hover-explained (`data-tip`, `Money`/`tipFor` in `src/components/ui.tsx`).
 - Footer: "All rights reserved & all wrongs reversed… feedback is welcome"; "feedback is welcome" opens an in-app form that POSTs to the author's Formspree form (`FEEDBACK_ENDPOINT` in `src/components/Feedback.tsx`), which emails them. Favicon: red crude tanker, side view (`public/favicon.svg`).
 - Tabs: Netbacks = per-destination cards with shared-scale waterfalls; Rankings = FLIP-animated leaderboard with ▲▼ vs Today; Egress = throughput vs capacity per pipe + rail-breakeven gauge; Method = plain-English explainer, live worked example, assumptions, sources.
+
+## Terminal restyle (Nov 2026) — supersedes the colour notes above
+- Accent is AMBER (brand, headers, controls, best badges); near-black dark background. JetBrains Mono for all numbers (`.num`).
+- Every lane has its own colour (`color: {dark, light}` in `src/lanes.ts`, validated categorical palette; rail is neutral grey), always visible on the map and in lists; the best lane gets a soft glow in its own colour. Confusable pairs are kept geographically apart.
+- Green/red (`--up`/`--down`, `Delta` in `src/components/ui.tsx`) for every gain/loss: vs Hardisty, rank moves, deltas vs Today — always with ▲▼ or a sign.
+- Map frames North America by default; it zooms out to the Pacific only when TMX → Asia is selected. Map lane board is sorted by netback with ▲▼ rank moves and a vs-Hardisty column; phones use short lane names.
+- Brent − WTI uses the recent DAILY spread (`spreads.brentWti` in data.json: month-to-date average once ≥5 trading days, else last full month). Oct 2026's monthly +$21.86 was a real but stale outlier in EIA data.

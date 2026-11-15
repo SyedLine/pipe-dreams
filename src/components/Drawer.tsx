@@ -3,7 +3,7 @@ import { signedUsd, usd } from '../data'
 import { LANES } from '../lanes'
 import { ASSUMPTION, type Inputs } from '../netback'
 import { PRESETS, type PresetId } from '../presets'
-import { Slider, SourceTag } from './ui'
+import { header, Slider, SourceTag } from './ui'
 
 interface Props {
   data: Data
@@ -29,7 +29,7 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
       {/* Scenario presets */}
       <section aria-labelledby="scenarios">
         <div className="flex items-center justify-between">
-          <h2 id="scenarios" className="text-[13px] font-semibold">
+          <h2 id="scenarios" className={header}>
             Scenario
           </h2>
           <button
@@ -48,7 +48,7 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
               type="button"
               aria-pressed={preset === p.id}
               onClick={() => applyPreset(p.id)}
-              className={`rounded-lg border px-2.5 py-2 text-left text-[12px] font-medium transition-colors ${
+              className={`rounded-md border px-2.5 py-1.5 text-left text-[12px] font-medium transition-colors ${
                 preset === p.id ? 'border-accent bg-accent-soft text-accent' : 'border-line text-fg hover:bg-sunken'
               }`}
             >
@@ -92,13 +92,13 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
           format={(n) => signedUsd(n)}
           onChange={set('brentSpread')}
           defaultValue={defaults.brentSpread}
-          source={data.prices.brent}
+          source={data.spreads?.brentWti ?? data.prices.brent}
         />
       </section>
 
       {/* Costs */}
       <section className="space-y-5">
-        <h2 className="text-[13px] font-semibold">Costs</h2>
+        <h2 className={header}>Costs</h2>
         <Slider
           label={
             <>
@@ -137,7 +137,7 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
 
       {/* Lane availability */}
       <section>
-        <h2 className="text-[13px] font-semibold">Lanes</h2>
+        <h2 className={header}>Lanes</h2>
         <ul className="mt-2 divide-y divide-line">
           {LANES.map((l) => {
             const on = !inputs.offline.includes(l.id)

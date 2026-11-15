@@ -32,7 +32,12 @@ export interface Lane {
   name: string
   short: string
   route: string
-  color: string
+  /**
+   * Lane colour per theme (validated categorical palette; rail is neutral grey).
+   * Confusable pairs are kept apart on the map: blue (Chicago) vs violet (Asia),
+   * aqua (Keystone) vs magenta (US West Coast); amber (Express) is away from orange (Mainline → USGC).
+   */
+  color: { dark: string; light: string }
   /** Pixel offset so lanes that share a pipe corridor sit side by side */
   offset: number
   /** Short caveat chip shown with the lane, e.g. "mostly contracted" */
@@ -160,9 +165,9 @@ export const LANES: Lane[] = [
   {
     id: 'mainline-chicago',
     name: 'Mainline → Chicago',
-    short: 'Chicago',
+    short: 'ML → Chicago',
     route: 'Enbridge Mainline via Superior to the Chicago refining hub',
-    color: '#38bdf8',
+    color: { dark: '#3987e5', light: '#2a78d6' },
     offset: -2.5,
     segments: [{ mode: 'pipe', coords: [...MAINLINE_TO_SUPERIOR, ...SUPERIOR_TO_FLANAGAN.slice(1, 3), [-87.8, 41.6]] }],
     destinations: [{ id: 'chicago', name: 'Chicago', place: 'Joliet / Whiting', coord: [-87.8, 41.6] }],
@@ -170,9 +175,9 @@ export const LANES: Lane[] = [
   {
     id: 'mainline-usgc',
     name: 'Mainline → US Gulf Coast',
-    short: 'Gulf Coast (pipe)',
+    short: 'ML → USGC',
     route: 'Enbridge Mainline → Flanagan South → Seaway to Houston',
-    color: '#a78bfa',
+    color: { dark: '#d95926', light: '#d4541f' },
     offset: 2.5,
     segments: [
       {
@@ -196,7 +201,7 @@ export const LANES: Lane[] = [
     name: 'Keystone → Cushing / Gulf Coast',
     short: 'Keystone',
     route: 'South Bow Keystone via Steele City to Cushing, then the Gulf Coast extension to Houston',
-    color: '#e879f9',
+    color: { dark: '#199e70', light: '#13875f' },
     offset: 0,
     tag: {
       label: 'Mostly contracted',
@@ -231,7 +236,7 @@ export const LANES: Lane[] = [
     name: 'Express → Wood River',
     short: 'Express',
     route: 'Express to Casper (Rockies refiners), then Platte to Wood River, Illinois',
-    color: '#a3e635',
+    color: { dark: '#c98500', light: '#a86f00' },
     offset: 2.5,
     segments: [
       {
@@ -256,9 +261,9 @@ export const LANES: Lane[] = [
   {
     id: 'tmx-uswc',
     name: 'TMX → US West Coast',
-    short: 'US West Coast',
+    short: 'TMX → USWC',
     route: 'Trans Mountain to Westridge, then Aframax tanker down the coast',
-    color: '#34d399',
+    color: { dark: '#d55181', light: '#c4467a' },
     offset: -2.5,
     segments: [
       { mode: 'transfer', coords: HARDISTY_TO_EDMONTON },
@@ -270,9 +275,9 @@ export const LANES: Lane[] = [
   {
     id: 'tmx-asia',
     name: 'TMX → Asia',
-    short: 'Asia',
+    short: 'TMX → Asia',
     route: 'Trans Mountain to Westridge, then tanker across the North Pacific',
-    color: '#fbbf24',
+    color: { dark: '#9085e9', light: '#6250d6' },
     offset: 2.5,
     segments: [
       { mode: 'transfer', coords: HARDISTY_TO_EDMONTON },
@@ -288,9 +293,9 @@ export const LANES: Lane[] = [
   {
     id: 'rail-usgc',
     name: 'Rail → US Gulf Coast',
-    short: 'Gulf Coast (rail)',
+    short: 'Rail → USGC',
     route: 'Unit train from Hardisty-area terminals to Port Arthur',
-    color: '#fb7185',
+    color: { dark: '#8e8e93', light: '#7a7a80' },
     offset: 0,
     segments: [
       {
