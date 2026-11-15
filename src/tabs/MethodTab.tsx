@@ -20,7 +20,7 @@ function Section({ id, title, children }: { id: string; title: string; children:
       <h2 id={id} className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent">
         {title}
       </h2>
-      <div className="space-y-3 text-[14px] leading-relaxed text-muted [&_strong]:font-medium [&_strong]:text-fg">{children}</div>
+      <div className="prose-text space-y-3 text-[14px] leading-relaxed text-muted [&_strong]:font-semibold [&_strong]:text-fg">{children}</div>
     </section>
   )
 }
@@ -40,7 +40,7 @@ export default function MethodTab({ data, inputs, bestR }: Props) {
       <article className="mx-auto max-w-3xl space-y-10 px-4 py-8 md:px-6">
         <header>
           <h1 className="text-[12px] font-semibold uppercase tracking-[0.08em] text-accent">Method</h1>
-          <p className="mt-2 text-[15px] leading-relaxed text-muted">
+          <p className="prose-text mt-2 text-[15px] leading-relaxed text-muted">
             Pipe Dreams asks one question: <strong className="font-medium text-fg">where should a barrel of Western Canadian Select at Hardisty go this month, and what is it worth?</strong>{' '}
             Here is how every number is built, where it comes from, and what&rsquo;s assumed.
           </p>

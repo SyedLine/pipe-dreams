@@ -68,7 +68,7 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - TMX originates at Edmonton: lanes are drawn from Edmonton with a dotted Hardisty→Edmonton `transfer` leg; its cost is an editable assumption (`transferCost`).
 - Presets (`src/presets.ts`): Today, Pipes full (2023: WTI 77.58, Brent +4.91, diff 18.66, TMX offline), TMX outage (TMX offline, diff → rail breakeven), Wide diff (28.18). Lanes can be toggled offline.
 - Every number is hover-explained (`data-tip`, `Money`/`tipFor` in `src/components/ui.tsx`).
-- Footer: "All rights reserved & all wrongs reversed… feedback is welcome"; "feedback is welcome" opens an in-app form that POSTs to the author's Formspree form (`FEEDBACK_ENDPOINT` in `src/components/Feedback.tsx`), which emails them. Favicon: red crude tanker, side view (`public/favicon.svg`).
+- Footer: "All rights reserved & all wrongs reversed… feedback is welcome"; "feedback is welcome" opens an in-app form that POSTs to the author's Formspree form (`FEEDBACK_ENDPOINT` in `src/components/Feedback.tsx`), which emails them. Favicon: see terminal notes below.
 - Tabs: Netbacks = per-destination cards with shared-scale waterfalls; Rankings = FLIP-animated leaderboard with ▲▼ vs Today; Egress = throughput vs capacity per pipe + rail-breakeven gauge; Method = plain-English explainer, live worked example, assumptions, sources.
 
 ## Terminal restyle (Nov 2026) — supersedes the colour notes above
@@ -78,5 +78,6 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Map frames North America by default; it zooms out to the Pacific only when TMX → Asia is selected. Map lane board is sorted by netback with ▲▼ rank moves and a vs-Hardisty column; phones use short lane names.
 - Brent − WTI uses the recent DAILY spread (`spreads.brentWti` in data.json: month-to-date average once ≥5 trading days, else last full month). Oct 2026's monthly +$21.86 was a real but stale outlier in EIA data.
 - Dark mode is the default for first-time visitors (choice still remembered). Light mode uses black, not amber, as the accent.
-- Tagline under the wordmark: "Where a Hardisty WCS barrel earns the best netback".
+- Tagline under the wordmark: "Where a Hardisty WCS barrel earns the best netback" (phones: "Best netback for a Hardisty barrel").
+- Fonts: IBM Plex Mono for the whole UI (terminal look; Bloomberg's own fonts are proprietary), IBM Plex Sans for Method prose (`.prose-text`). Favicon: orange "PD" monogram on black.
 - Sources are NAMED with as-of dates but NOT linked anywhere in the UI (author's choice, to discourage replication); no link to the GitHub repo either. Only the LinkedIn credit is a link. (`sourceUrl` stays in data.json for maintenance.)

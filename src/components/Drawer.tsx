@@ -48,7 +48,7 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
               type="button"
               aria-pressed={preset === p.id}
               onClick={() => applyPreset(p.id)}
-              className={`rounded-md border px-2.5 py-1.5 text-left text-[12px] font-medium transition-colors ${
+              className={`rounded-md border px-2 py-1.5 text-left text-[11px] font-medium tracking-tight transition-colors ${
                 preset === p.id ? 'border-accent bg-accent-soft text-accent' : 'border-line text-fg hover:bg-sunken'
               }`}
             >

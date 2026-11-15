@@ -131,7 +131,7 @@ function Shell({ data }: { data: Data }) {
             )}
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="truncate text-[16px] font-bold uppercase tracking-[0.06em] text-accent">Pipe Dreams</span>
-              <span className="truncate text-[11px] text-muted">Where a Hardisty WCS barrel earns the best netback</span>
+              <span className="truncate text-[11px] text-muted">{isPhone ? 'Best netback for a Hardisty barrel' : 'Where a Hardisty WCS barrel earns the best netback'}</span>
             </span>
           </div>
           {!isPhone && <div className="flex shrink-0 justify-center">{tabsNav}</div>}
