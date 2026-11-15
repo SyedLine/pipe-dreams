@@ -9,6 +9,8 @@ import { matchPreset, PRESETS, type PresetId } from './presets'
 import MapTab from './tabs/MapTab'
 import NetbacksTab from './tabs/NetbacksTab'
 import RankingsTab from './tabs/RankingsTab'
+import EgressTab from './tabs/EgressTab'
+import FeedbackDialog from './components/Feedback'
 
 const TABS = ['map', 'netbacks', 'rankings', 'egress', 'method'] as const
 type Tab = (typeof TABS)[number]
@@ -47,6 +49,7 @@ function Shell({ data }: { data: Data }) {
   const isTouch = useMedia('(hover: none)')
   const [drawerOpen, setDrawerOpen] = useState(isWide)
   const [sourcesOpen, setSourcesOpen] = useState(false)
+  const [feedbackOpen, setFeedbackOpen] = useState(false)
 
   const results = useMemo(() => computeAll(data, inputs), [data, inputs])
   const best = bestLane(results)
@@ -61,6 +64,7 @@ function Shell({ data }: { data: Data }) {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape') return
       setSourcesOpen(false)
+      setFeedbackOpen(false)
       if (!isWide) setDrawerOpen(false)
     }
     window.addEventListener('keydown', onKey)
@@ -156,7 +160,8 @@ function Shell({ data }: { data: Data }) {
           )}
           {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} />}
           {tab === 'rankings' && <RankingsTab data={data} results={results} />}
-          {(tab === 'egress' || tab === 'method') && (
+          {tab === 'egress' && <EgressTab data={data} inputs={inputs} pipeParity={pipeParity} railParity={railParity} />}
+          {tab === 'method' && (
             <div className="grid h-full place-items-center p-8 text-center">
               <div>
                 <h2 className="text-[17px] font-semibold">{TAB_LABEL[tab]}</h2>
@@ -193,7 +198,8 @@ function Shell({ data }: { data: Data }) {
         )}
       </div>
 
-      <AppFooter />
+      <AppFooter onFeedback={() => setFeedbackOpen(true)} />
+      {feedbackOpen && <FeedbackDialog onClose={() => setFeedbackOpen(false)} />}
 
       {/* Sources sheet */}
       {sourcesOpen && (

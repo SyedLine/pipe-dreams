@@ -4,8 +4,6 @@ import { SourceTag } from './ui'
 
 const LINKEDIN = 'https://www.linkedin.com/in/syedifrazahsan/'
 const REPO = 'https://github.com/SyedLine/pipe-dreams'
-/** Feedback form URL — set once a form service is chosen; until then the text isn't a link. */
-const FEEDBACK_URL = ''
 const YEAR = new Date().getFullYear()
 
 export function sourceRows(d: Data): { what: string; s: Sourced }[] {
@@ -66,13 +64,11 @@ export function SourceList({ data }: { data: Data }) {
 }
 
 /** Slim bar at the bottom of every tab. */
-export default function AppFooter() {
-  const feedback = FEEDBACK_URL ? (
-    <a href={FEEDBACK_URL} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+export default function AppFooter({ onFeedback }: { onFeedback: () => void }) {
+  const feedback = (
+    <button type="button" onClick={onFeedback} className="text-accent hover:underline">
       feedback is welcome
-    </a>
-  ) : (
-    'feedback is welcome'
+    </button>
   )
   return (
     <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 border-t border-line bg-surface px-4 py-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] text-center text-[11px] text-subtle md:justify-between md:text-left">
