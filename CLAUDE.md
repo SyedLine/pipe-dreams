@@ -54,3 +54,4 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Brent and ANS are applied as same-month spreads to WTI (ANS first-purchase prices lag ~2 months), so the WTI slider moves every benchmark.
 - Mainline utilization = ex-Gretna throughput (all products) vs available capacity; TMX = system committed + uncommitted vs available capacity.
 - Tolls used: Enbridge Mainline IJT Hardisty→Chicago (dual currency), Enbridge FSP IJT CER No. 12 uncommitted heavy Hardisty→USGC, TMX Interim Tariff uncommitted heavy Edmonton→Westridge (+ assumed Hardisty→Edmonton feeder).
+- WCS differential is **local-only**: the Alberta API returns 403 to GitHub runners, so CI skips it (keeps last value; stale once >2 months old). Refresh it from the Mac with `npm run refresh`, then commit `public/data.json`. Don't try to evade the block (header spoofing etc.).

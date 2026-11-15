@@ -222,6 +222,18 @@ const JOBS = {
   'throughput.tmx': () => cerThroughput('tmx'),
 }
 
+// The Alberta API refuses requests from cloud CI runners (HTTP 403), so the
+// differential is refreshed from a local machine (`npm run refresh`) and the
+// CI job leaves it alone instead of hammering a service that blocks it.
+const LOCAL_ONLY = new Set(['wcsDiff'])
+const IN_CI = process.env.GITHUB_ACTIONS === 'true'
+/** Whole months between a "YYYY-MM" period and today. */
+const monthsOld = (ym) => {
+  const [y, m] = String(ym).split('-').map(Number)
+  const d = new Date()
+  return (d.getUTCFullYear() - y) * 12 + (d.getUTCMonth() + 1 - m)
+}
+
 const getPath = (o, p) => p.split('.').reduce((a, k) => a?.[k], o)
 function setPath(o, p, v) {
   const ks = p.split('.')
@@ -240,6 +252,7 @@ const settle = (fn) => fn().then((value) => ({ status: 'fulfilled', value }), (r
 let eiaQueue = Promise.resolve()
 const results = await Promise.all(
   Object.entries(JOBS).map(([path, fn]) => {
+    if (IN_CI && LOCAL_ONLY.has(path)) return { status: 'skipped' }
     if (!path.startsWith('prices.')) return settle(fn)
     const run = eiaQueue.then(() => settle(fn))
     eiaQueue = run
@@ -249,8 +262,14 @@ const results = await Promise.all(
 Object.keys(JOBS).forEach((path, i) => {
   const r = results[i]
   const prev = getPath(data, path)
-  if (r.status === 'fulfilled') {
-    setPath(data, path, { ...r.value, fetchedAt: now, stale: false })
+  if (r.status === 'skipped') {
+    // Monthly series: the previous month is normally published by mid-month,
+    // so anything older than two months means nobody has refreshed it locally.
+    if (prev) setPath(data, path, { ...prev, stale: monthsOld(prev.asOf) > 2 })
+    console.log(`– ${path}: refreshed locally only (as of ${prev?.asOf ?? 'never'})`)
+  } else if (r.status === 'fulfilled') {
+    const extra = LOCAL_ONLY.has(path) ? { updatedLocally: true } : {}
+    setPath(data, path, { ...r.value, ...extra, fetchedAt: now, stale: false })
     console.log(`✓ ${path}  (as of ${r.value.asOf})`)
   } else {
     failures++
@@ -275,6 +294,7 @@ for (const key of ['brent', 'ans']) {
 
 data.generatedAt = now
 await writeFile(DATA_PATH, JSON.stringify(data, null, 2) + '\n')
-console.log(`\nWrote public/data.json (${Object.keys(JOBS).length - failures}/${Object.keys(JOBS).length} sources fresh)`)
+const attempted = results.filter((r) => r.status !== 'skipped').length
+console.log(`\nWrote public/data.json (${attempted - failures}/${attempted} fetched sources fresh)`)
 // A partial failure is not fatal: the site still deploys with stale markers.
-process.exitCode = failures === Object.keys(JOBS).length ? 1 : 0
+process.exitCode = failures === attempted ? 1 : 0
