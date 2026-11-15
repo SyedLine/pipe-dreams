@@ -4,6 +4,7 @@ import Controls from './components/Controls'
 import UtilizationChart from './components/UtilizationChart'
 import { LanePanel, PreviewCard } from './components/LaneCards'
 import { glass, SourceTag } from './components/ui'
+import Footer, { Credits, SourceList } from './components/Footer'
 import { loadData, signedUsd, usd, type Data } from './data'
 import { LANES, type LaneId, type Mode } from './lanes'
 import { bestLane, breakevens, computeAll, defaultInputs, type Inputs } from './netback'
@@ -52,7 +53,7 @@ function Monitor({ data }: { data: Data }) {
   const [inputs, setInputs] = useState<Inputs>(defaults)
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
-  const [tab, setTab] = useState<'lanes' | 'inputs' | 'egress'>('lanes')
+  const [tab, setTab] = useState<'lanes' | 'inputs' | 'egress' | 'about'>('lanes')
   const isPhone = useMedia('(max-width: 639px)')
   const isTouch = useMedia('(hover: none)')
 
@@ -189,6 +190,7 @@ function Monitor({ data }: { data: Data }) {
                     ['lanes', 'Lanes'],
                     ['inputs', 'Inputs'],
                     ['egress', 'Egress'],
+                    ['about', 'About'],
                   ] as const
                 ).map(([k, label]) => (
                   <button
@@ -213,6 +215,12 @@ function Monitor({ data }: { data: Data }) {
                 {tab === 'egress' && (
                   <div className="p-1.5">
                     <UtilizationChart data={data} />
+                  </div>
+                )}
+                {tab === 'about' && (
+                  <div className="space-y-3 p-1.5">
+                    <Credits />
+                    <SourceList data={data} />
                   </div>
                 )}
               </div>
@@ -256,6 +264,7 @@ function Monitor({ data }: { data: Data }) {
             </>
           )}
 
+          {!selected && <Footer data={data} />}
           {hovered && !selected && <PreviewCard r={hovered} isBestLane={hovered.lane.id === best} at={hovered && hover?.at} />}
           {panel}
         </>
