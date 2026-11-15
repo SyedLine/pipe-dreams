@@ -11,6 +11,7 @@ import NetbacksTab from './tabs/NetbacksTab'
 import RankingsTab from './tabs/RankingsTab'
 import EgressTab from './tabs/EgressTab'
 import FeedbackDialog from './components/Feedback'
+import MethodTab from './tabs/MethodTab'
 
 const TABS = ['map', 'netbacks', 'rankings', 'egress', 'method'] as const
 type Tab = (typeof TABS)[number]
@@ -161,14 +162,7 @@ function Shell({ data }: { data: Data }) {
           {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} />}
           {tab === 'rankings' && <RankingsTab data={data} results={results} />}
           {tab === 'egress' && <EgressTab data={data} inputs={inputs} pipeParity={pipeParity} railParity={railParity} />}
-          {tab === 'method' && (
-            <div className="grid h-full place-items-center p-8 text-center">
-              <div>
-                <h2 className="text-[17px] font-semibold">{TAB_LABEL[tab]}</h2>
-                <p className="mt-1 text-[13px] text-muted">Coming next.</p>
-              </div>
-            </div>
-          )}
+          {tab === 'method' && <MethodTab data={data} inputs={inputs} bestR={bestR} />}
         </main>
 
         {/* Phone: inputs as a bottom sheet */}
