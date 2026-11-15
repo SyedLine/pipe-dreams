@@ -79,5 +79,5 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Brent − WTI uses the recent DAILY spread (`spreads.brentWti` in data.json: month-to-date average once ≥5 trading days, else last full month). Oct 2026's monthly +$21.86 was a real but stale outlier in EIA data.
 - Dark mode is the default for first-time visitors (choice still remembered). Light mode uses black, not amber, as the accent.
 - Tagline under the wordmark: "Where a Hardisty WCS barrel earns the best netback" (phones: "Best netback for a Hardisty barrel").
-- Fonts: IBM Plex Mono for the whole UI (terminal look; Bloomberg's own fonts are proprietary), IBM Plex Sans for Method prose (`.prose-text`). Favicon: orange "PD" monogram on black.
+- Fonts: Inter for the UI, JetBrains Mono for numbers (`.num`). (An all-mono IBM Plex look was tried and reverted: Inter is easier on the eyes.) Favicon: orange "PD" monogram on black.
 - Sources are NAMED with as-of dates but NOT linked anywhere in the UI (author's choice, to discourage replication); no link to the GitHub repo either. Only the LinkedIn credit is a link. (`sourceUrl` stays in data.json for maintenance.)
