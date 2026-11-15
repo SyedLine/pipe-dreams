@@ -12,3 +12,60 @@ body {
   @apply bg-zinc-950 text-zinc-100 antialiased;
   font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 }
+
+/* Range input: transparent native track (we draw our own), round thumb. */
+.range {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  margin: 0;
+}
+.range:focus-visible {
+  outline: none;
+}
+.range::-webkit-slider-runnable-track {
+  height: 100%;
+  background: transparent;
+}
+.range::-moz-range-track {
+  background: transparent;
+}
+.range::-webkit-slider-thumb {
+  appearance: none;
+  margin-top: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 9999px;
+  background: #fafafa;
+  border: 3px solid var(--thumb, #fbbf24);
+  box-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+}
+.range::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border-radius: 9999px;
+  background: #fafafa;
+  border: 3px solid var(--thumb, #fbbf24);
+}
+.range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.25);
+}
+.range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Phones: pinch to zoom; the +/- buttons would sit on the bottom sheet. */
+@media (max-width: 639px) {
+  .maplibregl-ctrl-bottom-left .maplibregl-ctrl-group {
+    display: none;
+  }
+}

@@ -19,11 +19,21 @@ const STYLE_URL = 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.j
 const FONT = ['Montserrat Medium', 'Open Sans Regular', 'Noto Sans Regular']
 const FONT_BOLD = ['Montserrat SemiBold', 'Open Sans Bold', 'Noto Sans Regular']
 
+export interface Padding {
+  top: number
+  right: number
+  bottom: number
+  left: number
+}
+
 interface Props {
   best: LaneId
+  /** Screen space covered by overlays; Hardisty is centred in what's left. */
+  padding: Padding
   hovered: LaneId | null
-  onHover: (id: LaneId | null) => void
-  onSelect: (id: LaneId) => void
+  /** Pointer position is in viewport (client) coordinates. */
+  onHover: (id: LaneId | null, at?: { x: number; y: number }) => void
+  onSelect: (id: LaneId | null, at?: { x: number; y: number }) => void
 }
 
 const formatNm = (nm: number) => `≈ ${nm.toLocaleString('en-US')} nm`
@@ -66,7 +76,7 @@ function pointFeatures(): FeatureCollection<Point> {
 }
 
 /** Zoom that keeps Hardisty centred while fitting every lane on screen. */
-function fitZoom(el: HTMLElement): number {
+function fitZoom(el: HTMLElement, p: Padding): number {
   const coords = LANES.flatMap((l) => l.segments.flatMap((s) => s.coords))
   const mercY = (lat: number) =>
     (1 - Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 360)) / Math.PI) / 2
@@ -78,14 +88,16 @@ function fitZoom(el: HTMLElement): number {
     dy = Math.max(dy, Math.abs(mercY(lat) - cy))
   }
   const pad = 48
-  const zx = Math.log2((el.clientWidth / 2 - pad) / (dx * 512))
-  const zy = Math.log2((el.clientHeight / 2 - pad) / (dy * 512))
+  const w = el.clientWidth - p.left - p.right
+  const h = el.clientHeight - p.top - p.bottom
+  const zx = Math.log2((w / 2 - pad) / (dx * 512))
+  const zy = Math.log2((h / 2 - pad) / (dy * 512))
   return Math.max(0, Math.min(zx, zy, 4))
 }
 
 const laneFilter = (id: string | null): ExpressionSpecification => ['==', ['get', 'lane'], id ?? '__none__']
 
-export default function MapView({ best, hovered, onHover, onSelect }: Props) {
+export default function MapView({ best, padding, hovered, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const readyRef = useRef(false)
@@ -102,7 +114,7 @@ export default function MapView({ best, hovered, onHover, onSelect }: Props) {
       container: el,
       style: STYLE_URL,
       center: HARDISTY,
-      zoom: fitZoom(el),
+      zoom: fitZoom(el, padding),
       minZoom: 0,
       maxZoom: 9,
       renderWorldCopies: true,
@@ -110,8 +122,9 @@ export default function MapView({ best, hovered, onHover, onSelect }: Props) {
       dragRotate: false,
       pitchWithRotate: false,
     })
+    map.setPadding(padding)
     map.touchZoomRotate.disableRotation()
-    map.addControl(new NavigationControl({ showCompass: false }), 'top-right')
+    map.addControl(new NavigationControl({ showCompass: false }), 'bottom-left')
     mapRef.current = map
 
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -206,7 +219,8 @@ export default function MapView({ best, hovered, onHover, onSelect }: Props) {
 
       map.on('mousemove', 'lanes-hit', (e: MapLayerMouseEvent) => {
         const id = e.features?.[0]?.properties?.lane as LaneId | undefined
-        if (id) handlers.current.onHover(id)
+        const ev = e.originalEvent as MouseEvent
+        if (id) handlers.current.onHover(id, { x: ev.clientX, y: ev.clientY })
         map.getCanvas().style.cursor = 'pointer'
       })
       map.on('mouseleave', 'lanes-hit', () => {
@@ -216,8 +230,8 @@ export default function MapView({ best, hovered, onHover, onSelect }: Props) {
       map.on('click', (e: MapMouseEvent) => {
         const hit = map.queryRenderedFeatures(e.point, { layers: ['lanes-hit'] })[0]
         const id = hit?.properties?.lane as LaneId | undefined
-        if (id) handlers.current.onSelect(id)
-        else handlers.current.onHover(null)
+        const ev = e.originalEvent as MouseEvent
+        handlers.current.onSelect(id ?? null, { x: ev.clientX, y: ev.clientY })
       })
 
       if (!reduceMotion) {
@@ -239,6 +253,15 @@ export default function MapView({ best, hovered, onHover, onSelect }: Props) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const padKey = `${padding.top},${padding.right},${padding.bottom},${padding.left}`
+  useEffect(() => {
+    const map = mapRef.current
+    const el = containerRef.current
+    if (!map || !el) return
+    map.jumpTo({ center: HARDISTY, zoom: fitZoom(el, padding), padding })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [padKey])
 
   useEffect(() => {
     const map = mapRef.current

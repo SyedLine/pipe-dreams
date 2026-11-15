@@ -237,9 +237,3 @@ export const LANES: Lane[] = [
 ]
 
 export const laneById = Object.fromEntries(LANES.map((l) => [l.id, l])) as Record<LaneId, Lane>
-
-/**
- * Placeholder until live netbacks arrive in the data step. The map only uses
- * this to decide which lane glows.
- */
-export const PLACEHOLDER_BEST: LaneId = 'mainline-usgc'
