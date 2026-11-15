@@ -1,12 +1,13 @@
-import { useState } from 'react'
 import type { Data, Sourced } from '../data'
-import { formatAsOf, isStale } from '../data'
-import { glass, SourceTag } from './ui'
+import { formatAsOf } from '../data'
+import { SourceTag } from './ui'
 
 const LINKEDIN = 'https://www.linkedin.com/in/syedifrazahsan/'
 const REPO = 'https://github.com/SyedLine/pipe-dreams'
+/** Feedback form URL — set once a form service is chosen; until then the text isn't a link. */
+const FEEDBACK_URL = ''
 
-function rows(d: Data): { what: string; s: Sourced }[] {
+export function sourceRows(d: Data): { what: string; s: Sourced }[] {
   return [
     { what: 'WTI (Cushing spot)', s: d.prices.wti },
     { what: 'Brent (spread to WTI)', s: d.prices.brent },
@@ -25,87 +26,69 @@ function rows(d: Data): { what: string; s: Sourced }[] {
   ]
 }
 
-/** Full source list — used in the desktop footer popover and the phone "About" tab. */
+/** Full source list — Sources sheet and Method tab. */
 export function SourceList({ data }: { data: Data }) {
   return (
-    <div className="space-y-3 text-xs">
-      <ul className="divide-y divide-white/5">
-        {rows(data).map(({ what, s }) => (
-          <li key={what} className="flex items-start justify-between gap-3 py-1.5">
+    <div className="space-y-3">
+      <ul className="divide-y divide-line">
+        {sourceRows(data).map(({ what, s }) => (
+          <li key={what} className="flex items-start justify-between gap-4 py-2.5">
             <div className="min-w-0">
-              <div className="text-zinc-200">{what}</div>
-              <a href={s.sourceUrl} target="_blank" rel="noreferrer" className="text-[11px] text-zinc-500 hover:text-zinc-300 hover:underline">
+              <div className="text-[13px] text-fg">{what}</div>
+              <a href={s.sourceUrl} target="_blank" rel="noreferrer" className="text-[12px] text-muted hover:text-accent">
                 {s.source}
               </a>
             </div>
-            <SourceTag s={s} className="shrink-0 pt-0.5" />
+            <SourceTag s={s} className="shrink-0 pt-1" />
           </li>
         ))}
-        <li className="py-1.5">
-          <div className="text-zinc-200">Basemap</div>
-          <span className="text-[11px] text-zinc-500">
+        <li className="py-2.5">
+          <div className="text-[13px] text-fg">Basemap</div>
+          <span className="text-[12px] text-muted">
             ©{' '}
-            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="hover:text-zinc-300 hover:underline">
+            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="hover:text-accent">
               OpenStreetMap
             </a>{' '}
             contributors ©{' '}
-            <a href="https://carto.com/attributions" target="_blank" rel="noreferrer" className="hover:text-zinc-300 hover:underline">
+            <a href="https://carto.com/attributions" target="_blank" rel="noreferrer" className="hover:text-accent">
               CARTO
             </a>
           </span>
         </li>
       </ul>
-      <p className="text-[11px] leading-snug text-zinc-500">
-        Quality discounts, tanker freight, the Hardisty→Edmonton feeder and rail cost are the author&rsquo;s editable
-        assumptions, not published prices. Tolls are entered by hand from regulatory filings and marked stale after 6
-        months. Prices refresh automatically every 3 days; last refresh {formatAsOf(data.generatedAt.slice(0, 10))}.
+      <p className="text-[12px] leading-snug text-muted">
+        Prices refresh automatically every 3 days (last refresh {formatAsOf(data.generatedAt.slice(0, 10))}). Tolls are entered by hand from
+        regulatory filings and flagged stale after 6 months.
       </p>
     </div>
   )
 }
 
-export function Credits({ className = '' }: { className?: string }) {
-  return (
-    <p className={`text-[11px] text-zinc-500 ${className}`}>
-      <span className="text-zinc-400">Public data only. Not investment advice.</span> · Built by{' '}
-      <a href={LINKEDIN} target="_blank" rel="noreferrer" className="text-zinc-300 hover:text-white hover:underline">
-        Syed Ifraz Ahsan
-      </a>{' '}
-      ·{' '}
-      <a href={REPO} target="_blank" rel="noreferrer" className="hover:text-zinc-300 hover:underline">
-        Source code
-      </a>
-    </p>
+/** Slim bar at the bottom of every tab. */
+export default function AppFooter() {
+  const year = new Date().getFullYear()
+  const feedback = FEEDBACK_URL ? (
+    <a href={FEEDBACK_URL} target="_blank" rel="noreferrer" className="text-accent hover:underline">
+      feedback is welcome
+    </a>
+  ) : (
+    'feedback is welcome'
   )
-}
-
-/** Desktop footer bar with an expandable source list. */
-export default function Footer({ data }: { data: Data }) {
-  const [open, setOpen] = useState(false)
-  const anyStale = rows(data).some(({ s }) => isStale(s))
   return (
-    <footer className="pointer-events-none absolute inset-x-0 bottom-[calc(env(safe-area-inset-bottom,0px)+1rem)] flex justify-center px-[23.5rem] max-[1180px]:justify-start max-[1180px]:pl-16 max-[1180px]:pr-[22rem]">
-      <div className={`${glass} pointer-events-auto max-w-xl`}>
-        {open && (
-          <div id="sources" className="max-h-[60dvh] overflow-y-auto border-b border-white/10 p-4">
-            <h2 className="mb-1 text-sm font-semibold">Sources &amp; as-of dates</h2>
-            <SourceList data={data} />
-          </div>
-        )}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-3.5 py-2">
-          <button
-            type="button"
-            aria-expanded={open}
-            aria-controls="sources"
-            onClick={() => setOpen((o) => !o)}
-            className="inline-flex items-center gap-1.5 text-[11px] font-medium text-zinc-300 hover:text-white"
-          >
-            {anyStale && <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-amber-400" />}
-            Sources &amp; dates {open ? '▾' : '▴'}
-          </button>
-          <Credits />
-        </div>
-      </div>
+    <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 border-t border-line bg-surface px-4 py-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] text-center text-[11px] text-subtle md:justify-between md:text-left">
+      <span>
+        © {year}{' '}
+        <a href={LINKEDIN} target="_blank" rel="noreferrer" className="text-muted hover:text-accent">
+          Syed Ifraz Ahsan
+        </a>
+        . All rights reserved &amp; all wrongs reversed. I&rsquo;m always learning, and {feedback}.
+      </span>
+      <span>
+        Public data only. Not investment advice. ·{' '}
+        <a href={REPO} target="_blank" rel="noreferrer" className="hover:text-accent">
+          Source
+        </a>
+      </span>
     </footer>
   )
 }

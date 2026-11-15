@@ -14,7 +14,8 @@ export type LaneId =
   | 'tmx-uswc'
   | 'tmx-asia'
   | 'rail-usgc'
-export type Mode = 'pipe' | 'tanker' | 'rail'
+/** `transfer` = the Hardisty → Edmonton hop to reach TMX's origin (not part of TMX). */
+export type Mode = 'pipe' | 'tanker' | 'rail' | 'transfer'
 
 export interface Destination {
   id: string
@@ -42,6 +43,7 @@ export interface Lane {
 
 export const HARDISTY: LngLat = [-111.3, 52.67]
 export const WESTRIDGE: LngLat = [-122.95, 49.29]
+export const EDMONTON: LngLat = [-113.5, 53.55]
 export const CASPER: LngLat = [-106.3, 42.85]
 export const STEELE_CITY: LngLat = [-96.98, 40.03]
 
@@ -62,9 +64,10 @@ const SUPERIOR_TO_FLANAGAN: LngLat[] = [
   [-88.6, 40.9], // Flanagan / Pontiac, IL
 ]
 
+// Trans Mountain originates at Edmonton; barrels from Hardisty need a transfer first.
+const HARDISTY_TO_EDMONTON: LngLat[] = [HARDISTY, [-112.4, 53.2], EDMONTON]
 const TMX: LngLat[] = [
-  HARDISTY,
-  [-113.5, 53.55], // Edmonton terminal
+  EDMONTON, // Edmonton terminal
   [-117.58, 53.4], // Hinton
   [-118.08, 52.88], // Jasper
   [-119.27, 52.83], // Valemount
@@ -214,13 +217,13 @@ export const LANES: Lane[] = [
           STEELE_CITY,
           [-96.77, 35.98], // Cushing
           [-96.0, 32.4],
-          [-94.95, 29.8], // Houston
+          [-95.2, 29.65], // Houston
         ],
       },
     ],
     destinations: [
       { id: 'cushing', name: 'Cushing', place: 'Cushing, OK', coord: [-96.77, 35.98] },
-      { id: 'houston-keystone', name: 'Houston', place: 'Houston, TX (via Gulf Coast extension)', coord: [-94.95, 29.8] },
+      { id: 'houston-keystone', name: 'Houston', place: 'Houston, TX (via Gulf Coast extension)', coord: [-95.2, 29.65] },
     ],
   },
   {
@@ -258,6 +261,7 @@ export const LANES: Lane[] = [
     color: '#34d399',
     offset: -2.5,
     segments: [
+      { mode: 'transfer', coords: HARDISTY_TO_EDMONTON },
       { mode: 'pipe', coords: TMX },
       ...USWC_LEGS.map((l) => ({ mode: 'tanker' as const, coords: l.path })),
     ],
@@ -271,6 +275,7 @@ export const LANES: Lane[] = [
     color: '#fbbf24',
     offset: 2.5,
     segments: [
+      { mode: 'transfer', coords: HARDISTY_TO_EDMONTON },
       { mode: 'pipe', coords: TMX },
       ...ASIA_LEGS.map((l) => ({ mode: 'tanker' as const, coords: l.path })),
     ],

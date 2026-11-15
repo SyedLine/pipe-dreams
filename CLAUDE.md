@@ -59,3 +59,13 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Lanes are schematic routes in `src/lanes.ts`; a lane may carry a `tag` caveat chip (Keystone: "Mostly contracted"). Tolls can vary per destination (`destToll` in `src/netback.ts`).
 - WCS quality shows API gravity, density (kg/m³) and sulphur, latest sample and 5-yr average, from CrudeMonitor.
 - WCS differential is **local-only**: the Alberta API returns 403 to GitHub runners, so CI skips it (keeps last value; stale once >2 months old). Refresh it from the Mac with `npm run refresh`, then commit `public/data.json`. Don't try to evade the block (header spoofing etc.).
+
+## Redesign (Nov 2026) — multi-tab app
+- Tabs: Map, Netbacks, Rankings, Egress, Method; tab lives in the URL hash (#map …). Inputs drawer (left; bottom sheet on phones) is shared by all tabs.
+- Look: neutral greys + ONE accent (blue, `--accent`), Inter (self-hosted via @fontsource-variable/inter), tabular numbers (`.num`). Green/red (`--up`/`--down`) only for ▲▼ deltas, always with the arrow. Tokens live in `src/index.css`.
+- Theme: light/dark toggle in the top bar, remembered in localStorage (`pd-theme`), defaults to system; `index.html` applies it before paint. Map swaps CARTO Positron/Dark Matter.
+- Map: lanes grey by default; only the best lane (accent + glow) and the hovered/selected lane (foreground colour) stand out; city labels only for the active lane; nm distances only in the panel.
+- TMX originates at Edmonton: lanes are drawn from Edmonton with a dotted Hardisty→Edmonton `transfer` leg; its cost is an editable assumption (`transferCost`).
+- Presets (`src/presets.ts`): Today, Pipes full (2023: WTI 77.58, Brent +4.91, diff 18.66, TMX offline), TMX outage (TMX offline, diff → rail breakeven), Wide diff (28.18). Lanes can be toggled offline.
+- Every number is hover-explained (`data-tip`, `Money`/`tipFor` in `src/components/ui.tsx`).
+- Footer: "All rights reserved & all wrongs reversed… feedback is welcome" (feedback link pending: `FEEDBACK_URL` in `src/components/Footer.tsx`). Favicon: red oil barrel (`public/favicon.svg`).

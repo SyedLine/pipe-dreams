@@ -1,6 +1,70 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter";
 
 @custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Design tokens. Neutral greys + ONE accent (blue). `up`/`down` are reserved
+ * for ▲▼ rank/$ deltas only and always ship with the arrow.
+ */
+:root {
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --elev: #ffffff;
+  --sunken: #f0f0f3;
+  --border: rgb(0 0 0 / 0.08);
+  --border-strong: rgb(0 0 0 / 0.14);
+  --fg: #1d1d1f;
+  --muted: #6e6e73;
+  --subtle: #8e8e93;
+  --accent: #0071e3;
+  --accent-soft: rgb(0 113 227 / 0.1);
+  --on-accent: #ffffff;
+  --up: #1a7f37;
+  --down: #d1242f;
+  --stale: #b25000;
+  --scrim: rgb(0 0 0 / 0.25);
+  color-scheme: light;
+}
+.dark {
+  --bg: #0b0b0c;
+  --surface: #161618;
+  --elev: #1c1c1f;
+  --sunken: #111113;
+  --border: rgb(255 255 255 / 0.08);
+  --border-strong: rgb(255 255 255 / 0.14);
+  --fg: #f5f5f7;
+  --muted: #a1a1a6;
+  --subtle: #6e6e73;
+  --accent: #0a84ff;
+  --accent-soft: rgb(10 132 255 / 0.16);
+  --on-accent: #ffffff;
+  --up: #30d158;
+  --down: #ff453a;
+  --stale: #ff9f0a;
+  --scrim: rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+}
+
+@theme {
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-elev: var(--elev);
+  --color-sunken: var(--sunken);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-on-accent: var(--on-accent);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-stale: var(--stale);
+  --color-scrim: var(--scrim);
+}
 
 html,
 body,
@@ -9,8 +73,22 @@ body,
 }
 
 body {
-  @apply bg-zinc-950 text-zinc-100 antialiased;
-  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  @apply bg-bg font-sans text-fg antialiased;
+  font-feature-settings: "cv11", "ss01";
+}
+
+/* Tabular figures everywhere numbers line up */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum", "cv11";
+}
+
+/* Hide scrollbars on the sideways-scrolling tab strip */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 /* Range input: transparent native track (we draw our own), round thumb. */
@@ -32,26 +110,70 @@ body {
 }
 .range::-webkit-slider-thumb {
   appearance: none;
-  margin-top: 2px;
-  width: 16px;
-  height: 16px;
+  margin-top: 1px;
+  width: 18px;
+  height: 18px;
   border-radius: 9999px;
-  background: #fafafa;
-  border: 3px solid var(--thumb, #fbbf24);
-  box-shadow: 0 1px 6px rgb(0 0 0 / 0.5);
+  background: #ffffff;
+  border: 0.5px solid rgb(0 0 0 / 0.12);
+  box-shadow:
+    0 1px 2px rgb(0 0 0 / 0.2),
+    0 2px 8px rgb(0 0 0 / 0.12);
 }
 .range::-moz-range-thumb {
-  width: 12px;
-  height: 12px;
+  width: 18px;
+  height: 18px;
   border-radius: 9999px;
-  background: #fafafa;
-  border: 3px solid var(--thumb, #fbbf24);
+  background: #ffffff;
+  border: 0.5px solid rgb(0 0 0 / 0.12);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
 }
 .range:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.25);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 .range:focus-visible::-moz-range-thumb {
-  box-shadow: 0 0 0 4px rgb(255 255 255 / 0.25);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* Tooltip: any element with data-tip shows it on hover / keyboard focus */
+[data-tip] {
+  position: relative;
+}
+[data-tip]:hover::after,
+[data-tip]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  z-index: 60;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 16rem;
+  white-space: pre-line;
+  text-align: left;
+  padding: 6px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-transform: none;
+  font-variant-numeric: normal;
+  color: var(--fg);
+  background: var(--elev);
+  border: 1px solid var(--border-strong);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.18);
+  pointer-events: none;
+}
+[data-tip-pos="below"]:hover::after,
+[data-tip-pos="below"]:focus-visible::after {
+  bottom: auto;
+  top: calc(100% + 6px);
+}
+[data-tip-pos="left"]:hover::after {
+  left: auto;
+  right: 0;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -63,9 +185,27 @@ body {
   }
 }
 
-/* Phones: pinch to zoom; the +/- buttons would sit on the bottom sheet. */
-@media (max-width: 639px) {
-  .maplibregl-ctrl-bottom-left .maplibregl-ctrl-group {
+/* MapLibre controls in theme colours */
+.maplibregl-ctrl-group {
+  background: var(--elev) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: none !important;
+}
+.maplibregl-ctrl-group button + button {
+  border-top-color: var(--border) !important;
+}
+.dark .maplibregl-ctrl-group button .maplibregl-ctrl-icon {
+  filter: invert(1);
+}
+.maplibregl-ctrl-attrib {
+  background: color-mix(in srgb, var(--surface) 80%, transparent) !important;
+  color: var(--muted) !important;
+}
+.maplibregl-ctrl-attrib a {
+  color: var(--muted) !important;
+}
+@media (max-width: 767px) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
     display: none;
   }
 }

@@ -56,7 +56,7 @@
     "note": "Editable defaults chosen by the author, not published prices. Every one can be changed on the page.",
     "hardistyToEdmontonUsd": {
       "value": 0.75,
-      "label": "Hardisty → Edmonton feeder cost to reach TMX (no published TMX toll from Hardisty)"
+      "label": "Hardisty → Edmonton transfer to reach TMX’s origin (no published TMX toll from Hardisty)"
     },
     "qualityAdjUsd": {
       "label": "Heavy-sour discount of delivered WCS vs the destination benchmark",

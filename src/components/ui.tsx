@@ -1,28 +1,65 @@
 import { useId, type ReactNode } from 'react'
-import { formatAsOf, isStale, type Sourced } from '../data'
+import { formatAsOf, isStale, usd, type Sourced } from '../data'
+import { useTween } from '../hooks'
 
-/** "as of Oct 2026" with source link; amber dot + "stale" when out of date. */
+/** Hover text for any number: what it is, where it comes from, how fresh. */
+export function tipFor(s: Sourced, extra?: string): string {
+  const head = s.source === 'Assumption' ? `Assumption: ${s.label}` : `${s.label}\nSource: ${s.source}`
+  const when = s.asOf ? `As of ${formatAsOf(s.asOf)}${isStale(s) ? ' (stale)' : ''}` : ''
+  return [head, extra, when, s.error && `Last refresh failed: ${s.error}`].filter(Boolean).join('\n')
+}
+
+/** A dollar figure that ticks to new values and explains itself on hover. */
+export function Money({
+  value,
+  source,
+  extra,
+  dp = 2,
+  signed = false,
+  className = '',
+  tipPos,
+}: {
+  value: number
+  source?: Sourced
+  extra?: string
+  dp?: number
+  signed?: boolean
+  className?: string
+  tipPos?: 'below' | 'left'
+}) {
+  const v = useTween(value)
+  const text = signed ? `${v >= 0 ? '+' : '−'}$${Math.abs(v).toFixed(dp)}` : usd(v, dp)
+  return (
+    <span
+      className={`num whitespace-nowrap ${className}`}
+      data-tip={source ? tipFor(source, extra) : extra}
+      data-tip-pos={tipPos}
+      tabIndex={source || extra ? 0 : undefined}
+    >
+      {text}
+    </span>
+  )
+}
+
+/** "as of Oct 2026" with link; amber dot + "stale" when out of date. */
 export function SourceTag({ s, className = '' }: { s: Sourced; className?: string }) {
   const stale = isStale(s)
-  const title = [s.label, s.source, s.error && `Last refresh failed: ${s.error}`, s.updatedLocally && 'Refreshed manually']
-    .filter(Boolean)
-    .join('\n')
   const body = (
     <>
-      {stale && <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />}
+      {stale && <span aria-hidden className="h-1.5 w-1.5 shrink-0 rounded-full bg-stale" />}
       <span>
         {s.asOf ? `as of ${formatAsOf(s.asOf)}` : 'assumption'}
-        {stale && <span className="text-amber-400"> · stale</span>}
+        {stale && <span className="text-stale"> · stale</span>}
       </span>
     </>
   )
-  const cls = `inline-flex items-center gap-1 text-[11px] leading-none text-zinc-500 ${className}`
+  const cls = `inline-flex items-center gap-1 text-[11px] leading-none text-subtle ${className}`
   return s.sourceUrl ? (
-    <a href={s.sourceUrl} target="_blank" rel="noreferrer" title={title} className={`${cls} hover:text-zinc-300 hover:underline`}>
+    <a href={s.sourceUrl} target="_blank" rel="noreferrer" data-tip={tipFor(s)} className={`${cls} hover:text-fg`}>
       {body}
     </a>
   ) : (
-    <span title={title} className={cls}>
+    <span data-tip={tipFor(s)} tabIndex={0} className={cls}>
       {body}
     </span>
   )
@@ -31,7 +68,8 @@ export function SourceTag({ s, className = '' }: { s: Sourced; className?: strin
 export interface Marker {
   value: number
   label: string
-  color: string
+  /** CSS colour; defaults to the muted foreground */
+  color?: string
 }
 
 interface SliderProps {
@@ -40,39 +78,35 @@ interface SliderProps {
   min: number
   max: number
   step: number
-  format: (n: number) => string
+  format?: (n: number) => string
   onChange: (n: number) => void
   defaultValue?: number
   source?: Sourced
   markers?: Marker[]
-  accent?: string
 }
 
-export function Slider({ label, value, min, max, step, format, onChange, defaultValue, source, markers = [], accent = '#fbbf24' }: SliderProps) {
+export function Slider({ label, value, min, max, step, format = (n) => usd(n), onChange, defaultValue, source, markers = [] }: SliderProps) {
   const id = useId()
   const pct = (n: number) => `${((Math.min(max, Math.max(min, n)) - min) / (max - min)) * 100}%`
   const changed = defaultValue != null && Math.abs(value - defaultValue) > step / 2
   return (
     <div>
       <div className="flex items-baseline justify-between gap-2">
-        <label htmlFor={id} className="text-xs font-medium text-zinc-300">
+        <label htmlFor={id} className="text-[13px] text-fg">
           {label}
         </label>
-        <span className="font-mono text-sm tabular-nums text-zinc-100">{format(value)}</span>
+        <span className="num text-[13px] font-medium text-fg" data-tip={source ? tipFor(source) : undefined} data-tip-pos="left">
+          {format(value)}
+        </span>
       </div>
-      <div className="relative mt-1.5 h-5">
-        {/* track fill */}
-        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/10" />
-        <div
-          className="pointer-events-none absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full"
-          style={{ width: pct(value), backgroundColor: accent }}
-        />
+      <div className="relative mt-2 h-5">
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-line-strong" />
+        <div className="pointer-events-none absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-accent" style={{ width: pct(value) }} />
         {markers.map((m) => (
           <div
             key={m.label}
-            className="pointer-events-none absolute top-1/2 h-3.5 w-0.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
+            className="pointer-events-none absolute top-1/2 h-3 w-[2px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-muted"
             style={{ left: pct(m.value), backgroundColor: m.color }}
-            title={`${m.label}: ${format(m.value)}`}
           />
         ))}
         <input
@@ -84,14 +118,13 @@ export function Slider({ label, value, min, max, step, format, onChange, default
           value={value}
           onChange={(e) => onChange(Number(e.target.value))}
           className="range absolute inset-0 w-full"
-          style={{ ['--thumb' as string]: accent }}
         />
       </div>
-      <div className="mt-1 flex items-center justify-between gap-2">
+      <div className="mt-1.5 flex min-h-3 items-center justify-between gap-2">
         {source ? <SourceTag s={source} /> : <span />}
         {changed && (
-          <button type="button" onClick={() => onChange(defaultValue!)} className="text-[11px] text-zinc-500 hover:text-zinc-200">
-            Reset to {format(defaultValue!)}
+          <button type="button" onClick={() => onChange(defaultValue!)} className="text-[11px] text-subtle hover:text-fg">
+            Reset
           </button>
         )}
       </div>
@@ -99,5 +132,8 @@ export function Slider({ label, value, min, max, step, format, onChange, default
   )
 }
 
-export const glass =
-  'rounded-2xl border border-white/10 bg-zinc-900/65 shadow-2xl shadow-black/40 backdrop-blur-xl backdrop-saturate-150'
+/** Card surface used across tabs and overlays */
+export const card = 'rounded-2xl border border-line bg-surface'
+/** Floating surface over the map (slightly translucent) */
+export const floating =
+  'rounded-2xl border border-line bg-surface/85 shadow-[0_8px_32px_rgb(0_0_0/0.12)] backdrop-blur-xl backdrop-saturate-150'
