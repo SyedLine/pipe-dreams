@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -8,11 +8,10 @@
     <meta name="description" content="Where should a WCS barrel at Hardisty go this month, and what is it worth?" />
     <title>Pipe Dreams — Hardisty egress netbacks</title>
     <script>
-      // Apply the saved theme (or the system's) before first paint to avoid a flash.
+      // Dark by default; apply a saved light choice before first paint to avoid a flash.
       try {
         var t = localStorage.getItem('pd-theme')
-        if (t === 'dark' || (t !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches))
-          document.documentElement.classList.add('dark')
+        if (t !== 'light') document.documentElement.classList.add('dark')
       } catch (e) {}
     </script>
   </head>

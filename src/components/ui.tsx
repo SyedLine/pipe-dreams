@@ -93,11 +93,8 @@ export function SourceTag({ s, className = '' }: { s: Sourced; className?: strin
     </>
   )
   const cls = `inline-flex items-center gap-1 text-[11px] leading-none text-subtle ${className}`
-  return s.sourceUrl ? (
-    <a href={s.sourceUrl} target="_blank" rel="noreferrer" data-tip={tipFor(s)} className={`${cls} hover:text-fg`}>
-      {body}
-    </a>
-  ) : (
+  // Sources are named, not linked (author's choice).
+  return (
     <span data-tip={tipFor(s)} tabIndex={0} className={cls}>
       {body}
     </span>

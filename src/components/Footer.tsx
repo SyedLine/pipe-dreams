@@ -3,7 +3,6 @@ import { formatAsOf } from '../data'
 import { SourceTag } from './ui'
 
 const LINKEDIN = 'https://www.linkedin.com/in/syedifrazahsan/'
-const REPO = 'https://github.com/SyedLine/pipe-dreams'
 const YEAR = new Date().getFullYear()
 
 export function sourceRows(d: Data): { what: string; s: Sourced }[] {
@@ -35,25 +34,14 @@ export function SourceList({ data }: { data: Data }) {
           <li key={what} className="flex items-start justify-between gap-4 py-2.5">
             <div className="min-w-0">
               <div className="text-[13px] text-fg">{what}</div>
-              <a href={s.sourceUrl} target="_blank" rel="noreferrer" className="text-[12px] text-muted hover:text-accent">
-                {s.source}
-              </a>
+              <span className="text-[12px] text-muted">{s.source}</span>
             </div>
             <SourceTag s={s} className="shrink-0 pt-1" />
           </li>
         ))}
         <li className="py-2.5">
           <div className="text-[13px] text-fg">Basemap</div>
-          <span className="text-[12px] text-muted">
-            ©{' '}
-            <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" className="hover:text-accent">
-              OpenStreetMap
-            </a>{' '}
-            contributors ©{' '}
-            <a href="https://carto.com/attributions" target="_blank" rel="noreferrer" className="hover:text-accent">
-              CARTO
-            </a>
-          </span>
+          <span className="text-[12px] text-muted">© OpenStreetMap contributors © CARTO</span>
         </li>
       </ul>
       <p className="text-[12px] leading-snug text-muted">
@@ -81,10 +69,7 @@ export default function AppFooter({ onFeedback }: { onFeedback: () => void }) {
         . All rights reserved &amp; all wrongs reversed. I&rsquo;m always learning, and {feedback}.
       </span>
       <span>
-        Public data only. Not investment advice. ·{' '}
-        <a href={REPO} target="_blank" rel="noreferrer" className="hover:text-accent">
-          Source
-        </a>
+        Public data only. Not investment advice.
       </span>
     </footer>
   )

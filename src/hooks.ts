@@ -13,7 +13,7 @@ export function useMedia(query: string) {
 
 export const useReducedMotion = () => useMedia('(prefers-reduced-motion: reduce)')
 
-// ── Theme: explicit light/dark is remembered; default follows the system ────
+// ── Theme: dark by default; an explicit light/dark choice is remembered ─────
 export type Theme = 'light' | 'dark'
 const THEME_KEY = 'pd-theme'
 
@@ -27,9 +27,9 @@ function storedTheme(): Theme | null {
 }
 
 export function useTheme(): [Theme, () => void] {
-  const systemDark = useMedia('(prefers-color-scheme: dark)')
   const [explicit, setExplicit] = useState<Theme | null>(storedTheme)
-  const theme: Theme = explicit ?? (systemDark ? 'dark' : 'light')
+  // Dark by default; an explicit choice is remembered.
+  const theme: Theme = explicit ?? 'dark'
   useEffect(() => {
     document.documentElement.classList.toggle('dark', theme === 'dark')
   }, [theme])

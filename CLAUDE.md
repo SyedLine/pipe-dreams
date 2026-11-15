@@ -77,3 +77,6 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Green/red (`--up`/`--down`, `Delta` in `src/components/ui.tsx`) for every gain/loss: vs Hardisty, rank moves, deltas vs Today — always with ▲▼ or a sign.
 - Map frames North America by default; it zooms out to the Pacific only when TMX → Asia is selected. Map lane board is sorted by netback with ▲▼ rank moves and a vs-Hardisty column; phones use short lane names.
 - Brent − WTI uses the recent DAILY spread (`spreads.brentWti` in data.json: month-to-date average once ≥5 trading days, else last full month). Oct 2026's monthly +$21.86 was a real but stale outlier in EIA data.
+- Dark mode is the default for first-time visitors (choice still remembered). Light mode uses black, not amber, as the accent.
+- Tagline under the wordmark: "Where a Hardisty WCS barrel earns the best netback".
+- Sources are NAMED with as-of dates but NOT linked anywhere in the UI (author's choice, to discourage replication); no link to the GitHub repo either. Only the LinkedIn credit is a link. (`sourceUrl` stays in data.json for maintenance.)
