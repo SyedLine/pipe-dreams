@@ -1,17 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <title>Oil barrel</title>
-  <!-- body -->
-  <path d="M14 10c0-2.2 8-4 18-4s18 1.8 18 4v44c0 2.2-8 4-18 4s-18-1.8-18-4z" fill="#d32f2f"/>
-  <!-- left-side shading for depth -->
-  <path d="M14 10c0-2.2 8-4 18-4v52c-10 0-18-1.8-18-4z" fill="#b71c1c" opacity=".55"/>
-  <!-- rolling hoops -->
-  <path d="M14 23c0 2.2 8 4 18 4s18-1.8 18-4" fill="none" stroke="#7f1010" stroke-width="2.6"/>
-  <path d="M14 41c0 2.2 8 4 18 4s18-1.8 18-4" fill="none" stroke="#7f1010" stroke-width="2.6"/>
-  <!-- top lid -->
-  <ellipse cx="32" cy="10" rx="18" ry="4" fill="#ef5350"/>
-  <ellipse cx="32" cy="10" rx="18" ry="4" fill="none" stroke="#7f1010" stroke-width="1.6"/>
-  <!-- bung -->
-  <ellipse cx="40" cy="9.6" rx="2.6" ry="1" fill="#7f1010"/>
-  <!-- highlight -->
-  <path d="M42 14v36" stroke="#ff8a80" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>
+  <title>Crude tanker</title>
+  <!-- funnel -->
+  <rect x="8.5" y="12" width="7" height="9" rx="1.2" fill="#b71c1c" stroke="#1d1d1f" stroke-width="1.6"/>
+  <!-- bridge / accommodation block at the stern -->
+  <rect x="4.5" y="20" width="16" height="15" rx="2" fill="#f5f5f7" stroke="#1d1d1f" stroke-width="1.8"/>
+  <rect x="7.5" y="24" width="10" height="3.2" rx="1" fill="#1d1d1f"/>
+  <!-- cargo deck: manifold and catwalk -->
+  <rect x="23" y="30" width="36" height="5" rx="1.2" fill="#8e1414"/>
+  <rect x="37" y="26" width="4" height="4" rx="0.8" fill="#8e1414"/>
+  <!-- hull: vertical stern, long flat bottom, raked bow -->
+  <path d="M2.5 34H62l-5.4 15.6a2.4 2.4 0 0 1-2.3 1.6H5a2.5 2.5 0 0 1-2.5-2.5z" fill="#e53935" stroke="#1d1d1f" stroke-width="1.8" stroke-linejoin="round"/>
+  <!-- boot-top band -->
+  <path d="M2.5 44h56.7l-1.5 4.2H2.5z" fill="#9a1717"/>
 </svg>
