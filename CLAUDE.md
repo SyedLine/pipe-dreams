@@ -50,3 +50,7 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Deploy: GitHub Actions Pages deployment (`base: '/pipe-dreams/'`).
 - EIA key lives in repo secret `EIA_API_KEY`.
 - Local Node 22 LTS lives in `~/.local/node` (no Homebrew on this Mac).
+- Data: `npm run refresh` rewrites the auto sections of `public/data.json` (EIA WTI/Brent/ANS, Alberta WTI–WCS diff, Bank of Canada USD/CAD, CrudeMonitor WCS quality, CER throughput). `tolls` and `assumptions` are hand-maintained and never touched by the script.
+- Brent and ANS are applied as same-month spreads to WTI (ANS first-purchase prices lag ~2 months), so the WTI slider moves every benchmark.
+- Mainline utilization = ex-Gretna throughput (all products) vs available capacity; TMX = system committed + uncommitted vs available capacity.
+- Tolls used: Enbridge Mainline IJT Hardisty→Chicago (dual currency), Enbridge FSP IJT CER No. 12 uncommitted heavy Hardisty→USGC, TMX Interim Tariff uncommitted heavy Edmonton→Westridge (+ assumed Hardisty→Edmonton feeder).

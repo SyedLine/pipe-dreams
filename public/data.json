@@ -1,0 +1,644 @@
+{
+  "tolls": {
+    "mainlineChicago": {
+      "usdPerBbl": 3.4,
+      "cadPerBbl": 1.77,
+      "asOf": "2026-10-01",
+      "label": "Enbridge Mainline IJT, heavy crude, Hardisty → Chicago (dual currency, incl. Line 3 Replacement surcharge; excl. abandonment surcharge)",
+      "source": "Enbridge Q3 2026 Supplemental Package — CER-approved Mainline Tolling Settlement tolls (TOI-001-2023), Q4 2026 column",
+      "sourceUrl": "https://www.enbridge.com/~/media/Enb/Documents/Investor-Relations/2026/2026_Q3_Supplemental_Package_Final.pdf",
+      "manual": true
+    },
+    "mainlineUsgc": {
+      "usdPerBbl": 9.8608,
+      "asOf": "2026-10-01",
+      "label": "Uncommitted international joint rate, heavy crude, Hardisty → ECHO / Freeport / Port Arthur via Mainline, Lakehead and Flanagan South",
+      "source": "Enbridge Pipelines (FSP) International Joint Rate Tariff, CER No. 12 / FERC No. 3.60.0",
+      "sourceUrl": "https://www.enbridge.com/~/media/Enb/Documents/Tariffs/2026/FSP-IJT-FERC-3600-CER-12.pdf",
+      "manual": true
+    },
+    "tmxWestridge": {
+      "cadPerM3": 88.4308,
+      "cadPerBbl": 14.06,
+      "asOf": "2026-05-01",
+      "label": "Trans Mountain uncommitted toll, heavy crude, Edmonton → Westridge (tank metered); excludes Westridge dock bid premium, marine response and port fees",
+      "source": "Trans Mountain Interim Tariff No. 123 (CER)",
+      "sourceUrl": "https://docs.transmountain.com/Tolls-and-Tariffs/Interim-Tariff-No.-123.pdf",
+      "manual": true
+    }
+  },
+  "assumptions": {
+    "note": "Editable defaults chosen by the author, not published prices. Every one can be changed on the page.",
+    "hardistyToEdmontonUsd": {
+      "value": 0.75,
+      "label": "Hardisty → Edmonton feeder cost to reach TMX (no published TMX toll from Hardisty)"
+    },
+    "qualityAdjUsd": {
+      "label": "Heavy-sour discount of delivered WCS vs the destination benchmark",
+      "chicago": {
+        "value": -9,
+        "benchmark": "wti"
+      },
+      "houston": {
+        "value": -4.5,
+        "benchmark": "wti"
+      },
+      "port-arthur": {
+        "value": -4.5,
+        "benchmark": "wti"
+      },
+      "puget": {
+        "value": -6,
+        "benchmark": "ans"
+      },
+      "sf": {
+        "value": -6,
+        "benchmark": "ans"
+      },
+      "la": {
+        "value": -6,
+        "benchmark": "ans"
+      },
+      "japan": {
+        "value": -7,
+        "benchmark": "brent"
+      },
+      "korea": {
+        "value": -7,
+        "benchmark": "brent"
+      },
+      "china": {
+        "value": -7,
+        "benchmark": "brent"
+      },
+      "taiwan": {
+        "value": -7,
+        "benchmark": "brent"
+      }
+    },
+    "tanker": {
+      "fixedUsd": 0.5,
+      "usdPer1000nm": 1.2,
+      "label": "Aframax freight ≈ fixed port/dock cost + rate × distance from Westridge"
+    },
+    "railAllInUsd": {
+      "value": 17.5,
+      "min": 15,
+      "max": 20,
+      "label": "All-in unit-train cost Hardisty → US Gulf Coast (loading, rail, unloading)"
+    }
+  },
+  "prices": {
+    "wti": {
+      "value": 102.07,
+      "unit": "US$/bbl",
+      "asOf": "2026-10",
+      "history": [
+        {
+          "month": "2025-11",
+          "value": 60.06
+        },
+        {
+          "month": "2025-12",
+          "value": 57.97
+        },
+        {
+          "month": "2026-01",
+          "value": 60.04
+        },
+        {
+          "month": "2026-02",
+          "value": 64.51
+        },
+        {
+          "month": "2026-03",
+          "value": 91.38
+        },
+        {
+          "month": "2026-04",
+          "value": 100.32
+        },
+        {
+          "month": "2026-05",
+          "value": 102.13
+        },
+        {
+          "month": "2026-06",
+          "value": 84.81
+        },
+        {
+          "month": "2026-07",
+          "value": 80.46
+        },
+        {
+          "month": "2026-08",
+          "value": 83.9
+        },
+        {
+          "month": "2026-09",
+          "value": 97.31
+        },
+        {
+          "month": "2026-10",
+          "value": 102.07
+        }
+      ],
+      "label": "WTI Cushing spot (monthly average)",
+      "source": "U.S. EIA, series RWTC",
+      "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
+      "fetchedAt": "2026-11-15T02:11:13.130Z",
+      "stale": false
+    },
+    "brent": {
+      "value": 123.93,
+      "unit": "US$/bbl",
+      "asOf": "2026-10",
+      "history": [
+        {
+          "month": "2025-11",
+          "value": 63.8
+        },
+        {
+          "month": "2025-12",
+          "value": 62.54
+        },
+        {
+          "month": "2026-01",
+          "value": 66.6
+        },
+        {
+          "month": "2026-02",
+          "value": 70.89
+        },
+        {
+          "month": "2026-03",
+          "value": 103.13
+        },
+        {
+          "month": "2026-04",
+          "value": 117.29
+        },
+        {
+          "month": "2026-05",
+          "value": 107.14
+        },
+        {
+          "month": "2026-06",
+          "value": 85.4
+        },
+        {
+          "month": "2026-07",
+          "value": 83.76
+        },
+        {
+          "month": "2026-08",
+          "value": 91.08
+        },
+        {
+          "month": "2026-09",
+          "value": 114.16
+        },
+        {
+          "month": "2026-10",
+          "value": 123.93
+        }
+      ],
+      "label": "Brent spot (monthly average)",
+      "source": "U.S. EIA, series RBRTE",
+      "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
+      "fetchedAt": "2026-11-15T02:11:13.130Z",
+      "stale": false,
+      "spreadToWti": 21.86,
+      "spreadMonth": "2026-10"
+    },
+    "ans": {
+      "value": 81.45,
+      "unit": "US$/bbl",
+      "asOf": "2026-08",
+      "history": [
+        {
+          "month": "2025-09",
+          "value": 61.21
+        },
+        {
+          "month": "2025-10",
+          "value": 55.88
+        },
+        {
+          "month": "2025-11",
+          "value": 55.59
+        },
+        {
+          "month": "2025-12",
+          "value": 54.94
+        },
+        {
+          "month": "2026-01",
+          "value": 55.85
+        },
+        {
+          "month": "2026-02",
+          "value": 59.36
+        },
+        {
+          "month": "2026-03",
+          "value": 89.21
+        },
+        {
+          "month": "2026-04",
+          "value": 97.96
+        },
+        {
+          "month": "2026-05",
+          "value": 102.91
+        },
+        {
+          "month": "2026-06",
+          "value": 92.1
+        },
+        {
+          "month": "2026-07",
+          "value": 83.61
+        },
+        {
+          "month": "2026-08",
+          "value": 81.45
+        }
+      ],
+      "label": "Alaska North Slope first purchase price",
+      "source": "U.S. EIA, series F005071__3",
+      "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
+      "fetchedAt": "2026-11-15T02:11:13.130Z",
+      "stale": false,
+      "spreadToWti": -2.45,
+      "spreadMonth": "2026-08"
+    }
+  },
+  "wcsDiff": {
+    "value": 16.94,
+    "wcsHardisty": 80.37,
+    "unit": "US$/bbl",
+    "asOf": "2026-09",
+    "label": "WTI–WCS differential (monthly average)",
+    "source": "Government of Alberta, Economic Dashboard — Oil prices",
+    "sourceUrl": "https://economicdashboard.alberta.ca/OilPrice",
+    "fetchedAt": "2026-11-15T02:11:13.130Z",
+    "stale": false
+  },
+  "fx": {
+    "value": 1.4135,
+    "unit": "C$ per US$",
+    "asOf": "2026-10",
+    "label": "USD/CAD (monthly average)",
+    "source": "Bank of Canada, Valet API series FXMUSDCAD",
+    "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
+    "fetchedAt": "2026-11-15T02:11:13.130Z",
+    "stale": false
+  },
+  "quality": {
+    "apiGravity": 20.6,
+    "apiGravity5y": 21.1,
+    "sulphurPct": 3.71,
+    "sulphurPct5y": 3.68,
+    "densityKgM3": 929.8,
+    "asOf": "2026-10-01",
+    "label": "Western Canadian Select — most recent sample",
+    "source": "Crude Quality Inc., CrudeMonitor.ca",
+    "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
+    "fetchedAt": "2026-11-15T02:11:13.130Z",
+    "stale": false
+  },
+  "throughput": {
+    "mainline": {
+      "history": [
+        {
+          "month": "2023-07",
+          "throughputKbd": 2984,
+          "capacityKbd": 3229
+        },
+        {
+          "month": "2023-08",
+          "throughputKbd": 3011,
+          "capacityKbd": 3182
+        },
+        {
+          "month": "2023-09",
+          "throughputKbd": 2996,
+          "capacityKbd": 3182
+        },
+        {
+          "month": "2023-10",
+          "throughputKbd": 3146,
+          "capacityKbd": 3261
+        },
+        {
+          "month": "2023-11",
+          "throughputKbd": 3222,
+          "capacityKbd": 3255
+        },
+        {
+          "month": "2023-12",
+          "throughputKbd": 3265,
+          "capacityKbd": 3280
+        },
+        {
+          "month": "2024-01",
+          "throughputKbd": 3087,
+          "capacityKbd": 3262
+        },
+        {
+          "month": "2024-02",
+          "throughputKbd": 3118,
+          "capacityKbd": 3277
+        },
+        {
+          "month": "2024-03",
+          "throughputKbd": 3172,
+          "capacityKbd": 3282
+        },
+        {
+          "month": "2024-04",
+          "throughputKbd": 2965,
+          "capacityKbd": 3187
+        },
+        {
+          "month": "2024-05",
+          "throughputKbd": 3142,
+          "capacityKbd": 3229
+        },
+        {
+          "month": "2024-06",
+          "throughputKbd": 3123,
+          "capacityKbd": 3269
+        },
+        {
+          "month": "2024-07",
+          "throughputKbd": 3003,
+          "capacityKbd": 3227
+        },
+        {
+          "month": "2024-08",
+          "throughputKbd": 3014,
+          "capacityKbd": 3170
+        },
+        {
+          "month": "2024-09",
+          "throughputKbd": 2861,
+          "capacityKbd": 3151
+        },
+        {
+          "month": "2024-10",
+          "throughputKbd": 2939,
+          "capacityKbd": 3277
+        },
+        {
+          "month": "2024-11",
+          "throughputKbd": 3138,
+          "capacityKbd": 3216
+        },
+        {
+          "month": "2024-12",
+          "throughputKbd": 3155,
+          "capacityKbd": 3280
+        },
+        {
+          "month": "2025-01",
+          "throughputKbd": 3228,
+          "capacityKbd": 3222
+        },
+        {
+          "month": "2025-02",
+          "throughputKbd": 3228,
+          "capacityKbd": 3248
+        },
+        {
+          "month": "2025-03",
+          "throughputKbd": 3046,
+          "capacityKbd": 3257
+        },
+        {
+          "month": "2025-04",
+          "throughputKbd": 2986,
+          "capacityKbd": 3202
+        },
+        {
+          "month": "2025-05",
+          "throughputKbd": 2990,
+          "capacityKbd": 3221
+        },
+        {
+          "month": "2025-06",
+          "throughputKbd": 2927,
+          "capacityKbd": 3264
+        },
+        {
+          "month": "2025-07",
+          "throughputKbd": 3114,
+          "capacityKbd": 3184
+        },
+        {
+          "month": "2025-08",
+          "throughputKbd": 3106,
+          "capacityKbd": 3197
+        },
+        {
+          "month": "2025-09",
+          "throughputKbd": 2934,
+          "capacityKbd": 3157
+        },
+        {
+          "month": "2025-10",
+          "throughputKbd": 2966,
+          "capacityKbd": 3269
+        },
+        {
+          "month": "2025-11",
+          "throughputKbd": 3150,
+          "capacityKbd": 3275
+        },
+        {
+          "month": "2025-12",
+          "throughputKbd": 3243,
+          "capacityKbd": 3275
+        },
+        {
+          "month": "2026-01",
+          "throughputKbd": 3174,
+          "capacityKbd": 3285
+        },
+        {
+          "month": "2026-02",
+          "throughputKbd": 3243,
+          "capacityKbd": 3270
+        },
+        {
+          "month": "2026-03",
+          "throughputKbd": 3100,
+          "capacityKbd": 3282
+        },
+        {
+          "month": "2026-04",
+          "throughputKbd": 3042,
+          "capacityKbd": 3139
+        },
+        {
+          "month": "2026-05",
+          "throughputKbd": 3086,
+          "capacityKbd": 3228
+        },
+        {
+          "month": "2026-06",
+          "throughputKbd": 3094,
+          "capacityKbd": 3277
+        }
+      ],
+      "asOf": "2026-06",
+      "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
+      "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
+      "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
+      "fetchedAt": "2026-11-15T02:11:13.130Z",
+      "stale": false
+    },
+    "tmx": {
+      "history": [
+        {
+          "month": "2024-05",
+          "throughputKbd": 411,
+          "capacityKbd": 746
+        },
+        {
+          "month": "2024-06",
+          "throughputKbd": 704,
+          "capacityKbd": 865
+        },
+        {
+          "month": "2024-07",
+          "throughputKbd": 704,
+          "capacityKbd": 874
+        },
+        {
+          "month": "2024-08",
+          "throughputKbd": 699,
+          "capacityKbd": 874
+        },
+        {
+          "month": "2024-09",
+          "throughputKbd": 674,
+          "capacityKbd": 811
+        },
+        {
+          "month": "2024-10",
+          "throughputKbd": 739,
+          "capacityKbd": 855
+        },
+        {
+          "month": "2024-11",
+          "throughputKbd": 744,
+          "capacityKbd": 874
+        },
+        {
+          "month": "2024-12",
+          "throughputKbd": 681,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2025-01",
+          "throughputKbd": 757,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2025-02",
+          "throughputKbd": 720,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2025-03",
+          "throughputKbd": 793,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2025-04",
+          "throughputKbd": 704,
+          "capacityKbd": 887
+        },
+        {
+          "month": "2025-05",
+          "throughputKbd": 703,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2025-06",
+          "throughputKbd": 701,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2025-07",
+          "throughputKbd": 716,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2025-08",
+          "throughputKbd": 801,
+          "capacityKbd": 906
+        },
+        {
+          "month": "2025-09",
+          "throughputKbd": 816,
+          "capacityKbd": 862
+        },
+        {
+          "month": "2025-10",
+          "throughputKbd": 843,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2025-11",
+          "throughputKbd": 855,
+          "capacityKbd": 887
+        },
+        {
+          "month": "2025-12",
+          "throughputKbd": 725,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2026-01",
+          "throughputKbd": 769,
+          "capacityKbd": 906
+        },
+        {
+          "month": "2026-02",
+          "throughputKbd": 641,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2026-03",
+          "throughputKbd": 793,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2026-04",
+          "throughputKbd": 851,
+          "capacityKbd": 862
+        },
+        {
+          "month": "2026-05",
+          "throughputKbd": 804,
+          "capacityKbd": 906
+        },
+        {
+          "month": "2026-06",
+          "throughputKbd": 865,
+          "capacityKbd": 899
+        }
+      ],
+      "asOf": "2026-06",
+      "label": "Trans Mountain, system throughput vs available capacity",
+      "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
+      "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
+      "fetchedAt": "2026-11-15T02:11:13.130Z",
+      "stale": false
+    }
+  },
+  "generatedAt": "2026-11-15T02:11:13.130Z"
+}

@@ -1,0 +1,44 @@
+name: Refresh data
+
+on:
+  schedule:
+    # 12:00 UTC every third day of the month (1st, 4th, 7th … 31st)
+    - cron: '0 12 */3 * *'
+  workflow_dispatch:
+
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      # Sources that fail keep their last good value and are flagged stale;
+      # the script only exits non-zero if every source fails.
+      - name: Fetch public sources
+        run: node scripts/refresh-data.mjs
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+      - name: Commit data.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/data.json
+          git diff --cached --quiet && { echo "No changes"; exit 0; }
+          git commit -m "Refresh data.json ($(date -u +%Y-%m-%d))"
+          git push
+
+  deploy:
+    needs: refresh
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    uses: ./.github/workflows/deploy.yml
