@@ -4,6 +4,6 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/hardisty-egress/',
+  base: '/pipe-dreams/',
   plugins: [react(), tailwindcss()],
 })

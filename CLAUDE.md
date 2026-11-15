@@ -2,7 +2,7 @@ Project: Pipe Dreams — a Hardisty egress netback monitor.
 Question it answers: "Where should a WCS barrel at Hardisty go this month, and what is it worth?"
 
 TECH
-- React + Vite + Tailwind, static site deployed to GitHub Pages (repo: hardisty-egress, user: SyedLine).
+- React + Vite + Tailwind, static site deployed to GitHub Pages (repo: pipe-dreams, user: SyedLine).
 - Dark mode by default, polished and modern.
 - Map: MapLibre with free basemap tiles. Hardisty at the centre.
 
@@ -47,6 +47,6 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Basemap: CARTO Dark Matter GL style (no API key; attribution shown).
 - Destination price = public benchmark (WTI for Chicago/USGC, EIA ANS for USWC, Brent for Asia) + editable heavy-sour quality diff; defaults sourced and labelled as assumptions.
 - Tolls: entered by hand from CER tariff filings with link + effective date; the refresh Action never changes them. UI marks a toll stale if its as-of date is more than 6 months old.
-- Deploy: GitHub Actions Pages deployment (`base: '/hardisty-egress/'`).
+- Deploy: GitHub Actions Pages deployment (`base: '/pipe-dreams/'`).
 - EIA key lives in repo secret `EIA_API_KEY`.
 - Local Node 22 LTS lives in `~/.local/node` (no Homebrew on this Mac).
