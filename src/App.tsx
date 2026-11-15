@@ -7,6 +7,7 @@ import { useHashTab, useMedia, useTheme } from './hooks'
 import { bestLane, breakevens, computeAll, defaultInputs, type Inputs } from './netback'
 import { matchPreset, PRESETS, type PresetId } from './presets'
 import MapTab from './tabs/MapTab'
+import NetbacksTab from './tabs/NetbacksTab'
 
 const TABS = ['map', 'netbacks', 'rankings', 'egress', 'method'] as const
 type Tab = (typeof TABS)[number]
@@ -152,7 +153,8 @@ function Shell({ data }: { data: Data }) {
           {tab === 'map' && (
             <MapTab data={data} theme={theme} results={results} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} />
           )}
-          {tab !== 'map' && (
+          {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} />}
+          {tab !== 'map' && tab !== 'netbacks' && (
             <div className="grid h-full place-items-center p-8 text-center">
               <div>
                 <h2 className="text-[17px] font-semibold">{TAB_LABEL[tab]}</h2>
@@ -167,7 +169,7 @@ function Shell({ data }: { data: Data }) {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="absolute bottom-[150px] right-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-medium text-on-accent shadow-lg"
+            className={`absolute ${tab === 'map' ? 'bottom-[150px]' : 'bottom-4'} right-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-medium text-on-accent shadow-lg`}
           >
             <Icon d={SLIDERS} size={16} /> Inputs
           </button>

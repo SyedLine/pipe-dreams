@@ -156,7 +156,7 @@ export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
       { label: 'Quality adj.', value: q.value, source: assumption(d.assumptions.qualityAdjUsd.label as string) },
       { label: isRail ? 'Rail all-in' : 'Pipeline toll', value: -toll, source, note },
     ]
-    if (isTmx) steps.push({ label: 'Hardisty → Edmonton', value: -transfer, source: assumption(d.assumptions.hardistyToEdmontonUsd.label) })
+    if (isTmx) steps.push({ label: 'Edmonton transfer', value: -transfer, source: assumption(d.assumptions.hardistyToEdmontonUsd.label) })
     if (freightKind === 'tanker')
       steps.push({
         label: 'Tanker freight',
