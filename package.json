@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/spa-pages.mjs",
     "lint": "oxlint",
     "preview": "vite preview",
     "refresh": "node --env-file-if-exists=.env.local scripts/refresh-data.mjs"

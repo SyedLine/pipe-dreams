@@ -3,7 +3,7 @@ import DrawerContent from './components/Drawer'
 import AppFooter, { SourceList } from './components/Footer'
 import { Delta, Money } from './components/ui'
 import { loadData, type Data } from './data'
-import { useHashTab, useMedia, useTheme } from './hooks'
+import { tabHref, useMedia, usePathTab, useTheme } from './hooks'
 import { bestLane, breakevens, computeAll, defaultInputs, ranked, type Inputs } from './netback'
 import type { LaneId } from './lanes'
 import { matchPreset, PRESETS, type PresetId } from './presets'
@@ -43,7 +43,7 @@ const CLOSE = 'M6 6l12 12M18 6L6 18'
 
 function Shell({ data }: { data: Data }) {
   const [theme, toggleTheme] = useTheme()
-  const [tab, setTab] = useHashTab(TABS, 'map')
+  const [tab, setTab] = usePathTab(TABS, 'map')
   const defaults = useMemo(() => defaultInputs(data), [data])
   const [inputs, setInputs] = useState<Inputs>(defaults)
   const isPhone = useMedia('(max-width: 767px)')
@@ -98,7 +98,7 @@ function Shell({ data }: { data: Data }) {
         {TABS.map((t) => (
           <a
             key={t}
-            href={`#${t}`}
+            href={tabHref(t, 'map')}
             role="tab"
             aria-selected={tab === t}
             onClick={(e) => {

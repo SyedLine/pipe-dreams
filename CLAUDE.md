@@ -61,7 +61,7 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - WCS differential is **local-only**: the Alberta API returns 403 to GitHub runners, so CI skips it (keeps last value; stale once >2 months old). Refresh it from the Mac with `npm run refresh`, then commit `public/data.json`. Don't try to evade the block (header spoofing etc.).
 
 ## Redesign (Nov 2026) — multi-tab app
-- Tabs: Map, Netbacks, Rankings, Egress, Method; tab lives in the URL hash (#map …). Inputs drawer (left; bottom sheet on phones) is shared by all tabs.
+- Tabs: Map, Netbacks, Rankings, Egress, Method; tab lives in the URL PATH (/pipe-dreams/netbacks …; Map is the root). `scripts/spa-pages.mjs` (run by `npm run build`) copies index.html to <tab>.html + 404.html so GitHub Pages serves clean URLs with a 200; old #tab links are rewritten. Inputs drawer (left; bottom sheet on phones) is shared by all tabs.
 - Look: neutral greys + ONE accent (blue, `--accent`), Inter (self-hosted via @fontsource-variable/inter), tabular numbers (`.num`). Green/red (`--up`/`--down`) only for ▲▼ deltas, always with the arrow. Tokens live in `src/index.css`.
 - Theme: light/dark toggle in the top bar, remembered in localStorage (`pd-theme`), defaults to system; `index.html` applies it before paint. Map swaps CARTO Positron/Dark Matter.
 - Map: lanes grey by default; only the best lane (accent + glow) and the hovered/selected lane (foreground colour) stand out; city labels only for the active lane; nm distances only in the panel.
@@ -79,5 +79,5 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Brent − WTI uses the recent DAILY spread (`spreads.brentWti` in data.json: month-to-date average once ≥5 trading days, else last full month). Oct 2026's monthly +$21.86 was a real but stale outlier in EIA data.
 - Dark mode is the default for first-time visitors (choice still remembered). Light mode uses black, not amber, as the accent.
 - Tagline under the wordmark: "Where a Hardisty WCS barrel earns the best netback" (phones: "Best netback for a Hardisty barrel").
-- Fonts: Inter for the UI, JetBrains Mono for numbers (`.num`). (An all-mono IBM Plex look was tried and reverted: Inter is easier on the eyes.) Favicon: orange "PD" monogram on black.
+- Fonts: Inter for the UI, JetBrains Mono for numbers (`.num`). (An all-mono IBM Plex look was tried and reverted: Inter is easier on the eyes.) Favicon: white "PD" monogram on black (clean, no outline).
 - Sources are NAMED with as-of dates but NOT linked anywhere in the UI (author's choice, to discourage replication); no link to the GitHub repo either. Only the LinkedIn credit is a link. (`sourceUrl` stays in data.json for maintenance.)

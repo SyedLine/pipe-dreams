@@ -45,23 +45,42 @@ export function useTheme(): [Theme, () => void] {
   return [theme, toggle]
 }
 
-// ── Tabs live in the URL hash (#map, #netbacks, …) ──────────────────────────
-export function useHashTab<T extends string>(tabs: readonly T[], fallback: T): [T, (t: T) => void] {
-  const read = () => {
+// ── Tabs live in the URL path (/pipe-dreams/netbacks, …) ───────────────────
+const BASE = import.meta.env.BASE_URL // '/pipe-dreams/'
+
+/** URL for a tab: the first tab is the site root, others are /<tab>. */
+export function tabHref<T extends string>(t: T, fallback: T): string {
+  return t === fallback ? BASE : `${BASE}${t}`
+}
+
+export function usePathTab<T extends string>(tabs: readonly T[], fallback: T): [T, (t: T) => void] {
+  const read = (): T => {
+    const seg = window.location.pathname.slice(BASE.length).replace(/\.html$/, '').replace(/\/+$/, '') as T
+    if (tabs.includes(seg)) return seg
+    // Old links used the hash (#map, #netbacks…)
     const h = window.location.hash.slice(1) as T
     return tabs.includes(h) ? h : fallback
   }
   const [tab, setTab] = useState<T>(read)
   useEffect(() => {
+    // Rewrite legacy #tab links (and /map.html, trailing slashes) to the clean path.
+    const clean = tabHref(read(), fallback)
+    if (window.location.pathname + window.location.hash !== clean) {
+      window.history.replaceState(null, '', clean + window.location.search)
+    }
     const on = () => setTab(read())
-    window.addEventListener('hashchange', on)
-    return () => window.removeEventListener('hashchange', on)
+    window.addEventListener('popstate', on)
+    return () => window.removeEventListener('popstate', on)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  const go = useCallback((t: T) => {
-    if (window.location.hash !== `#${t}`) window.location.hash = t
-    setTab(t)
-  }, [])
+  const go = useCallback(
+    (t: T) => {
+      const href = tabHref(t, fallback)
+      if (window.location.pathname !== href) window.history.pushState(null, '', href)
+      setTab(t)
+    },
+    [fallback],
+  )
   return [tab, go]
 }
 
