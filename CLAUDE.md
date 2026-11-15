@@ -8,12 +8,14 @@ TECH
 
 SCOPE (keep it simple)
 - One crude: WCS. One month view. Everything netbacked to Hardisty in US$/bbl.
-- Five lanes:
+- Seven lanes:
   1. Enbridge Mainline -> Chicago
   2. Enbridge Mainline -> US Gulf Coast
-  3. TMX -> Westridge -> US West Coast (tanker)
-  4. TMX -> Westridge -> Asia (tanker; show distances to Japan, Korea, China, Taiwan)
-  5. Rail -> US Gulf Coast (one all-in cost, default ~US$15–20/bbl, editable)
+  3. Keystone -> Steele City -> Cushing / US Gulf Coast (tagged "mostly contracted": little spot capacity)
+  4. Express -> Casper -> Rockies refiners / Wood River, IL (one destination price: Wood River)
+  5. TMX -> Westridge -> US West Coast (tanker)
+  6. TMX -> Westridge -> Asia (tanker; show distances to Japan, Korea, China, Taiwan)
+  7. Rail -> US Gulf Coast (one all-in cost, default ~US$15–20/bbl, editable)
 - Netback = destination price − pipeline toll − freight ± quality adjustment.
 
 INTERACTION
@@ -53,5 +55,7 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Data: `npm run refresh` rewrites the auto sections of `public/data.json` (EIA WTI/Brent/ANS, Alberta WTI–WCS diff, Bank of Canada USD/CAD, CrudeMonitor WCS quality, CER throughput). `tolls` and `assumptions` are hand-maintained and never touched by the script.
 - Brent and ANS are applied as same-month spreads to WTI (ANS first-purchase prices lag ~2 months), so the WTI slider moves every benchmark.
 - Mainline utilization = ex-Gretna throughput (all products) vs available capacity; TMX = system committed + uncommitted vs available capacity.
-- Tolls used: Enbridge Mainline IJT Hardisty→Chicago (dual currency), Enbridge FSP IJT CER No. 12 uncommitted heavy Hardisty→USGC, TMX Interim Tariff uncommitted heavy Edmonton→Westridge (+ assumed Hardisty→Edmonton feeder).
+- Tolls used (all hand-entered in `public/data.json` → `tolls`, with filing + effective date): Enbridge Mainline IJT Hardisty→Chicago (dual currency); Enbridge FSP IJT CER No. 12 uncommitted heavy Hardisty→USGC; South Bow Keystone IJT CER No. 84 / FERC 7.44.0 uncommitted heavy Hardisty→Cushing and →Houston (tolls differ per destination); Express/Platte joint *term* rate CER 209 / FERC 167.34.0 heavy Hardisty→Wood River (Express is largely contracted; its joint tariff only lists term rates); TMX Interim Tariff uncommitted heavy Edmonton→Westridge (+ assumed Hardisty→Edmonton feeder).
+- Lanes are schematic routes in `src/lanes.ts`; a lane may carry a `tag` caveat chip (Keystone: "Mostly contracted"). Tolls can vary per destination (`destToll` in `src/netback.ts`).
+- WCS quality shows API gravity, density (kg/m³) and sulphur, latest sample and 5-yr average, from CrudeMonitor.
 - WCS differential is **local-only**: the Alberta API returns 403 to GitHub runners, so CI skips it (keeps last value; stale once >2 months old). Refresh it from the Mac with `npm run refresh`, then commit `public/data.json`. Don't try to evade the block (header spoofing etc.).

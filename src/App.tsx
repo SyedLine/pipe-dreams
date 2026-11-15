@@ -121,7 +121,14 @@ function Monitor({ data }: { data: Data }) {
                   <ModeSwatch key={m} mode={m} color={lane.color} />
                 ))}
               </span>
-              <span className="min-w-0 flex-1 truncate">{lane.name}</span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate">{lane.name}</span>
+                {lane.tag && (
+                  <span title={lane.tag.detail} className="block text-[10px] uppercase tracking-wide text-zinc-500">
+                    {lane.tag.label}
+                  </span>
+                )}
+              </span>
               {lane.id === best && (
                 <span className="rounded-full px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide" style={{ color: lane.color, backgroundColor: `${lane.color}1f` }}>
                   Best
@@ -150,8 +157,13 @@ function Monitor({ data }: { data: Data }) {
   )
   const quality = (
     <p className="text-[11px] leading-snug text-zinc-500">
-      WCS quality: {data.quality.apiGravity}° API, {data.quality.sulphurPct}% sulphur{' '}
-      <span className="text-zinc-600">(5-yr avg {data.quality.apiGravity5y}°, {data.quality.sulphurPct5y}%)</span> ·{' '}
+      WCS quality: {data.quality.apiGravity}° API
+      {data.quality.densityKgM3 != null && <>, {data.quality.densityKgM3} kg/m³</>}, {data.quality.sulphurPct}% sulphur{' '}
+      <span className="text-zinc-600">
+        (5-yr avg {data.quality.apiGravity5y}°
+        {data.quality.densityKgM35y != null && <>, {data.quality.densityKgM35y} kg/m³</>}, {data.quality.sulphurPct5y}%)
+      </span>{' '}
+      ·{' '}
       <SourceTag s={data.quality} />
     </p>
   )

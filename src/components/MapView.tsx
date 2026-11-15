@@ -11,7 +11,7 @@ import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?url'
 import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import type { FeatureCollection, LineString, Point } from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { HARDISTY, LANES, WESTRIDGE, type LaneId } from '../lanes'
+import { CASPER, HARDISTY, LANES, STEELE_CITY, WESTRIDGE, type LaneId } from '../lanes'
 
 setWorkerUrl(workerUrl)
 
@@ -66,6 +66,8 @@ function pointFeatures(): FeatureCollection<Point> {
   )
   const hubs = [
     { label: 'Westridge', coord: WESTRIDGE, kind: 'hub' },
+    { label: 'Casper', coord: CASPER, kind: 'hub' },
+    { label: 'Steele City', coord: STEELE_CITY, kind: 'hub' },
     { label: 'Hardisty', coord: HARDISTY, kind: 'origin' },
   ].map((h) => ({
     type: 'Feature' as const,

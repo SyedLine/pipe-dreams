@@ -25,6 +25,31 @@
       "source": "Trans Mountain Interim Tariff No. 123 (CER)",
       "sourceUrl": "https://docs.transmountain.com/Tolls-and-Tariffs/Interim-Tariff-No.-123.pdf",
       "manual": true
+    },
+    "keystoneCushing": {
+      "usdPerBbl": 6.75,
+      "asOf": "2026-09-01",
+      "label": "International joint uncommitted rate, heavy crude, Hardisty → Cushing (excl. CAD$0.042/bbl abandonment surcharge)",
+      "source": "South Bow International Joint Rate Tariff, CER No. 84 / FERC No. 7.44.0",
+      "sourceUrl": "https://www.southbow.com/wp-content/uploads/2026/07/CER-No.-84-South-Bow-IJT-Rates-Tariff.pdf",
+      "manual": true
+    },
+    "keystoneUsgc": {
+      "usdPerBbl": 8.8,
+      "asOf": "2026-09-01",
+      "label": "International joint uncommitted rate, heavy crude, Hardisty → Houston / Port Arthur (excl. abandonment surcharge)",
+      "source": "South Bow International Joint Rate Tariff, CER No. 84 / FERC No. 7.44.0",
+      "sourceUrl": "https://www.southbow.com/wp-content/uploads/2026/07/CER-No.-84-South-Bow-IJT-Rates-Tariff.pdf",
+      "manual": true
+    },
+    "expressWoodRiver": {
+      "usdPerM3": 44.9633,
+      "usdPerBbl": 7.15,
+      "asOf": "2026-11-01",
+      "label": "International joint term rate (10–14 yr), heavy crude, Hardisty → Casper → Wood River via Express and Platte",
+      "source": "Express Pipeline / Platte International Joint and Proportional Term Rate Tariff, CER No. 209 / FERC No. 167.34.0",
+      "sourceUrl": "https://www.enbridge.com/~/media/Enb/Documents/Tariffs/2026/EXP-CAN-CER-209-EXP-US-FERC-167340--PLT.pdf",
+      "manual": true
     }
   },
   "assumptions": {
@@ -74,6 +99,18 @@
       "taiwan": {
         "value": -7,
         "benchmark": "brent"
+      },
+      "cushing": {
+        "value": -6.5,
+        "benchmark": "wti"
+      },
+      "houston-keystone": {
+        "value": -4.5,
+        "benchmark": "wti"
+      },
+      "wood-river": {
+        "value": -9,
+        "benchmark": "wti"
       }
     },
     "tanker": {
@@ -146,7 +183,7 @@
       "label": "WTI Cushing spot (monthly average)",
       "source": "U.S. EIA, series RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
-      "fetchedAt": "2026-11-15T02:16:14.124Z",
+      "fetchedAt": "2026-11-15T02:32:36.259Z",
       "stale": false
     },
     "brent": {
@@ -206,7 +243,7 @@
       "label": "Brent spot (monthly average)",
       "source": "U.S. EIA, series RBRTE",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
-      "fetchedAt": "2026-11-15T02:16:14.124Z",
+      "fetchedAt": "2026-11-15T02:32:36.259Z",
       "stale": false,
       "spreadToWti": 21.86,
       "spreadMonth": "2026-10"
@@ -268,7 +305,7 @@
       "label": "Alaska North Slope first purchase price",
       "source": "U.S. EIA, series F005071__3",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
-      "fetchedAt": "2026-11-15T02:16:14.124Z",
+      "fetchedAt": "2026-11-15T02:32:36.259Z",
       "stale": false,
       "spreadToWti": -2.45,
       "spreadMonth": "2026-08"
@@ -283,7 +320,7 @@
     "source": "Government of Alberta, Economic Dashboard — Oil prices",
     "sourceUrl": "https://economicdashboard.alberta.ca/OilPrice",
     "updatedLocally": true,
-    "fetchedAt": "2026-11-15T02:16:14.124Z",
+    "fetchedAt": "2026-11-15T02:32:36.259Z",
     "stale": false
   },
   "fx": {
@@ -293,7 +330,7 @@
     "label": "USD/CAD (monthly average)",
     "source": "Bank of Canada, Valet API series FXMUSDCAD",
     "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
-    "fetchedAt": "2026-11-15T02:16:14.124Z",
+    "fetchedAt": "2026-11-15T02:32:36.259Z",
     "stale": false
   },
   "quality": {
@@ -302,11 +339,12 @@
     "sulphurPct": 3.71,
     "sulphurPct5y": 3.68,
     "densityKgM3": 929.8,
+    "densityKgM35y": 926.6,
     "asOf": "2026-10-01",
     "label": "Western Canadian Select — most recent sample",
     "source": "Crude Quality Inc., CrudeMonitor.ca",
     "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
-    "fetchedAt": "2026-11-15T02:16:14.124Z",
+    "fetchedAt": "2026-11-15T02:32:36.259Z",
     "stale": false
   },
   "throughput": {
@@ -497,7 +535,7 @@
       "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-15T02:16:14.124Z",
+      "fetchedAt": "2026-11-15T02:32:36.259Z",
       "stale": false
     },
     "tmx": {
@@ -637,9 +675,9 @@
       "label": "Trans Mountain, system throughput vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-15T02:16:14.124Z",
+      "fetchedAt": "2026-11-15T02:32:36.259Z",
       "stale": false
     }
   },
-  "generatedAt": "2026-11-15T02:16:14.124Z"
+  "generatedAt": "2026-11-15T02:32:36.259Z"
 }

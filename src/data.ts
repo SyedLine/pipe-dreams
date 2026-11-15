@@ -21,6 +21,7 @@ export interface PriceSeries extends Sourced {
 
 export interface Toll extends Sourced {
   usdPerBbl?: number
+  usdPerM3?: number
   cadPerBbl?: number
   cadPerM3?: number
   manual: true
@@ -43,9 +44,17 @@ export interface Data {
     sulphurPct: number
     sulphurPct5y: number
     densityKgM3: number | null
+    densityKgM35y: number | null
   }
   throughput: { mainline: Throughput; tmx: Throughput }
-  tolls: { mainlineChicago: Toll; mainlineUsgc: Toll; tmxWestridge: Toll }
+  tolls: {
+    mainlineChicago: Toll
+    mainlineUsgc: Toll
+    tmxWestridge: Toll
+    keystoneCushing: Toll
+    keystoneUsgc: Toll
+    expressWoodRiver: Toll
+  }
   assumptions: {
     note: string
     hardistyToEdmontonUsd: { value: number; label: string }

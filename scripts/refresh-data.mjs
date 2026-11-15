@@ -154,6 +154,7 @@ async function wcsQuality() {
     sulphurPct: sulphur.recent,
     sulphurPct5y: sulphur.avg5y,
     densityKgM3: density?.recent ?? null,
+    densityKgM35y: density?.avg5y ?? null,
     asOf: date,
     label: 'Western Canadian Select — most recent sample',
     source: 'Crude Quality Inc., CrudeMonitor.ca',

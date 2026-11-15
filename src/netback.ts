@@ -25,6 +25,8 @@ export interface DestResult {
   qualityAdj: number
   delivered: number
   toll: number
+  tollSource: Sourced
+  tollNote: string
   freight: number
   freightKind: 'none' | 'tanker' | 'rail'
   netback: number
@@ -34,9 +36,11 @@ export interface DestResult {
 
 export interface LaneResult {
   lane: Lane
+  /** Toll of the best destination (tolls can differ by destination, e.g. Keystone) */
   toll: number
   tollSource: Sourced
   tollNote: string
+  tollVaries: boolean
   dests: DestResult[]
   best: DestResult
 }
@@ -55,10 +59,20 @@ export function defaultTankerFreight(d: Data, nm: number, rate: number): number 
   return d.assumptions.tanker.fixedUsd + (rate * nm) / 1000
 }
 
-function laneToll(d: Data, lane: Lane, inp: Inputs): { toll: number; source: Sourced; note: string } {
+function destToll(d: Data, lane: Lane, dest: Destination, inp: Inputs): { toll: number; source: Sourced; note: string } {
   const fx = d.fx.value
   const t = d.tolls
   switch (lane.id) {
+    case 'keystone':
+      return dest.id === 'cushing'
+        ? { toll: t.keystoneCushing.usdPerBbl!, source: t.keystoneCushing, note: 'Uncommitted joint rate, heavy, Hardisty → Cushing' }
+        : { toll: t.keystoneUsgc.usdPerBbl!, source: t.keystoneUsgc, note: 'Uncommitted joint rate, heavy, Hardisty → Houston' }
+    case 'express':
+      return {
+        toll: t.expressWoodRiver.usdPerBbl!,
+        source: t.expressWoodRiver,
+        note: `Joint term rate (10–14 yr), heavy: US$${t.expressWoodRiver.usdPerM3!.toFixed(2)}/m³`,
+      }
     case 'mainline-chicago': {
       const toll = t.mainlineChicago.usdPerBbl! + t.mainlineChicago.cadPerBbl! / fx
       return {
@@ -89,7 +103,6 @@ function laneToll(d: Data, lane: Lane, inp: Inputs): { toll: number; source: Sou
 }
 
 export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
-  const { toll, source, note } = laneToll(d, lane, inp)
   const hardistyWcs = inp.wti - inp.wcsDiff
   const bench: Record<Benchmark, number> = {
     wti: inp.wti,
@@ -98,6 +111,7 @@ export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
   }
   const isRail = lane.id === 'rail-usgc'
   const dests = lane.destinations.map((dest): DestResult => {
+    const { toll, source, note } = destToll(d, lane, dest, inp)
     const q = d.assumptions.qualityAdjUsd[dest.id] as { value: number; benchmark: Benchmark }
     const delivered = bench[q.benchmark] + q.value
     const freightKind = dest.seaNm != null ? 'tanker' : isRail ? 'rail' : 'none'
@@ -113,6 +127,8 @@ export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
       qualityAdj: q.value,
       delivered,
       toll,
+      tollSource: source,
+      tollNote: note,
       freight,
       freightKind,
       netback,
@@ -120,7 +136,15 @@ export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
     }
   })
   const best = dests.reduce((a, b) => (b.netback > a.netback ? b : a))
-  return { lane, toll, tollSource: source, tollNote: note, dests, best }
+  return {
+    lane,
+    toll: best.toll,
+    tollSource: best.tollSource,
+    tollNote: best.tollNote,
+    tollVaries: new Set(dests.map((x) => x.toll)).size > 1,
+    dests,
+    best,
+  }
 }
 
 export function computeAll(d: Data, inp: Inputs): Record<LaneId, LaneResult> {

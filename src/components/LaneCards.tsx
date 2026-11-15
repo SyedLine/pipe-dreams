@@ -6,6 +6,17 @@ import { glass, Slider, SourceTag } from './ui'
 
 const BENCH_LABEL = { wti: 'WTI', brent: 'Brent', ans: 'ANS' } as const
 
+export function LaneTag({ tag }: { tag: NonNullable<LaneResult['lane']['tag']> }) {
+  return (
+    <span
+      title={tag.detail}
+      className="shrink-0 rounded-full border border-white/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-zinc-300"
+    >
+      {tag.label}
+    </span>
+  )
+}
+
 function Uplift({ n }: { n: number }) {
   return (
     <span className={`whitespace-nowrap font-mono text-[11px] tabular-nums ${n >= 0 ? 'text-emerald-300' : 'text-zinc-500'}`}>
@@ -39,6 +50,7 @@ export function PreviewCard({ r, isBestLane, at, onOpen }: PreviewProps) {
       <div className="flex items-center gap-2">
         <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: r.lane.color }} />
         <h3 className="flex-1 truncate text-sm font-semibold">{r.lane.name}</h3>
+        {r.lane.tag && <LaneTag tag={r.lane.tag} />}
         {isBestLane && (
           <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-zinc-200">
             Best lane
@@ -100,6 +112,12 @@ export function LanePanel({ r, data, inputs, setInputs, onClose }: PanelProps) {
         <div className="min-w-0 flex-1">
           <h2 className="text-lg font-semibold leading-tight">{r.lane.name}</h2>
           <p className="mt-0.5 text-xs text-zinc-400">{r.lane.route}</p>
+          {r.lane.tag && (
+            <div className="mt-2 space-y-1">
+              <LaneTag tag={r.lane.tag} />
+              <p className="text-[11px] leading-snug text-zinc-400">{r.lane.tag.detail}</p>
+            </div>
+          )}
         </div>
         <button
           type="button"
@@ -130,14 +148,25 @@ export function LanePanel({ r, data, inputs, setInputs, onClose }: PanelProps) {
               accent={r.lane.color}
             />
           ) : (
-            <>
-              <div className="flex items-baseline justify-between">
-                <span className="text-xs font-medium text-zinc-300">Pipeline toll</span>
-                <span className="font-mono text-sm tabular-nums">{usd(r.toll)}</span>
-              </div>
-              <p className="mt-1 text-[11px] leading-snug text-zinc-500">{r.tollNote}</p>
-              <SourceTag s={r.tollSource} className="mt-1.5" />
-            </>
+            r.tollVaries ? (
+              <>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs font-medium text-zinc-300">Pipeline toll</span>
+                  <span className="text-xs text-zinc-400">varies by destination</span>
+                </div>
+                <p className="mt-1 text-[11px] leading-snug text-zinc-500">{r.tollSource.source}</p>
+                <SourceTag s={r.tollSource} className="mt-1.5" />
+              </>
+            ) : (
+              <>
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs font-medium text-zinc-300">Pipeline toll</span>
+                  <span className="font-mono text-sm tabular-nums">{usd(r.toll)}</span>
+                </div>
+                <p className="mt-1 text-[11px] leading-snug text-zinc-500">{r.tollNote}</p>
+                <SourceTag s={r.tollSource} className="mt-1.5" />
+              </>
+            )
           )}
         </section>
 
@@ -213,7 +242,7 @@ function DestRow({
         <dd className="text-right font-mono tabular-nums text-zinc-300">{usd(d.benchmarkPrice)}</dd>
         <dt>Heavy-sour quality adj. (assumed)</dt>
         <dd className="text-right font-mono tabular-nums text-zinc-300">{signedUsd(d.qualityAdj)}</dd>
-        <dt>{d.freightKind === 'rail' ? 'Rail all-in' : 'Pipeline toll'}</dt>
+        <dt title={d.tollNote}>{d.freightKind === 'rail' ? 'Rail all-in' : 'Pipeline toll'}</dt>
         <dd className="text-right font-mono tabular-nums text-zinc-300">−{usd(d.toll)}</dd>
         {d.freightKind === 'tanker' && (
           <>

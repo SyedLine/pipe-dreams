@@ -6,7 +6,14 @@ import { greatCircle, pathNm, unwrapTo, type LngLat } from './geo'
  * read on a continental map, not survey-grade alignments.
  */
 
-export type LaneId = 'mainline-chicago' | 'mainline-usgc' | 'tmx-uswc' | 'tmx-asia' | 'rail-usgc'
+export type LaneId =
+  | 'mainline-chicago'
+  | 'mainline-usgc'
+  | 'keystone'
+  | 'express'
+  | 'tmx-uswc'
+  | 'tmx-asia'
+  | 'rail-usgc'
 export type Mode = 'pipe' | 'tanker' | 'rail'
 
 export interface Destination {
@@ -27,12 +34,16 @@ export interface Lane {
   color: string
   /** Pixel offset so lanes that share a pipe corridor sit side by side */
   offset: number
+  /** Short caveat chip shown with the lane, e.g. "mostly contracted" */
+  tag?: { label: string; detail: string }
   segments: { mode: Mode; coords: LngLat[] }[]
   destinations: Destination[]
 }
 
 export const HARDISTY: LngLat = [-111.3, 52.67]
 export const WESTRIDGE: LngLat = [-122.95, 49.29]
+export const CASPER: LngLat = [-106.3, 42.85]
+export const STEELE_CITY: LngLat = [-96.98, 40.03]
 
 // ── Shared corridors ────────────────────────────────────────────────────────
 const MAINLINE_TO_SUPERIOR: LngLat[] = [
@@ -176,6 +187,68 @@ export const LANES: Lane[] = [
       },
     ],
     destinations: [{ id: 'houston', name: 'Houston', place: 'Houston, TX', coord: [-95.2, 29.65] }],
+  },
+  {
+    id: 'keystone',
+    name: 'Keystone → Cushing / Gulf Coast',
+    short: 'Keystone',
+    route: 'South Bow Keystone via Steele City to Cushing, then the Gulf Coast extension to Houston',
+    color: '#e879f9',
+    offset: 0,
+    tag: {
+      label: 'Mostly contracted',
+      detail:
+        'Most Keystone capacity is held under long-term contracts; the CER only requires 6% of nominal capacity to be offered to uncommitted (spot) shippers.',
+    },
+    segments: [
+      {
+        mode: 'pipe',
+        coords: [
+          HARDISTY,
+          [-108.6, 51.6],
+          [-104.8, 50.1],
+          [-101.2, 49.6],
+          [-97.9, 49.0], // Haskett, MB (border)
+          [-97.6, 46.4],
+          [-97.4, 42.9], // Yankton, SD
+          STEELE_CITY,
+          [-96.77, 35.98], // Cushing
+          [-96.0, 32.4],
+          [-94.95, 29.8], // Houston
+        ],
+      },
+    ],
+    destinations: [
+      { id: 'cushing', name: 'Cushing', place: 'Cushing, OK', coord: [-96.77, 35.98] },
+      { id: 'houston-keystone', name: 'Houston', place: 'Houston, TX (via Gulf Coast extension)', coord: [-94.95, 29.8] },
+    ],
+  },
+  {
+    id: 'express',
+    name: 'Express → Wood River',
+    short: 'Express',
+    route: 'Express to Casper (Rockies refiners), then Platte to Wood River, Illinois',
+    color: '#a3e635',
+    offset: 2.5,
+    segments: [
+      {
+        mode: 'pipe',
+        coords: [
+          HARDISTY,
+          [-110.9, 51.2],
+          [-110.3, 49.0], // Wild Horse (border)
+          [-109.2, 47.3],
+          [-107.6, 45.2],
+          CASPER,
+          [-104.74, 42.27], // Guernsey, WY
+          [-101.5, 41.0],
+          [-99.37, 40.44], // Holdrege, NE
+          [-94.6, 39.4],
+          [-90.1, 38.86], // Wood River, IL
+        ],
+      },
+    ],
+    destinations: [{ id: 'wood-river', name: 'Wood River', place: 'Wood River, IL (via Casper)', coord: [-90.1, 38.86] }],
   },
   {
     id: 'tmx-uswc',

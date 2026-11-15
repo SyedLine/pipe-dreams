@@ -18,6 +18,9 @@ function rows(d: Data): { what: string; s: Sourced }[] {
     { what: 'TMX throughput & capacity', s: d.throughput.tmx },
     { what: 'Toll: Mainline → Chicago', s: d.tolls.mainlineChicago },
     { what: 'Toll: Mainline → US Gulf Coast', s: d.tolls.mainlineUsgc },
+    { what: 'Toll: Keystone → Cushing', s: d.tolls.keystoneCushing },
+    { what: 'Toll: Keystone → Houston', s: d.tolls.keystoneUsgc },
+    { what: 'Toll: Express → Wood River', s: d.tolls.expressWoodRiver },
     { what: 'Toll: TMX Edmonton → Westridge', s: d.tolls.tmxWestridge },
   ]
 }
