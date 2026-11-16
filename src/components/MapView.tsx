@@ -13,6 +13,7 @@ import type { ExpressionSpecification } from '@maplibre/maplibre-gl-style-spec'
 import type { FeatureCollection, LineString, Point } from 'geojson'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import type { Theme } from '../hooks'
+import { smooth } from '../geo'
 import { EDMONTON, HARDISTY, LANES, type LaneId } from '../lanes'
 
 setWorkerUrl(workerUrl)
@@ -68,7 +69,7 @@ function laneFeatures(): FeatureCollection<LineString> {
       lane.segments.map((s) => ({
         type: 'Feature' as const,
         properties: { lane: lane.id, mode: s.mode, offset: lane.offset, cd: lane.color.dark, cl: lane.color.light },
-        geometry: { type: 'LineString' as const, coordinates: s.coords },
+        geometry: { type: 'LineString' as const, coordinates: smooth(s.coords) },
       })),
     ),
   }
@@ -133,7 +134,10 @@ export default function MapView({ theme, best, active, showAsia, offline, paddin
       isLane(active),
     ]
     map.setFilter('points-label', show)
-    map.setFilter('points-circle', show)
+    map.setFilter('points-circle', ['any', show, ['==', ['get', 'kind'], 'dest']])
+    map.setPaintProperty('points-circle', 'circle-opacity', active ? ['case', ['any', ['==', ['get', 'kind'], 'origin'], isLane(active)], 1, 0.35] : ['case', off, 0.2, 1])
+    map.setPaintProperty('points-circle', 'circle-stroke-opacity', active ? ['case', ['any', ['==', ['get', 'kind'], 'origin'], isLane(active)], 1, 0.35] : ['case', off, 0.2, 1])
+    map.setPaintProperty('origin-ring', 'circle-stroke-color', p.origin)
     map.setPaintProperty('points-circle', 'circle-color', ['case', ['==', ['get', 'kind'], 'origin'], p.origin, color])
     map.setPaintProperty('points-circle', 'circle-stroke-color', p.halo)
     map.setPaintProperty('points-label', 'text-color', p.label)
@@ -179,7 +183,15 @@ export default function MapView({ theme, best, active, showAsia, offline, paddin
       id: 'points-circle',
       type: 'circle',
       source: 'points',
-      paint: { 'circle-radius': ['match', ['get', 'kind'], 'origin', 4.5, 4], 'circle-stroke-width': 1.5 },
+      paint: { 'circle-radius': ['match', ['get', 'kind'], 'origin', 4.5, 3.2], 'circle-stroke-width': 1.5 },
+    })
+    // Ring around Hardisty: the origin of every lane
+    map.addLayer({
+      id: 'origin-ring',
+      type: 'circle',
+      source: 'points',
+      filter: ['==', ['get', 'lane'], '*'],
+      paint: { 'circle-radius': 10, 'circle-color': 'rgba(0,0,0,0)', 'circle-stroke-width': 1.5, 'circle-stroke-opacity': 0.55 },
     })
     map.addLayer({
       id: 'points-label',

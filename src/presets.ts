@@ -59,6 +59,7 @@ export function matchPreset(d: Data, inp: Inputs): PresetId | null {
         (k) => Math.abs(v[k] - inp[k]) < 0.005,
       ) &&
       Object.keys(inp.freight).length === 0 &&
+      Object.keys(inp.qualityAdj).length === 0 &&
       v.offline.length === inp.offline.length &&
       v.offline.every((l) => inp.offline.includes(l))
     if (same) return p.id

@@ -20,6 +20,8 @@ export interface Inputs {
   transferCost: number
   /** Per-destination freight overrides (tanker destinations), US$/bbl */
   freight: Record<string, number>
+  /** Quality-adjustment overrides by destination id, US$/bbl (defaults in data.json) */
+  qualityAdj: Record<string, number>
   /** Lanes unavailable in this scenario (e.g. TMX outage) */
   offline: LaneId[]
 }
@@ -76,6 +78,7 @@ export function defaultInputs(d: Data): Inputs {
     railCost: d.assumptions.railAllInUsd.value,
     transferCost: d.assumptions.hardistyToEdmontonUsd.value,
     freight: {},
+    qualityAdj: {},
     offline: [],
   }
 }
@@ -137,7 +140,8 @@ export function computeLane(d: Data, lane: Lane, inp: Inputs): LaneResult {
   const isTmx = lane.id === 'tmx-uswc' || lane.id === 'tmx-asia'
   const dests = lane.destinations.map((dest): DestResult => {
     const { toll, source, note } = destToll(d, lane, dest, inp)
-    const q = d.assumptions.qualityAdjUsd[dest.id] as { value: number; benchmark: Benchmark }
+    const q0 = d.assumptions.qualityAdjUsd[dest.id] as { value: number; benchmark: Benchmark }
+    const q = { ...q0, value: inp.qualityAdj[dest.id] ?? q0.value }
     const delivered = bench[q.benchmark] + q.value
     const freightKind = dest.seaNm != null ? 'tanker' : isRail ? 'rail' : 'none'
     const freight =

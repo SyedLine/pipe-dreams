@@ -61,3 +61,28 @@ export function unwrapTo(lon: number, ref: number): number {
   while (lon - ref < -180) lon += 360
   return lon
 }
+
+/**
+ * Smooth a polyline with a Catmull-Rom spline. The curve passes through every
+ * original waypoint, so terminals and hubs stay exactly on the line.
+ */
+export function smooth(points: LngLat[], perSegment = 10): LngLat[] {
+  if (points.length < 3) return points
+  const out: LngLat[] = []
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[Math.max(0, i - 1)]
+    const p1 = points[i]
+    const p2 = points[i + 1]
+    const p3 = points[Math.min(points.length - 1, i + 2)]
+    for (let k = 0; k < perSegment; k++) {
+      const t = k / perSegment
+      const t2 = t * t
+      const t3 = t2 * t
+      const f = (a: number, b: number, c: number, d: number) =>
+        0.5 * (2 * b + (c - a) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (3 * b - a - 3 * c + d) * t3)
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])])
+    }
+  }
+  out.push(points[points.length - 1])
+  return out
+}

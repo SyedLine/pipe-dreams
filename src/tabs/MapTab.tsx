@@ -72,6 +72,26 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         onSelect={onSelect}
       />
 
+      {/* Line-style legend */}
+      <div
+        className={`${floating} pointer-events-none absolute z-10 flex gap-3 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 top-2' : 'bottom-3 left-3'}`}
+      >
+        {(
+          [
+            ['Pipeline', undefined],
+            ['Tanker', '1 3'],
+            ['Rail', '5 3'],
+          ] as const
+        ).map(([label, dash]) => (
+          <span key={label} className="inline-flex items-center gap-1.5">
+            <svg width="18" height="6" aria-hidden>
+              <line x1="1" y1="3" x2="17" y2="3" stroke="currentColor" strokeWidth="2" strokeDasharray={dash} strokeLinecap={dash ? 'butt' : 'round'} />
+            </svg>
+            {label}
+          </span>
+        ))}
+      </div>
+
       {/* Lane board: sorted by netback */}
       {!selected && (
         <nav

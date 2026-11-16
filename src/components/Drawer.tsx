@@ -18,6 +18,15 @@ interface Props {
 
 const assume = (label: string) => ({ ...ASSUMPTION, label })
 
+/** Quality adjustments are edited per market; each slider sets every destination in its group. */
+const QUALITY_GROUPS: { label: string; bench: string; ids: string[] }[] = [
+  { label: 'US Gulf Coast', bench: 'WTI', ids: ['houston', 'houston-keystone', 'port-arthur'] },
+  { label: 'Cushing', bench: 'WTI', ids: ['cushing'] },
+  { label: 'Midwest', bench: 'WTI', ids: ['chicago', 'wood-river'] },
+  { label: 'US West Coast', bench: 'ANS', ids: ['puget', 'sf', 'la'] },
+  { label: 'Asia', bench: 'Brent', ids: ['japan', 'korea', 'china', 'taiwan'] },
+]
+
 export default function DrawerContent({ data, inputs, defaults, setInputs, preset, applyPreset, pipeParity, railParity }: Props) {
   const set = (k: 'wti' | 'wcsDiff' | 'brentSpread' | 'railCost' | 'transferCost') => (v: number) => setInputs((i) => ({ ...i, [k]: v }))
   const active = PRESETS.find((p) => p.id === preset)
@@ -133,6 +142,45 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
           defaultValue={defaults.transferCost}
           source={assume(data.assumptions.hardistyToEdmontonUsd.label)}
         />
+      </section>
+
+      {/* Quality adjustments */}
+      <section className="space-y-5">
+        <div>
+          <h2 className={header}>Quality adjustments</h2>
+          <p className="mt-1 text-[12px] leading-snug text-muted">Heavy-sour discount of delivered WCS vs each market&rsquo;s benchmark. Author estimates; set your own.</p>
+        </div>
+        {QUALITY_GROUPS.map((g) => {
+          const def = (data.assumptions.qualityAdjUsd[g.ids[0]] as { value: number }).value
+          const value = inputs.qualityAdj[g.ids[0]] ?? def
+          return (
+            <Slider
+              key={g.label}
+              label={
+                <>
+                  {g.label} <span className="text-subtle">vs {g.bench}</span>
+                </>
+              }
+              value={value}
+              min={-20}
+              max={5}
+              step={0.25}
+              format={(n) => signedUsd(n)}
+              defaultValue={def}
+              source={assume(data.assumptions.qualityAdjUsd.label as string)}
+              onChange={(v) =>
+                setInputs((i) => {
+                  const q = { ...i.qualityAdj }
+                  for (const id of g.ids) {
+                    if (Math.abs(v - def) < 0.001) delete q[id]
+                    else q[id] = v
+                  }
+                  return { ...i, qualityAdj: q }
+                })
+              }
+            />
+          )
+        })}
       </section>
 
       {/* Lane availability */}

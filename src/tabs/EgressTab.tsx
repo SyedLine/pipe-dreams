@@ -226,14 +226,14 @@ function DiffGauge({ data, diff, pipeParity, railParity }: { data: Data; diff: n
         <div className="absolute inset-x-0 top-4 h-2 rounded-full bg-sunken" />
         {/* pipe → rail zone */}
         <div className="absolute top-4 h-2 rounded-full bg-accent-soft" style={{ left: x(Math.min(pipeParity, railParity)), width: `calc(${x(Math.max(pipeParity, railParity))} - ${x(Math.min(pipeParity, railParity))})` }} />
-        <Marker at={x(pipeParity)} frac={(pipeParity - lo) / (hi - lo)} label="Pipe parity" value={pipeParity} tone="muted" />
+        <Marker at={x(pipeParity)} frac={(pipeParity - lo) / (hi - lo)} label="Pipe parity" value={pipeParity} tone="muted" below />
         <Marker at={x(railParity)} frac={(railParity - lo) / (hi - lo)} label="Rail breakeven" value={railParity} tone="accent" />
         {/* current diff */}
         <div className="absolute top-2.5 -translate-x-1/2 transition-[left] duration-300" style={{ left: x(diff) }}>
           <span className="block h-5 w-5 rounded-full border-2 border-surface bg-fg shadow" data-tip={tipFor(data.wcsDiff)} tabIndex={0} />
         </div>
       </div>
-      <div className="num mt-6 flex justify-between text-[11px] text-subtle">
+      <div className="num mt-9 flex justify-between text-[11px] text-subtle">
         <span>{usd(lo, 0)}</span>
         <span>{usd(hi, 0)} / bbl</span>
       </div>
@@ -262,13 +262,13 @@ function DiffGauge({ data, diff, pipeParity, railParity }: { data: Data; diff: n
   )
 }
 
-function Marker({ at, frac, label, value, tone }: { at: string; frac: number; label: string; value: number; tone: 'muted' | 'accent' }) {
+function Marker({ at, frac, label, value, tone, below = false }: { at: string; frac: number; label: string; value: number; tone: 'muted' | 'accent'; below?: boolean }) {
   // Keep the label on screen near the ends of the track
   const align = frac < 0.2 ? 'left-0' : frac > 0.8 ? 'right-0' : 'left-1/2 -translate-x-1/2'
   return (
     <div className="absolute top-0 -translate-x-1/2 text-center transition-[left] duration-300" style={{ left: at }}>
       <span className={`mx-auto block h-10 w-[2px] rounded-full ${tone === 'accent' ? 'bg-accent' : 'bg-muted'}`} />
-      <span className={`absolute -top-6 ${align} whitespace-nowrap text-[11px] ${tone === 'accent' ? 'text-accent' : 'text-muted'}`}>
+      <span className={`absolute ${below ? '-bottom-6' : '-top-6'} ${align} whitespace-nowrap text-[11px] ${tone === 'accent' ? 'text-accent' : 'text-muted'}`}>
         {label} <span className="num">{usd(value)}</span>
       </span>
     </div>

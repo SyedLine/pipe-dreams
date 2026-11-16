@@ -131,7 +131,7 @@ export function Slider({ label, value, min, max, step, format = (n) => usd(n), o
         <label htmlFor={id} className="text-[13px] text-fg">
           {label}
         </label>
-        <span className="num text-[13px] font-medium text-fg" data-tip={source ? tipFor(source) : undefined} data-tip-pos="left">
+        <span className="num shrink-0 whitespace-nowrap text-[13px] font-medium text-fg" data-tip={source ? tipFor(source) : undefined} data-tip-pos="left">
           {format(value)}
         </span>
       </div>
