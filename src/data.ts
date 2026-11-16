@@ -33,6 +33,38 @@ export interface Throughput extends Sourced {
 
 export type Benchmark = 'wti' | 'brent' | 'ans'
 
+export type Stage = 'proposed' | 'commercial' | 'regulatory' | 'sanctioned' | 'construction' | 'in-service' | 'postponed'
+
+/** A proposed egress project (hand-curated in data.json → projects). */
+export interface Project {
+  id: string
+  name: string
+  operator: string
+  kind: 'expansion' | 'new'
+  /** Existing lane an expansion sits on */
+  onLane?: string
+  capacityKbd: number
+  stage: Stage
+  target: string
+  targetYear: number | null
+  summary: string
+  milestones: { date: string; text: string }[]
+  source: string
+  asOf: string
+  keywords: string[]
+  match: string
+  /** Schematic route for new builds (drawn as a ghost line) */
+  route?: [number, number][]
+  routeNote?: string
+}
+
+export interface NewsItem {
+  projectId: string
+  title: string
+  outlet: string
+  date: string
+}
+
 export interface Data {
   generatedAt: string
   prices: { wti: PriceSeries; brent: PriceSeries; ans: PriceSeries }
@@ -47,6 +79,8 @@ export interface Data {
     densityKgM35y: number | null
   }
   throughput: { mainline: Throughput; tmx: Throughput }
+  projects: { asOf: string; note: string; items: Project[] }
+  news?: Sourced & { items: NewsItem[] }
   /** Recent daily Brent − WTI (preferred over the monthly spread) */
   spreads?: { brentWti?: Sourced & { value: number; from: string; to: string; days: number } }
   tolls: {

@@ -255,6 +255,59 @@ async function brentWtiDaily() {
   }
 }
 
+/**
+ * Recent headlines for each proposed egress project, from Bing News RSS search.
+ * Each project's `keywords` drive the search and its `match` regex filters titles,
+ * so only stories that are actually about the project are kept.
+ */
+async function projectNews(projects) {
+  if (!projects?.length) throw new Error('no projects in data.json')
+  const cutoff = Date.now() - 120 * 86_400_000
+  const seen = new Set()
+  const items = []
+  const decode = (s) =>
+    s
+      .replace(/<!\[CDATA\[(.*?)\]\]>/gs, '$1')
+      .replace(/&amp;/g, '&')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;|&apos;/g, "'")
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .trim()
+  for (const p of projects) {
+    const re = new RegExp(p.match, 'i')
+    let kept = 0
+    for (const q of p.keywords ?? []) {
+      const xml = await get(`https://www.bing.com/news/search?q=${encodeURIComponent(q)}&format=rss`, { type: 'text' })
+      for (const raw of xml.match(/<item>[\s\S]*?<\/item>/g) ?? []) {
+        const field = (k) => decode(raw.match(new RegExp(`<${k}[^>]*>([\\s\\S]*?)</${k}>`))?.[1] ?? '')
+        const title = field('title')
+        const date = new Date(field('pubDate'))
+        const key = title.toLowerCase().replace(/\W+/g, ' ').trim()
+        if (!title || !re.test(title) || !(date.getTime() > cutoff) || seen.has(key)) continue
+        seen.add(key)
+        items.push({
+          projectId: p.id,
+          title,
+          outlet: field('News:Source').replace(/ on MSN$/, '') || 'News',
+          date: date.toISOString().slice(0, 10),
+        })
+        kept++
+      }
+      if (kept >= 4) break
+    }
+  }
+  if (!items.length) throw new Error('news: no matching headlines')
+  items.sort((a, b) => (a.date < b.date ? 1 : -1))
+  return {
+    items: items.slice(0, 24),
+    asOf: new Date().toISOString().slice(0, 10),
+    label: 'Recent headlines about proposed egress projects',
+    source: 'Bing News search, filtered by project',
+    sourceUrl: '',
+  }
+}
+
 const JOBS = {
   'prices.wti': () => eiaMonthly('pri/spt', 'RWTC', 'WTI Cushing spot (monthly average)'),
   'spreads.brentWti': brentWtiDaily,
@@ -265,6 +318,7 @@ const JOBS = {
   quality: wcsQuality,
   'throughput.mainline': () => cerThroughput('mainline'),
   'throughput.tmx': () => cerThroughput('tmx'),
+  news: () => projectNews(data.projects?.items),
 }
 
 // The Alberta API refuses requests from cloud CI runners (HTTP 403), so the

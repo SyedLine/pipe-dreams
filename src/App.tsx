@@ -13,10 +13,11 @@ import RankingsTab from './tabs/RankingsTab'
 import EgressTab from './tabs/EgressTab'
 import FeedbackDialog from './components/Feedback'
 import MethodTab from './tabs/MethodTab'
+import OutlookTab from './tabs/OutlookTab'
 
-const TABS = ['map', 'netbacks', 'rankings', 'egress', 'method'] as const
+const TABS = ['map', 'netbacks', 'rankings', 'egress', 'outlook', 'method'] as const
 type Tab = (typeof TABS)[number]
-const TAB_LABEL: Record<Tab, string> = { map: 'Map', netbacks: 'Netbacks', rankings: 'Rankings', egress: 'Egress', method: 'Method' }
+const TAB_LABEL: Record<Tab, string> = { map: 'Map', netbacks: 'Netbacks', rankings: 'Rankings', egress: 'Egress', outlook: 'Outlook', method: 'Method' }
 
 export default function App() {
   const [data, setData] = useState<Data | null>(null)
@@ -172,6 +173,7 @@ function Shell({ data }: { data: Data }) {
           {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} theme={theme} />}
           {tab === 'rankings' && <RankingsTab data={data} results={results} theme={theme} />}
           {tab === 'egress' && <EgressTab data={data} theme={theme} inputs={inputs} pipeParity={pipeParity} railParity={railParity} />}
+          {tab === 'outlook' && <OutlookTab data={data} theme={theme} />}
           {tab === 'method' && <MethodTab data={data} inputs={inputs} bestR={bestR} />}
         </main>
 

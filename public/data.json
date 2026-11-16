@@ -183,7 +183,7 @@
       "label": "WTI Cushing spot (monthly average)",
       "source": "U.S. EIA, series RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false
     },
     "brent": {
@@ -243,7 +243,7 @@
       "label": "Brent spot (monthly average)",
       "source": "U.S. EIA, series RBRTE",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false,
       "spreadToWti": 3.24,
       "spreadMonth": "2026-11-02..2026-11-11"
@@ -305,7 +305,7 @@
       "label": "Alaska North Slope first purchase price",
       "source": "U.S. EIA, series F005071__3",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false,
       "spreadToWti": -2.45,
       "spreadMonth": "2026-08"
@@ -320,7 +320,7 @@
     "source": "Government of Alberta, Economic Dashboard — Oil prices",
     "sourceUrl": "https://economicdashboard.alberta.ca/OilPrice",
     "updatedLocally": true,
-    "fetchedAt": "2026-11-15T03:26:21.300Z",
+    "fetchedAt": "2026-11-16T23:45:17.630Z",
     "stale": false
   },
   "fx": {
@@ -330,7 +330,7 @@
     "label": "USD/CAD (monthly average)",
     "source": "Bank of Canada, Valet API series FXMUSDCAD",
     "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
-    "fetchedAt": "2026-11-16T21:52:26.925Z",
+    "fetchedAt": "2026-11-16T23:45:17.630Z",
     "stale": false
   },
   "quality": {
@@ -344,7 +344,7 @@
     "label": "Western Canadian Select — most recent sample",
     "source": "Crude Quality Inc., CrudeMonitor.ca",
     "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
-    "fetchedAt": "2026-11-16T21:52:26.925Z",
+    "fetchedAt": "2026-11-16T23:45:17.630Z",
     "stale": false
   },
   "throughput": {
@@ -535,7 +535,7 @@
       "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false
     },
     "tmx": {
@@ -675,11 +675,11 @@
       "label": "Trans Mountain, system throughput vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false
     }
   },
-  "generatedAt": "2026-11-16T21:52:26.925Z",
+  "generatedAt": "2026-11-16T23:45:17.630Z",
   "spreads": {
     "brentWti": {
       "value": 3.24,
@@ -691,8 +691,365 @@
       "label": "Brent − WTI, average of 8 daily spreads 2026-11-02 to 2026-11-11",
       "source": "U.S. EIA daily spot prices, series RBRTE − RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm",
-      "fetchedAt": "2026-11-16T21:52:26.925Z",
+      "fetchedAt": "2026-11-16T23:45:17.630Z",
       "stale": false
     }
+  },
+  "projects": {
+    "asOf": "2026-11-16",
+    "note": "Curated by hand from company and government releases. Stages and dates change; check the as-of date.",
+    "items": [
+      {
+        "id": "mlo1",
+        "name": "Mainline Optimization Phase 1",
+        "operator": "Enbridge",
+        "kind": "expansion",
+        "onLane": "mainline-chicago",
+        "capacityKbd": 150,
+        "stage": "construction",
+        "target": "2027",
+        "targetYear": 2027,
+        "summary": "Optimization of the existing Mainline; reached final investment decision in November 2025. Paired with downstream Flanagan South (+100 kb/d) and Southern Access Extension (+50 kb/d) work in the US.",
+        "milestones": [
+          {
+            "date": "2025-11",
+            "text": "Final investment decision"
+          },
+          {
+            "date": "2026-07",
+            "text": "Phase 1 prioritized as Phase 2 is postponed"
+          }
+        ],
+        "source": "Enbridge 2025 annual report and Q2 2026 results",
+        "asOf": "2026-07-31",
+        "keywords": [
+          "Enbridge Mainline optimization"
+        ],
+        "match": "Enbridge.*(Mainline|optimi)|(Mainline|optimi).*Enbridge"
+      },
+      {
+        "id": "mlo2",
+        "name": "Mainline Optimization Phase 2",
+        "operator": "Enbridge",
+        "kind": "expansion",
+        "onLane": "mainline-chicago",
+        "capacityKbd": 250,
+        "stage": "postponed",
+        "target": "Postponed",
+        "targetYear": null,
+        "summary": "Second phase of Mainline optimization. Postponed in July 2026, partly because producers had not committed to significant output growth; previously targeted late 2028.",
+        "milestones": [
+          {
+            "date": "2026-02",
+            "text": "Targeting 2028 in-service, pending sanction"
+          },
+          {
+            "date": "2026-07",
+            "text": "Postponed"
+          }
+        ],
+        "source": "Enbridge Q2 2026 results (July 31, 2026)",
+        "asOf": "2026-07-31",
+        "keywords": [
+          "Enbridge Mainline Phase 2"
+        ],
+        "match": "Enbridge.*(Mainline|Phase 2)|Mainline.*Enbridge"
+      },
+      {
+        "id": "tmx-opt",
+        "name": "Trans Mountain optimization",
+        "operator": "Trans Mountain Corporation",
+        "kind": "expansion",
+        "onLane": "tmx-uswc",
+        "capacityKbd": 300,
+        "stage": "commercial",
+        "target": "Early 2027 (DRA) / late 2028",
+        "targetYear": 2028,
+        "summary": "Up to +300 kb/d on the existing line (≈890 to ≈1,190 kb/d): drag-reducing agent adds ≈90 kb/d by early 2027, mainline optimization ≈210 kb/d by late 2028. Subject to final investment decisions and approvals.",
+        "milestones": [
+          {
+            "date": "2026-07",
+            "text": "Binding expansion open season opens (Jul 13 to Aug 10)"
+          },
+          {
+            "date": "2026-08",
+            "text": "Q2 2026 update: DRA early 2027, mainline work late 2028"
+          }
+        ],
+        "source": "Trans Mountain Q2 2026 corporate update",
+        "asOf": "2026-08-28",
+        "keywords": [
+          "Trans Mountain expansion capacity",
+          "Trans Mountain optimization"
+        ],
+        "match": "Trans Mountain|TMX"
+      },
+      {
+        "id": "prairie-connector",
+        "name": "Prairie Connector",
+        "operator": "South Bow",
+        "kind": "new",
+        "capacityKbd": 450,
+        "stage": "commercial",
+        "target": "TBD (FID targeted mid-2027)",
+        "targetYear": null,
+        "summary": "≈530 km from Hardisty to the Canada–US border: ≈380 km of new 36-inch pipe plus ≈150 km of existing pipe and pump stations from the cancelled Keystone XL. 20-year shipper commitments secured; needs a US presidential permit.",
+        "milestones": [
+          {
+            "date": "2026-03",
+            "text": "Open season closes"
+          },
+          {
+            "date": "2026-05",
+            "text": "20-year binding shipper commitments secured"
+          },
+          {
+            "date": "2026-11",
+            "text": "Q3 update: due diligence on track for mid-2027 FID"
+          }
+        ],
+        "source": "South Bow open season results (May 29, 2026) and Q3 2026 results",
+        "asOf": "2026-11-05",
+        "keywords": [
+          "South Bow Prairie Connector",
+          "Keystone XL revival"
+        ],
+        "route": [
+          [
+            -111.3,
+            52.67
+          ],
+          [
+            -110.6,
+            51.9
+          ],
+          [
+            -109.7,
+            50.9
+          ],
+          [
+            -108.6,
+            49.9
+          ],
+          [
+            -107.4,
+            49
+          ]
+        ],
+        "routeNote": "Schematic route to the border near Monchy, SK; onward US routing not yet public.",
+        "match": "Prairie Connector|Keystone XL"
+      },
+      {
+        "id": "pacific-link",
+        "name": "Pacific Link (West Coast oil pipeline)",
+        "operator": "Trans Mountain Corp., Pembina, Government of Alberta",
+        "kind": "new",
+        "capacityKbd": 1000,
+        "stage": "regulatory",
+        "target": "2032–2034",
+        "targetYear": 2033,
+        "summary": "1 million b/d of heavy crude from Bruderheim, AB to a marine terminal at Roberts Bank (Delta, BC). Estimated $35.2–43.7 billion. Listed as a project of national interest on October 1, 2026; construction could start as early as September 2027.",
+        "milestones": [
+          {
+            "date": "2026-07",
+            "text": "Alberta formally proposes the pipeline"
+          },
+          {
+            "date": "2026-10",
+            "text": "Listed as a national-interest project (Major Projects Office)"
+          },
+          {
+            "date": "2026-11",
+            "text": "B.C. First Nations file court challenges to the national-interest designation"
+          }
+        ],
+        "source": "Government of Alberta and Prime Minister's Office releases; CBC, Globe and Mail, Vancouver Sun (Nov 2026)",
+        "asOf": "2026-11-06",
+        "keywords": [
+          "Pacific Link pipeline",
+          "West Coast oil pipeline Alberta"
+        ],
+        "route": [
+          [
+            -112.93,
+            53.8
+          ],
+          [
+            -114.6,
+            53.62
+          ],
+          [
+            -117.58,
+            53.42
+          ],
+          [
+            -118.12,
+            52.86
+          ],
+          [
+            -119.3,
+            52.8
+          ],
+          [
+            -119.35,
+            52.05
+          ],
+          [
+            -120.4,
+            50.66
+          ],
+          [
+            -121.42,
+            49.36
+          ],
+          [
+            -122.4,
+            49.1
+          ],
+          [
+            -123.16,
+            49.02
+          ]
+        ],
+        "routeNote": "Schematic corridor; the route is not final.",
+        "match": "Pacific Link|West Coast (oil )?pipeline|B\\.C\\. pipeline|northwest coast pipeline"
+      }
+    ]
+  },
+  "news": {
+    "items": [
+      {
+        "projectId": "pacific-link",
+        "title": "Washington residents call on Gov. Ferguson, Director Sixkiller and state agencies to oppose Pacific Link Pipeline and supertankers",
+        "outlet": "The Journal of the San Juan Islands",
+        "date": "2026-11-15"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "Trump floats Keystone XL revival in Canada trade talks as Alberta-to-US pipeline plans return to focus",
+        "outlet": "#Investing",
+        "date": "2026-11-07"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "First Nations challenging Pacific Link pipeline’s national-interest designation",
+        "outlet": "CBC.ca",
+        "date": "2026-11-06"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "GETTING CLOSER: South Bow Advances Prairie Connector Due Diligence Ahead of Mid-2027 Decision",
+        "outlet": "EnergyNow",
+        "date": "2026-11-05"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "South Bow advances Prairie Connector due diligence ahead of mid-2027 decision",
+        "outlet": "The Peterborough Examiner",
+        "date": "2026-11-05"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "The Pacific Link pipeline will be a national liability",
+        "outlet": "David Suzuki Foundation",
+        "date": "2026-11-04"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "First Nations challenge Ottawa’s fast-tracking of Pacific Link oil pipeline",
+        "outlet": "Horizon Weekly",
+        "date": "2026-11-03"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "Kaeding optimistic on potential trade deals, Keystone XL revival",
+        "outlet": "CKRM",
+        "date": "2026-11-03"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "First Nations court challenges pile up against Pacific Link pipeline",
+        "outlet": "The Globe and Mail",
+        "date": "2026-11-02"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "B.C. First Nations file court challenge against the proposed Pacific Link pipeline",
+        "outlet": "Vancouver Sun",
+        "date": "2026-11-02"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "First Nations in B.C. challenge Carney's Pacific Link pipeline national interest designation",
+        "outlet": "CBC.ca",
+        "date": "2026-11-02"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "Opinion: Why gamble $50 billion on the Pacific Link pipeline?",
+        "outlet": "SaskToday.ca",
+        "date": "2026-10-30"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "Canada approves Pacific Link pipeline; South Korea must wait until 2032 for more oil",
+        "outlet": "MSN",
+        "date": "2026-10-05"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "Canada designates Pacific Link oil pipeline as project of national interest",
+        "outlet": "Yahoo Finance",
+        "date": "2026-10-01"
+      },
+      {
+        "projectId": "tmx-opt",
+        "title": "Asia poised to take 70% of Canadian oil exports as Trans Mountain expansion cuts reliance on US market",
+        "outlet": "MSN",
+        "date": "2026-09-08"
+      },
+      {
+        "projectId": "tmx-opt",
+        "title": "Varcoe: Trans Mountain files pitch for new pipeline expansion, as Canada aims to boost oil exports to Asia",
+        "outlet": "Yahoo News",
+        "date": "2026-08-28"
+      },
+      {
+        "projectId": "tmx-opt",
+        "title": "Trans Mountain Reports Q2 2026 Results",
+        "outlet": "EnergyNow",
+        "date": "2026-08-27"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "Trump floats reviving Keystone XL pipeline, drawing mixed reactions from Nebraskans",
+        "outlet": "KETV Omaha",
+        "date": "2026-08-22"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "A look back at the Keystone XL pipeline drama as Trump touts its potential revival",
+        "outlet": "City News",
+        "date": "2026-08-19"
+      },
+      {
+        "projectId": "prairie-connector",
+        "title": "South Bow on track for mid-2027 decision on Prairie Connector investment",
+        "outlet": "Winnipeg Free Press",
+        "date": "2026-08-06"
+      },
+      {
+        "projectId": "mlo2",
+        "title": "Canada's Enbridge postpones plans for 2nd phase of Mainline oil pipeline expansion",
+        "outlet": "CBC.ca",
+        "date": "2026-08-01"
+      }
+    ],
+    "asOf": "2026-11-16",
+    "label": "Recent headlines about proposed egress projects",
+    "source": "Bing News search, filtered by project",
+    "sourceUrl": "",
+    "fetchedAt": "2026-11-16T23:45:17.630Z",
+    "stale": false
   }
 }

@@ -55,6 +55,9 @@ interface Props {
   /** Frame the Pacific crossing (TMX → Asia selected) */
   showAsia: boolean
   offline: LaneId[]
+  /** Proposed new-build pipelines, drawn as dashed ghost lines when `showProposed` */
+  proposed: { id: string; name: string; route: [number, number][] }[]
+  showProposed: boolean
   /** Screen space covered by overlays */
   padding: Padding
   /** Pointer position is in viewport (client) coordinates. */
@@ -96,20 +99,20 @@ function pointFeatures(): FeatureCollection<Point> {
 
 const isLane = (id: string | null): ExpressionSpecification => ['==', ['get', 'lane'], id ?? '__none__']
 
-export default function MapView({ theme, best, active, showAsia, offline, padding, onHover, onSelect }: Props) {
+export default function MapView({ theme, best, active, showAsia, offline, proposed, showProposed, padding, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const readyRef = useRef(false)
   const handlers = useRef({ onHover, onSelect })
   handlers.current = { onHover, onSelect }
-  const latest = useRef({ theme, best, active, offline })
-  latest.current = { theme, best, active, offline }
+  const latest = useRef({ theme, best, active, offline, proposed, showProposed })
+  latest.current = { theme, best, active, offline, proposed, showProposed }
 
   /** Push current best/active/offline/theme into layer paint + filters. */
   const restyle = () => {
     const map = mapRef.current
     if (!map || !readyRef.current) return
-    const { theme, best, active, offline } = latest.current
+    const { theme, best, active, offline, showProposed } = latest.current
     const p = PAL[theme]
     const color: ExpressionSpecification = ['get', theme === 'dark' ? 'cd' : 'cl']
     const off: ExpressionSpecification = ['in', ['get', 'lane'], ['literal', offline]]
@@ -142,12 +145,63 @@ export default function MapView({ theme, best, active, showAsia, offline, paddin
     map.setPaintProperty('points-circle', 'circle-stroke-color', p.halo)
     map.setPaintProperty('points-label', 'text-color', p.label)
     map.setPaintProperty('points-label', 'text-halo-color', p.halo)
+    const vis = showProposed ? 'visible' : 'none'
+    for (const id of ['proposed-line', 'proposed-label']) map.setLayoutProperty(id, 'visibility', vis)
+    map.setPaintProperty('proposed-line', 'line-color', p.origin)
+    map.setPaintProperty('proposed-label', 'text-color', p.label)
+    map.setPaintProperty('proposed-label', 'text-halo-color', p.halo)
   }
 
   /** (Re)install sources and layers — runs on first load and after every theme switch. */
   const install = (map: MapLibreMap) => {
     map.addSource('lanes', { type: 'geojson', data: laneFeatures() })
     map.addSource('points', { type: 'geojson', data: pointFeatures() })
+    map.addSource('proposed', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: latest.current.proposed.map((pr) => ({
+          type: 'Feature' as const,
+          properties: { id: pr.id, label: `${pr.name} (proposed)` },
+          geometry: { type: 'LineString' as const, coordinates: smooth(pr.route) },
+        })),
+      },
+    })
+    // Ghost lines for proposed new builds: under the live lanes, dashed and translucent
+    map.addLayer({
+      id: 'proposed-line',
+      type: 'line',
+      source: 'proposed',
+      layout: { 'line-cap': 'butt', 'line-join': 'round' },
+      paint: { 'line-width': 2.4, 'line-opacity': 0.55, 'line-dasharray': [2, 2], 'line-offset': 7 },
+    })
+    // Label each proposed route at its far end (line-placed text drops out at low zoom)
+    map.addSource('proposed-ends', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: latest.current.proposed.map((pr) => ({
+          type: 'Feature' as const,
+          properties: { label: `${pr.name}\n(proposed)` },
+          geometry: { type: 'Point' as const, coordinates: pr.route[pr.route.length - 1] },
+        })),
+      },
+    })
+    map.addLayer({
+      id: 'proposed-label',
+      type: 'symbol',
+      source: 'proposed-ends',
+      layout: {
+        'text-field': ['get', 'label'],
+        'text-font': ['literal', FONT],
+        'text-size': 11,
+        'text-variable-anchor': ['right', 'left', 'top', 'bottom'],
+        'text-radial-offset': 0.8,
+        'text-justify': 'auto',
+        'text-line-height': 1.2,
+      },
+      paint: { 'text-halo-width': 1.5, 'text-opacity': 0.85 },
+    })
     const offset: ExpressionSpecification = ['get', 'offset']
     map.addLayer({
       id: 'lanes-glow',
@@ -287,7 +341,7 @@ export default function MapView({ theme, best, active, showAsia, offline, paddin
   }, [frameKey])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(restyle, [best, active, offline.join(','), theme])
+  useEffect(restyle, [best, active, offline.join(','), theme, showProposed])
 
   // MapLibre's CSS forces position:relative on the container, so size it from a wrapper.
   return (

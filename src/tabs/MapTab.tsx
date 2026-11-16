@@ -36,6 +36,8 @@ export function RankMove({ now, was }: { now: number | null; was: number | undef
 export default function MapTab({ data, theme, results, todayRank, best, inputs, setInputs, isTouch, isPhone }: Props) {
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
+  const [showProposed, setShowProposed] = useState(false)
+  const proposed = data.projects.items.filter((p) => p.route).map((p) => ({ id: p.id, name: p.name.replace(/ \(.*\)$/, ''), route: p.route! }))
   const active = selected ?? hover?.id ?? null
 
   // Desktop: hover previews, click opens. Touch: tap previews (hover behaviour), "Details" opens.
@@ -67,6 +69,8 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         active={active}
         showAsia={selected === 'tmx-asia'}
         offline={inputs.offline}
+        proposed={proposed}
+        showProposed={showProposed}
         padding={padding}
         onHover={onHover}
         onSelect={onSelect}
@@ -74,7 +78,7 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
 
       {/* Line-style legend */}
       <div
-        className={`${floating} pointer-events-none absolute z-10 flex gap-3 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 top-2' : 'bottom-3 left-3'}`}
+        className={`${floating} absolute z-10 flex items-center gap-3 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 top-2' : 'bottom-3 left-3'}`}
       >
         {(
           [
@@ -90,6 +94,19 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
             {label}
           </span>
         ))}
+        <button
+          type="button"
+          aria-pressed={showProposed}
+          onClick={() => setShowProposed((v) => !v)}
+          className={`ml-1 inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors ${
+            showProposed ? 'border-accent text-accent' : 'border-line-strong text-muted hover:text-fg'
+          }`}
+        >
+          <svg width="18" height="6" aria-hidden>
+            <line x1="1" y1="3" x2="17" y2="3" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3" opacity="0.8" />
+          </svg>
+          Proposed
+        </button>
       </div>
 
       {/* Lane board: sorted by netback */}
