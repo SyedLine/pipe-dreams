@@ -58,6 +58,11 @@ interface Props {
   /** Proposed new-build pipelines, drawn as dashed ghost lines when `showProposed` */
   proposed: { id: string; name: string; route: [number, number][] }[]
   showProposed: boolean
+  /** Shade US PADD regions */
+  showPadds: boolean
+  /** Largest refineries per PADD */
+  refineries: { name: string; operator: string; crudeKbd: number; cokeKbd: number; coord: [number, number] }[]
+  showRefineries: boolean
   /** Screen space covered by overlays */
   padding: Padding
   /** Pointer position is in viewport (client) coordinates. */
@@ -99,20 +104,20 @@ function pointFeatures(): FeatureCollection<Point> {
 
 const isLane = (id: string | null): ExpressionSpecification => ['==', ['get', 'lane'], id ?? '__none__']
 
-export default function MapView({ theme, best, active, showAsia, offline, proposed, showProposed, padding, onHover, onSelect }: Props) {
+export default function MapView({ theme, best, active, showAsia, offline, proposed, showProposed, showPadds, refineries, showRefineries, padding, onHover, onSelect }: Props) {
   const containerRef = useRef<HTMLDivElement>(null)
   const mapRef = useRef<MapLibreMap | null>(null)
   const readyRef = useRef(false)
   const handlers = useRef({ onHover, onSelect })
   handlers.current = { onHover, onSelect }
-  const latest = useRef({ theme, best, active, offline, proposed, showProposed })
-  latest.current = { theme, best, active, offline, proposed, showProposed }
+  const latest = useRef({ theme, best, active, offline, proposed, showProposed, showPadds, refineries, showRefineries })
+  latest.current = { theme, best, active, offline, proposed, showProposed, showPadds, refineries, showRefineries }
 
   /** Push current best/active/offline/theme into layer paint + filters. */
   const restyle = () => {
     const map = mapRef.current
     if (!map || !readyRef.current) return
-    const { theme, best, active, offline, showProposed } = latest.current
+    const { theme, best, active, offline, showProposed, showPadds, showRefineries } = latest.current
     const p = PAL[theme]
     const color: ExpressionSpecification = ['get', theme === 'dark' ? 'cd' : 'cl']
     const off: ExpressionSpecification = ['in', ['get', 'lane'], ['literal', offline]]
@@ -147,6 +152,15 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
     map.setPaintProperty('points-label', 'text-halo-color', p.halo)
     const vis = showProposed ? 'visible' : 'none'
     for (const id of ['proposed-line', 'proposed-label']) map.setLayoutProperty(id, 'visibility', vis)
+    for (const id of ['padd-fill', 'padd-label']) map.setLayoutProperty(id, 'visibility', showPadds ? 'visible' : 'none')
+    for (const id of ['refinery-circle', 'refinery-label']) map.setLayoutProperty(id, 'visibility', showRefineries ? 'visible' : 'none')
+    map.setPaintProperty('padd-fill', 'fill-color', p.origin)
+    map.setPaintProperty('padd-label', 'text-color', p.label)
+    map.setPaintProperty('padd-label', 'text-halo-color', p.halo)
+    map.setPaintProperty('refinery-circle', 'circle-color', p.origin)
+    map.setPaintProperty('refinery-circle', 'circle-stroke-color', ['case', ['>', ['get', 'coke'], 0], theme === 'dark' ? '#ffa028' : '#b45f00', p.halo])
+    map.setPaintProperty('refinery-label', 'text-color', p.label)
+    map.setPaintProperty('refinery-label', 'text-halo-color', p.halo)
     map.setPaintProperty('proposed-line', 'line-color', p.origin)
     map.setPaintProperty('proposed-label', 'text-color', p.label)
     map.setPaintProperty('proposed-label', 'text-halo-color', p.halo)
@@ -156,6 +170,45 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
   const install = (map: MapLibreMap) => {
     map.addSource('lanes', { type: 'geojson', data: laneFeatures() })
     map.addSource('points', { type: 'geojson', data: pointFeatures() })
+    // US PADD regions (beneath everything we draw)
+    map.addSource('padds', { type: 'geojson', data: `${import.meta.env.BASE_URL}padds.geojson` })
+    map.addLayer({
+      id: 'padd-fill',
+      type: 'fill',
+      source: 'padds',
+      layout: { visibility: 'none' },
+      paint: {
+        'fill-opacity': ['match', ['get', 'padd'], 2, 0.1, 3, 0.16, 4, 0.06, 5, 0.12, 0.03],
+        'fill-outline-color': 'rgba(0,0,0,0)',
+      },
+    })
+    map.addSource('padd-labels', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: (
+          [
+            ['PADD 1\nEast Coast', [-76.6, 41.2]],
+            ['PADD 2\nMidwest', [-98.5, 45.6]],
+            ['PADD 3\nGulf Coast', [-98.5, 31.8]],
+            ['PADD 4\nRockies', [-109.5, 43.6]],
+            ['PADD 5\nWest Coast', [-117.3, 40.2]],
+          ] as const
+        ).map(([label, c]) => ({
+          type: 'Feature' as const,
+          properties: { label },
+          geometry: { type: 'Point' as const, coordinates: [...c] },
+        })),
+      },
+    })
+    map.addLayer({
+      id: 'padd-label',
+      type: 'symbol',
+      source: 'padd-labels',
+      layout: { visibility: 'none', 'text-field': ['get', 'label'], 'text-font': ['literal', FONT_BOLD], 'text-size': 12, 'text-allow-overlap': true, 'text-line-height': 1.15, 'text-letter-spacing': 0.04 },
+      paint: { 'text-halo-width': 1.5, 'text-opacity': 0.8 },
+    })
+
     map.addSource('proposed', {
       type: 'geojson',
       data: {
@@ -261,6 +314,44 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
       },
       paint: { 'text-halo-width': 1.5 },
     })
+    // Largest refineries per PADD: size by crude capacity, amber ring = has a coker (runs heavy crude)
+    map.addSource('refineries', {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: latest.current.refineries.map((r) => ({
+          type: 'Feature' as const,
+          properties: { label: `${r.name.replace(/ \(.*\)/, '').replace(/,.*$/, '')} ${r.crudeKbd}k`, crude: r.crudeKbd, coke: r.cokeKbd },
+          geometry: { type: 'Point' as const, coordinates: r.coord },
+        })),
+      },
+    })
+    map.addLayer({
+      id: 'refinery-circle',
+      type: 'circle',
+      source: 'refineries',
+      layout: { visibility: 'none' },
+      paint: {
+        'circle-radius': ['interpolate', ['linear'], ['get', 'crude'], 60, 3, 650, 8.5],
+        'circle-opacity': 0.85,
+        'circle-stroke-width': 2,
+      },
+    })
+    map.addLayer({
+      id: 'refinery-label',
+      type: 'symbol',
+      source: 'refineries',
+      layout: {
+        visibility: 'none',
+        'text-field': ['get', 'label'],
+        'text-font': ['literal', FONT],
+        'text-size': 10.5,
+        'text-variable-anchor': ['left', 'right', 'top', 'bottom'],
+        'text-radial-offset': 1,
+        'text-justify': 'auto',
+      },
+      paint: { 'text-halo-width': 1.5 },
+    })
     readyRef.current = true
     restyle()
   }
@@ -341,7 +432,7 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
   }, [frameKey])
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(restyle, [best, active, offline.join(','), theme, showProposed])
+  useEffect(restyle, [best, active, offline.join(','), theme, showProposed, showPadds, showRefineries])
 
   // MapLibre's CSS forces position:relative on the container, so size it from a wrapper.
   return (

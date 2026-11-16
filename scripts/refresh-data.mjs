@@ -256,6 +256,38 @@ async function brentWtiDaily() {
 }
 
 /**
+ * Annual crude imports by PADD of processing: from Canada vs from everywhere.
+ * EIA route petroleum/move/impcp; series MCRIPP{n}CA2 (Canada) and MCRIPP{n}2 (total), kb/d.
+ */
+async function paddImports() {
+  const key = process.env.EIA_API_KEY
+  if (!key) throw new Error('EIA_API_KEY not set')
+  const series = [2, 3, 4, 5].flatMap((n) => [`MCRIPP${n}CA2`, `MCRIPP${n}2`])
+  const url =
+    `https://api.eia.gov/v2/petroleum/move/impcp/data/?api_key=${key}&frequency=annual&data[0]=value` +
+    series.map((s) => `&facets[series][]=${s}`).join('') +
+    `&sort[0][column]=period&sort[0][direction]=desc&length=40`
+  const rows = (await get(url))?.response?.data ?? []
+  const latest = (s) => rows.find((r) => r.series === s)
+  const padds = {}
+  let year = ''
+  for (const n of [2, 3, 4, 5]) {
+    const can = latest(`MCRIPP${n}CA2`)
+    const tot = latest(`MCRIPP${n}2`)
+    if (!can || !tot) throw new Error(`EIA imports: missing PADD ${n}`)
+    padds[n] = { canadaKbd: Number(can.value), totalKbd: Number(tot.value) }
+    year = can.period
+  }
+  return {
+    padds,
+    asOf: year,
+    label: 'Crude oil imports by PADD of processing, annual (from Canada vs all countries)',
+    source: 'U.S. EIA, PAD District Imports by Country of Origin',
+    sourceUrl: '',
+  }
+}
+
+/**
  * Recent headlines for each proposed egress project, from Bing News RSS search.
  * Each project's `keywords` drive the search and its `match` regex filters titles,
  * so only stories that are actually about the project are kept.
@@ -311,6 +343,7 @@ async function projectNews(projects) {
 const JOBS = {
   'prices.wti': () => eiaMonthly('pri/spt', 'RWTC', 'WTI Cushing spot (monthly average)'),
   'spreads.brentWti': brentWtiDaily,
+  'prices.imports': paddImports,
   'prices.brent': () => eiaMonthly('pri/spt', 'RBRTE', 'Brent spot (monthly average)'),
   'prices.ans': () => eiaMonthly('pri/dfp1', 'F005071__3', 'Alaska North Slope first purchase price'),
   wcsDiff: albertaDiff,

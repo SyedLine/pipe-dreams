@@ -67,7 +67,12 @@ export interface NewsItem {
 
 export interface Data {
   generatedAt: string
-  prices: { wti: PriceSeries; brent: PriceSeries; ans: PriceSeries }
+  prices: {
+    wti: PriceSeries
+    brent: PriceSeries
+    ans: PriceSeries
+    imports?: Sourced & { padds: Record<string, { canadaKbd: number; totalKbd: number }> }
+  }
   wcsDiff: Sourced & { value: number; wcsHardisty: number; unit: string }
   fx: Sourced & { value: number; unit: string }
   quality: Sourced & {
@@ -80,6 +85,22 @@ export interface Data {
   }
   throughput: { mainline: Throughput; tmx: Throughput }
   projects: { asOf: string; note: string; items: Project[] }
+  markets: {
+    refining: Sourced & {
+      manual: true
+      note: string
+      padds: {
+        padd: string
+        name: string
+        lanes: string[]
+        refineries: number
+        crudeKbd: number
+        cokingKbd: number
+        cokerSites: number
+        top: { site: string; operator: string; crudeKbd: number; cokeKbd: number; coord: [number, number] }[]
+      }[]
+    }
+  }
   news?: Sourced & { items: NewsItem[] }
   /** Recent daily Brent − WTI (preferred over the monthly spread) */
   spreads?: { brentWti?: Sourced & { value: number; from: string; to: string; days: number } }

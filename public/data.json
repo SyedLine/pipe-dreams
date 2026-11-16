@@ -183,7 +183,7 @@
       "label": "WTI Cushing spot (monthly average)",
       "source": "U.S. EIA, series RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false
     },
     "brent": {
@@ -243,7 +243,7 @@
       "label": "Brent spot (monthly average)",
       "source": "U.S. EIA, series RBRTE",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false,
       "spreadToWti": 3.24,
       "spreadMonth": "2026-11-02..2026-11-11"
@@ -305,10 +305,36 @@
       "label": "Alaska North Slope first purchase price",
       "source": "U.S. EIA, series F005071__3",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false,
       "spreadToWti": -2.45,
       "spreadMonth": "2026-08"
+    },
+    "imports": {
+      "padds": {
+        "2": {
+          "canadaKbd": 2753,
+          "totalKbd": 2753
+        },
+        "3": {
+          "canadaKbd": 416,
+          "totalKbd": 1390
+        },
+        "4": {
+          "canadaKbd": 268,
+          "totalKbd": 268
+        },
+        "5": {
+          "canadaKbd": 369,
+          "totalKbd": 1158
+        }
+      },
+      "asOf": "2025",
+      "label": "Crude oil imports by PADD of processing, annual (from Canada vs all countries)",
+      "source": "U.S. EIA, PAD District Imports by Country of Origin",
+      "sourceUrl": "",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
+      "stale": false
     }
   },
   "wcsDiff": {
@@ -320,7 +346,7 @@
     "source": "Government of Alberta, Economic Dashboard — Oil prices",
     "sourceUrl": "https://economicdashboard.alberta.ca/OilPrice",
     "updatedLocally": true,
-    "fetchedAt": "2026-11-16T23:45:17.630Z",
+    "fetchedAt": "2026-11-16T23:56:04.942Z",
     "stale": false
   },
   "fx": {
@@ -330,7 +356,7 @@
     "label": "USD/CAD (monthly average)",
     "source": "Bank of Canada, Valet API series FXMUSDCAD",
     "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
-    "fetchedAt": "2026-11-16T23:45:17.630Z",
+    "fetchedAt": "2026-11-16T23:56:04.942Z",
     "stale": false
   },
   "quality": {
@@ -344,7 +370,7 @@
     "label": "Western Canadian Select — most recent sample",
     "source": "Crude Quality Inc., CrudeMonitor.ca",
     "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
-    "fetchedAt": "2026-11-16T23:45:17.630Z",
+    "fetchedAt": "2026-11-16T23:56:04.942Z",
     "stale": false
   },
   "throughput": {
@@ -535,7 +561,7 @@
       "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false
     },
     "tmx": {
@@ -675,11 +701,11 @@
       "label": "Trans Mountain, system throughput vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false
     }
   },
-  "generatedAt": "2026-11-16T23:45:17.630Z",
+  "generatedAt": "2026-11-16T23:56:04.942Z",
   "spreads": {
     "brentWti": {
       "value": 3.24,
@@ -691,7 +717,7 @@
       "label": "Brent − WTI, average of 8 daily spreads 2026-11-02 to 2026-11-11",
       "source": "U.S. EIA daily spot prices, series RBRTE − RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm",
-      "fetchedAt": "2026-11-16T23:45:17.630Z",
+      "fetchedAt": "2026-11-16T23:56:04.942Z",
       "stale": false
     }
   },
@@ -1049,7 +1075,275 @@
     "label": "Recent headlines about proposed egress projects",
     "source": "Bing News search, filtered by project",
     "sourceUrl": "",
-    "fetchedAt": "2026-11-16T23:45:17.630Z",
+    "fetchedAt": "2026-11-16T23:56:04.942Z",
     "stale": false
+  },
+  "markets": {
+    "refining": {
+      "padds": [
+        {
+          "padd": "2",
+          "name": "Midwest",
+          "lanes": [
+            "mainline-chicago",
+            "keystone",
+            "express"
+          ],
+          "refineries": 25,
+          "crudeKbd": 4283,
+          "cokingKbd": 1162,
+          "cokerSites": 14,
+          "top": [
+            {
+              "site": "Whiting, IN",
+              "operator": "BP",
+              "crudeKbd": 435,
+              "cokeKbd": 198,
+              "coord": [
+                -87.48,
+                41.67
+              ]
+            },
+            {
+              "site": "Wood River, IL",
+              "operator": "Phillips 66 / Cenovus (WRB)",
+              "crudeKbd": 345,
+              "cokeKbd": 150,
+              "coord": [
+                -90.08,
+                38.86
+              ]
+            },
+            {
+              "site": "Pine Bend (St. Paul), MN",
+              "operator": "Flint Hills Resources (Koch)",
+              "crudeKbd": 335,
+              "cokeKbd": 156,
+              "coord": [
+                -93.03,
+                44.77
+              ]
+            },
+            {
+              "site": "Catlettsburg, KY",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 307,
+              "cokeKbd": 0,
+              "coord": [
+                -82.6,
+                38.4
+              ]
+            },
+            {
+              "site": "Joliet, IL",
+              "operator": "ExxonMobil",
+              "crudeKbd": 267,
+              "cokeKbd": 115,
+              "coord": [
+                -88.18,
+                41.43
+              ]
+            }
+          ]
+        },
+        {
+          "padd": "3",
+          "name": "Gulf Coast",
+          "lanes": [
+            "mainline-usgc",
+            "keystone",
+            "rail-usgc"
+          ],
+          "refineries": 52,
+          "crudeKbd": 9877,
+          "cokingKbd": 3100,
+          "cokerSites": 22,
+          "top": [
+            {
+              "site": "Port Arthur, TX",
+              "operator": "Motiva (Saudi Aramco)",
+              "crudeKbd": 656,
+              "cokeKbd": 336,
+              "coord": [
+                -93.96,
+                29.9
+              ]
+            },
+            {
+              "site": "Galveston Bay (Texas City), TX",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 631,
+              "cokeKbd": 63,
+              "coord": [
+                -94.92,
+                29.38
+              ]
+            },
+            {
+              "site": "Garyville, LA",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 617,
+              "cokeKbd": 216,
+              "coord": [
+                -90.62,
+                30.06
+              ]
+            },
+            {
+              "site": "Beaumont, TX",
+              "operator": "ExxonMobil",
+              "crudeKbd": 612,
+              "cokeKbd": 92,
+              "coord": [
+                -94.07,
+                30.06
+              ]
+            },
+            {
+              "site": "Baytown, TX",
+              "operator": "ExxonMobil",
+              "crudeKbd": 564,
+              "cokeKbd": 187,
+              "coord": [
+                -95.01,
+                29.74
+              ]
+            }
+          ]
+        },
+        {
+          "padd": "4",
+          "name": "Rocky Mountain",
+          "lanes": [
+            "express"
+          ],
+          "refineries": 15,
+          "crudeKbd": 653,
+          "cokingKbd": 147,
+          "cokerSites": 5,
+          "top": [
+            {
+              "site": "Sinclair, WY",
+              "operator": "HF Sinclair",
+              "crudeKbd": 75,
+              "cokeKbd": 38,
+              "coord": [
+                -107.11,
+                41.78
+              ]
+            },
+            {
+              "site": "Billings, MT",
+              "operator": "Phillips 66",
+              "crudeKbd": 71,
+              "cokeKbd": 39,
+              "coord": [
+                -108.49,
+                45.78
+              ]
+            },
+            {
+              "site": "Salt Lake City, UT",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 70,
+              "cokeKbd": 0,
+              "coord": [
+                -111.92,
+                40.84
+              ]
+            },
+            {
+              "site": "Commerce City, CO",
+              "operator": "Suncor Energy",
+              "crudeKbd": 67,
+              "cokeKbd": 0,
+              "coord": [
+                -104.94,
+                39.81
+              ]
+            },
+            {
+              "site": "Laurel, MT",
+              "operator": "CHS",
+              "crudeKbd": 62,
+              "cokeKbd": 31,
+              "coord": [
+                -108.77,
+                45.67
+              ]
+            }
+          ]
+        },
+        {
+          "padd": "5",
+          "name": "West Coast",
+          "lanes": [
+            "tmx-uswc"
+          ],
+          "refineries": 24,
+          "crudeKbd": 2420,
+          "cokingKbd": 851,
+          "cokerSites": 8,
+          "top": [
+            {
+              "site": "Los Angeles (Carson), CA",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 365,
+              "cokeKbd": 213,
+              "coord": [
+                -118.24,
+                33.81
+              ]
+            },
+            {
+              "site": "El Segundo, CA",
+              "operator": "Chevron",
+              "crudeKbd": 285,
+              "cokeKbd": 149,
+              "coord": [
+                -118.41,
+                33.91
+              ]
+            },
+            {
+              "site": "Richmond, CA",
+              "operator": "Chevron",
+              "crudeKbd": 245,
+              "cokeKbd": 0,
+              "coord": [
+                -122.4,
+                37.94
+              ]
+            },
+            {
+              "site": "Cherry Point (Ferndale), WA",
+              "operator": "BP",
+              "crudeKbd": 238,
+              "cokeKbd": 117,
+              "coord": [
+                -122.75,
+                48.84
+              ]
+            },
+            {
+              "site": "Torrance, CA",
+              "operator": "PBF Energy",
+              "crudeKbd": 160,
+              "cokeKbd": 115,
+              "coord": [
+                -118.33,
+                33.85
+              ]
+            }
+          ]
+        }
+      ],
+      "asOf": "2026-01-01",
+      "label": "Operable crude distillation and coking capacity as of January 1, 2026",
+      "source": "U.S. EIA Refinery Capacity Report 2026",
+      "sourceUrl": "",
+      "manual": true,
+      "note": "Crude capacity in barrels per calendar day; coking in barrels per stream day. Refinery locations on the map are approximate."
+    }
   }
 }

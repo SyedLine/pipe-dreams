@@ -22,6 +22,26 @@ interface Props {
 
 type Hover = { id: LaneId; at?: { x: number; y: number } } | null
 
+function Toggle({ on, set, label, dash = false }: { on: boolean; set: (fn: (v: boolean) => boolean) => void; label: string; dash?: boolean }) {
+  return (
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={() => set((v) => !v)}
+      className={`inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors ${
+        on ? 'border-accent text-accent' : 'border-line-strong text-muted hover:text-fg'
+      }`}
+    >
+      {dash && (
+        <svg width="18" height="6" aria-hidden>
+          <line x1="1" y1="3" x2="17" y2="3" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3" opacity="0.8" />
+        </svg>
+      )}
+      {label}
+    </button>
+  )
+}
+
 export function RankMove({ now, was }: { now: number | null; was: number | undefined }) {
   if (now == null || was == null || was === now) return <span className="num text-subtle">–</span>
   const up = was > now
@@ -37,6 +57,9 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
   const [showProposed, setShowProposed] = useState(false)
+  const [showPadds, setShowPadds] = useState(false)
+  const [showRefineries, setShowRefineries] = useState(false)
+  const refineries = data.markets.refining.padds.flatMap((p) => p.top.map((t) => ({ name: t.site, operator: t.operator, crudeKbd: t.crudeKbd, cokeKbd: t.cokeKbd, coord: t.coord })))
   const proposed = data.projects.items.filter((p) => p.route).map((p) => ({ id: p.id, name: p.name.replace(/ \(.*\)$/, ''), route: p.route! }))
   const active = selected ?? hover?.id ?? null
 
@@ -71,6 +94,9 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         offline={inputs.offline}
         proposed={proposed}
         showProposed={showProposed}
+        showPadds={showPadds}
+        refineries={refineries}
+        showRefineries={showRefineries}
         padding={padding}
         onHover={onHover}
         onSelect={onSelect}
@@ -78,7 +104,7 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
 
       {/* Line-style legend */}
       <div
-        className={`${floating} absolute z-10 flex items-center gap-3 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 top-2' : 'bottom-3 left-3'}`}
+        className={`${floating} absolute z-10 flex flex-wrap items-center gap-x-3 gap-y-1.5 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 right-24 top-2' : 'bottom-3 left-3'}`}
       >
         {(
           [
@@ -94,19 +120,9 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
             {label}
           </span>
         ))}
-        <button
-          type="button"
-          aria-pressed={showProposed}
-          onClick={() => setShowProposed((v) => !v)}
-          className={`ml-1 inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors ${
-            showProposed ? 'border-accent text-accent' : 'border-line-strong text-muted hover:text-fg'
-          }`}
-        >
-          <svg width="18" height="6" aria-hidden>
-            <line x1="1" y1="3" x2="17" y2="3" stroke="currentColor" strokeWidth="2" strokeDasharray="3 3" opacity="0.8" />
-          </svg>
-          Proposed
-        </button>
+        <Toggle on={showProposed} set={setShowProposed} label="Proposed" dash />
+        <Toggle on={showPadds} set={setShowPadds} label="PADDs" />
+        <Toggle on={showRefineries} set={setShowRefineries} label="Refineries" />
       </div>
 
       {/* Lane board: sorted by netback */}
