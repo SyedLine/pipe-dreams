@@ -1091,14 +1091,14 @@
           ],
           "refineries": 25,
           "crudeKbd": 4283,
-          "cokingKbd": 1162,
+          "cokingKbd": 603,
           "cokerSites": 14,
           "top": [
             {
               "site": "Whiting, IN",
               "operator": "BP",
               "crudeKbd": 435,
-              "cokeKbd": 198,
+              "cokeKbd": 102,
               "coord": [
                 -87.48,
                 41.67
@@ -1108,7 +1108,7 @@
               "site": "Wood River, IL",
               "operator": "Phillips 66 / Cenovus (WRB)",
               "crudeKbd": 345,
-              "cokeKbd": 150,
+              "cokeKbd": 77,
               "coord": [
                 -90.08,
                 38.86
@@ -1118,7 +1118,7 @@
               "site": "Pine Bend (St. Paul), MN",
               "operator": "Flint Hills Resources (Koch)",
               "crudeKbd": 335,
-              "cokeKbd": 156,
+              "cokeKbd": 82,
               "coord": [
                 -93.03,
                 44.77
@@ -1138,7 +1138,7 @@
               "site": "Joliet, IL",
               "operator": "ExxonMobil",
               "crudeKbd": 267,
-              "cokeKbd": 115,
+              "cokeKbd": 58,
               "coord": [
                 -88.18,
                 41.43
@@ -1156,14 +1156,14 @@
           ],
           "refineries": 52,
           "crudeKbd": 9877,
-          "cokingKbd": 3100,
+          "cokingKbd": 1618,
           "cokerSites": 22,
           "top": [
             {
               "site": "Port Arthur, TX",
               "operator": "Motiva (Saudi Aramco)",
               "crudeKbd": 656,
-              "cokeKbd": 336,
+              "cokeKbd": 178,
               "coord": [
                 -93.96,
                 29.9
@@ -1173,7 +1173,7 @@
               "site": "Galveston Bay (Texas City), TX",
               "operator": "Marathon Petroleum",
               "crudeKbd": 631,
-              "cokeKbd": 63,
+              "cokeKbd": 32,
               "coord": [
                 -94.92,
                 29.38
@@ -1183,7 +1183,7 @@
               "site": "Garyville, LA",
               "operator": "Marathon Petroleum",
               "crudeKbd": 617,
-              "cokeKbd": 216,
+              "cokeKbd": 110,
               "coord": [
                 -90.62,
                 30.06
@@ -1193,7 +1193,7 @@
               "site": "Beaumont, TX",
               "operator": "ExxonMobil",
               "crudeKbd": 612,
-              "cokeKbd": 92,
+              "cokeKbd": 47,
               "coord": [
                 -94.07,
                 30.06
@@ -1203,7 +1203,7 @@
               "site": "Baytown, TX",
               "operator": "ExxonMobil",
               "crudeKbd": 564,
-              "cokeKbd": 187,
+              "cokeKbd": 96,
               "coord": [
                 -95.01,
                 29.74
@@ -1219,14 +1219,14 @@
           ],
           "refineries": 15,
           "crudeKbd": 653,
-          "cokingKbd": 147,
+          "cokingKbd": 76,
           "cokerSites": 5,
           "top": [
             {
               "site": "Sinclair, WY",
               "operator": "HF Sinclair",
               "crudeKbd": 75,
-              "cokeKbd": 38,
+              "cokeKbd": 20,
               "coord": [
                 -107.11,
                 41.78
@@ -1236,7 +1236,7 @@
               "site": "Billings, MT",
               "operator": "Phillips 66",
               "crudeKbd": 71,
-              "cokeKbd": 39,
+              "cokeKbd": 20,
               "coord": [
                 -108.49,
                 45.78
@@ -1266,7 +1266,7 @@
               "site": "Laurel, MT",
               "operator": "CHS",
               "crudeKbd": 62,
-              "cokeKbd": 31,
+              "cokeKbd": 16,
               "coord": [
                 -108.77,
                 45.67
@@ -1282,14 +1282,14 @@
           ],
           "refineries": 24,
           "crudeKbd": 2420,
-          "cokingKbd": 851,
+          "cokingKbd": 442,
           "cokerSites": 8,
           "top": [
             {
               "site": "Los Angeles (Carson), CA",
               "operator": "Marathon Petroleum",
               "crudeKbd": 365,
-              "cokeKbd": 213,
+              "cokeKbd": 109,
               "coord": [
                 -118.24,
                 33.81
@@ -1299,7 +1299,7 @@
               "site": "El Segundo, CA",
               "operator": "Chevron",
               "crudeKbd": 285,
-              "cokeKbd": 149,
+              "cokeKbd": 77,
               "coord": [
                 -118.41,
                 33.91
@@ -1319,7 +1319,7 @@
               "site": "Cherry Point (Ferndale), WA",
               "operator": "BP",
               "crudeKbd": 238,
-              "cokeKbd": 117,
+              "cokeKbd": 62,
               "coord": [
                 -122.75,
                 48.84
@@ -1329,7 +1329,7 @@
               "site": "Torrance, CA",
               "operator": "PBF Energy",
               "crudeKbd": 160,
-              "cokeKbd": 115,
+              "cokeKbd": 62,
               "coord": [
                 -118.33,
                 33.85
