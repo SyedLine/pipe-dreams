@@ -3,6 +3,17 @@ import type { Data } from '../data'
 import type { Theme } from '../hooks'
 import { laneById, type LaneId } from '../lanes'
 import type { DestResult, LaneResult, Results } from '../netback'
+import { ticker } from '../operators'
+
+/** Ticker badge + operator name */
+function Operator({ name }: { name: string }) {
+  return (
+    <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">
+      <span className="num rounded-[3px] border border-line-strong bg-sunken px-1 py-px text-[9.5px] font-semibold leading-none tracking-wide text-fg">{ticker(name)}</span>
+      {name}
+    </div>
+  )
+}
 
 /** Which PADD each priced destination sits in. */
 const DEST_PADD: Record<string, string> = {
@@ -30,7 +41,7 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
     <div className="h-full overflow-y-auto">
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-6 md:px-6">
         <header>
-          <h1 className={header}>Markets</h1>
+          <h1 className={header}>Demand</h1>
           <p className="mt-1 max-w-2xl text-[13px] text-muted">
             Where Canadian heavy crude gets refined. Each US refining district (PADD) with the lanes that reach it, how much it can run, how much
             heavy crude it can handle (coking), how much of its imported crude comes from Canada, and its largest refineries. Turn on{' '}
@@ -119,7 +130,7 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
                       <tr key={t.site}>
                         <td className="py-1.5 pr-2">
                           <div className="text-fg">{t.site}</div>
-                          <div className="text-[11px] text-muted">{t.operator}</div>
+                          <Operator name={t.operator} />
                         </td>
                         <td className="num py-1.5 text-right">{t.crudeKbd}</td>
                         <td className="num py-1.5 text-right">
@@ -202,7 +213,7 @@ function ChinaCard({ data, theme, all }: { data: Data; theme: Theme; all: { r: L
             <tr key={t.site}>
               <td className="py-1.5 pr-2">
                 <div className="text-fg">{t.site}</div>
-                <div className="text-[11px] text-muted">{t.operator}</div>
+                <Operator name={t.operator} />
                 <div className="text-[11px] text-subtle">{t.cokeNote}</div>
               </td>
               <td className="num py-1.5 text-right align-top">{t.crudeKbd}</td>

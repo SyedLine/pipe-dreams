@@ -128,6 +128,20 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         <Toggle on={showRefineries} set={setShowRefineries} label="Refineries" />
       </div>
 
+      {/* Refinery key: only coking refineries are drawn */}
+      {showRefineries && (
+        <div
+          className={`${floating} pointer-events-none absolute z-10 max-w-[19rem] px-2.5 py-2 text-[11px] leading-snug text-muted ${
+            isPhone ? 'left-2 right-24 top-[4.6rem]' : 'bottom-[3.6rem] left-3'
+          }`}
+        >
+          <span className="font-medium text-fg">Coking refineries only.</span> Cokers let a refinery run heavy crude like WCS directly.
+          <span className="mt-1 flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full border-2 border-accent bg-fg" /> Dot size = crude capacity; amber ring = coker. Locations approximate.
+          </span>
+        </div>
+      )}
+
       {/* Lane board: sorted by netback */}
       {!selected && (
         <nav

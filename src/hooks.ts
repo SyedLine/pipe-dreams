@@ -47,6 +47,8 @@ export function useTheme(): [Theme, () => void] {
 
 // ── Tabs live in the URL path (/pipe-dreams/netbacks, …) ───────────────────
 const BASE = import.meta.env.BASE_URL // '/pipe-dreams/'
+/** Old tab names → new ones, so shared links keep working */
+const RENAMED: Record<string, string> = { markets: 'demand' }
 
 /** URL for a tab: the first tab is the site root, others are /<tab>. */
 export function tabHref<T extends string>(t: T, fallback: T): string {
@@ -55,7 +57,8 @@ export function tabHref<T extends string>(t: T, fallback: T): string {
 
 export function usePathTab<T extends string>(tabs: readonly T[], fallback: T): [T, (t: T) => void] {
   const read = (): T => {
-    const seg = window.location.pathname.slice(BASE.length).replace(/\.html$/, '').replace(/\/+$/, '') as T
+    const raw = window.location.pathname.slice(BASE.length).replace(/\.html$/, '').replace(/\/+$/, '')
+    const seg = (RENAMED[raw] ?? raw) as T
     if (tabs.includes(seg)) return seg
     // Old links used the hash (#map, #netbacks…)
     const h = window.location.hash.slice(1) as T

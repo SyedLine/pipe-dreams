@@ -15,6 +15,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import type { Theme } from '../hooks'
 import { smooth } from '../geo'
 import { EDMONTON, HARDISTY, LANES, type LaneId } from '../lanes'
+import { ticker } from '../operators'
 
 setWorkerUrl(workerUrl)
 
@@ -321,7 +322,7 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
         type: 'FeatureCollection',
         features: latest.current.refineries.map((r) => ({
           type: 'Feature' as const,
-          properties: { label: `${r.name.replace(/ \(.*\)/, '').replace(/,.*$/, '')} ${r.crudeKbd}k`, crude: r.crudeKbd, coke: r.cokeKbd },
+          properties: { label: `${r.name.replace(/ \(.*\)/, '').replace(/,.*$/, '')} ${r.crudeKbd}k\n${ticker(r.operator)}`, crude: r.crudeKbd, coke: r.cokeKbd },
           geometry: { type: 'Point' as const, coordinates: r.coord },
         })),
       },
@@ -346,6 +347,8 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
         'text-field': ['get', 'label'],
         'text-font': ['literal', FONT],
         'text-size': 10.5,
+        'text-line-height': 1.15,
+        'text-max-width': 16,
         'text-variable-anchor': ['left', 'right', 'top', 'bottom'],
         'text-radial-offset': 1,
         'text-justify': 'auto',
