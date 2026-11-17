@@ -3,13 +3,22 @@ import type { Data } from '../data'
 import type { Theme } from '../hooks'
 import { laneById, type LaneId } from '../lanes'
 import type { DestResult, LaneResult, Results } from '../netback'
-import { ticker } from '../operators'
+import { logoFor, ticker } from '../operators'
 
 /** Ticker badge + operator name */
 function Operator({ name }: { name: string }) {
+  const logo = logoFor(name)
   return (
     <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-muted">
-      <span className="num rounded-[3px] border border-line-strong bg-sunken px-1 py-px text-[9.5px] font-semibold leading-none tracking-wide text-fg">{ticker(name)}</span>
+      {logo ? (
+        <span className="inline-flex h-[18px] w-[34px] shrink-0 items-center justify-center rounded-[3px] bg-white px-0.5">
+          <img src={logo} alt={`${name} logo`} className="max-h-[13px] max-w-[30px] object-contain" loading="lazy" />
+        </span>
+      ) : (
+        <span className="num inline-flex h-[18px] min-w-[34px] items-center justify-center rounded-[3px] border border-line-strong bg-sunken px-1 text-[9.5px] font-semibold leading-none tracking-wide text-fg">
+          {ticker(name)}
+        </span>
+      )}
       {name}
     </div>
   )

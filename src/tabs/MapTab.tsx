@@ -113,7 +113,6 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
           [
             ['Pipeline', undefined],
             ['Tanker', '1 3'],
-            ['Rail', '5 3'],
           ] as const
         ).map(([label, dash]) => (
           <span key={label} className="inline-flex items-center gap-1.5">
@@ -123,6 +122,15 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
             {label}
           </span>
         ))}
+        <span className="inline-flex items-center gap-1.5">
+          <svg width="18" height="8" aria-hidden>
+            <line x1="1" y1="4" x2="17" y2="4" stroke="currentColor" strokeWidth="1.5" />
+            {[3, 7, 11, 15].map((x) => (
+              <line key={x} x1={x} y1="1" x2={x} y2="7" stroke="currentColor" strokeWidth="1.2" />
+            ))}
+          </svg>
+          Rail
+        </span>
         <Toggle on={showProposed} set={setShowProposed} label="Proposed" dash />
         <Toggle on={showPadds} set={setShowPadds} label="PADDs" />
         <Toggle on={showRefineries} set={setShowRefineries} label="Refineries" />

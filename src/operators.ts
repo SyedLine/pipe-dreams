@@ -23,3 +23,15 @@ const TICKERS: [RegExp, string][] = [
 export function ticker(operator: string): string {
   return TICKERS.find(([re]) => re.test(operator))?.[1] ?? operator.slice(0, 3).toUpperCase()
 }
+
+/** Public-domain logo files from Wikimedia Commons, stored in public/logos/. */
+const LOGOS = new Set(['XOM', 'MPC', 'CVX', 'PSX', 'PBF', 'MOT', 'CHS'])
+/** WRB is operated by Phillips 66 */
+const LOGO_ALIAS: Record<string, string> = { WRB: 'PSX' }
+
+/** Logo URL for an operator, or null when no free logo is available. */
+export function logoFor(operator: string): string | null {
+  const t = ticker(operator)
+  const key = LOGO_ALIAS[t] ?? t
+  return LOGOS.has(key) ? `${import.meta.env.BASE_URL}logos/${key}.svg` : null
+}

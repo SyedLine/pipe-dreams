@@ -15,7 +15,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import type { Theme } from '../hooks'
 import { smooth } from '../geo'
 import { EDMONTON, HARDISTY, LANES, type LaneId } from '../lanes'
-import { ticker } from '../operators'
+import { logoFor, ticker } from '../operators'
 
 setWorkerUrl(workerUrl)
 
@@ -103,6 +103,30 @@ function pointFeatures(): FeatureCollection<Point> {
   return { type: 'FeatureCollection', features: [...dests, ...origins] }
 }
 
+/** Rasterise an SVG logo onto a small white tile and register it with the map. */
+async function addLogo(map: MapLibreMap, id: string, url: string) {
+  const img = new Image()
+  img.src = url
+  await img.decode().catch(() => undefined)
+  if (!img.naturalWidth || map.hasImage(id)) return
+  const scale = 2 // crisp on high-density screens
+  const h = 16
+  const w = Math.min(46, Math.max(16, Math.round((img.naturalWidth / img.naturalHeight) * (h - 4)) + 6))
+  const c = document.createElement('canvas')
+  c.width = w * scale
+  c.height = h * scale
+  const g = c.getContext('2d')!
+  g.scale(scale, scale)
+  g.fillStyle = '#ffffff'
+  g.beginPath()
+  g.roundRect(0, 0, w, h, 3)
+  g.fill()
+  const iw = Math.min(w - 6, ((h - 4) * img.naturalWidth) / img.naturalHeight)
+  const ih = (iw * img.naturalHeight) / img.naturalWidth
+  g.drawImage(img, (w - iw) / 2, (h - ih) / 2, iw, ih)
+  if (!map.hasImage(id)) map.addImage(id, g.getImageData(0, 0, c.width, c.height), { pixelRatio: scale })
+}
+
 const isLane = (id: string | null): ExpressionSpecification => ['==', ['get', 'lane'], id ?? '__none__']
 
 export default function MapView({ theme, best, active, showAsia, offline, proposed, showProposed, showPadds, refineries, showRefineries, padding, onHover, onSelect }: Props) {
@@ -127,6 +151,8 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
     const opacity: ExpressionSpecification = active
       ? ['case', off, 0.15, isLane(active), 1, 0.4]
       : ['case', off, 0.15, 0.95]
+    map.setPaintProperty('lanes-rail-ties', 'line-color', color)
+    map.setPaintProperty('lanes-rail-ties', 'line-opacity', opacity)
     for (const id of ['lanes-pipe', 'lanes-tanker', 'lanes-rail', 'lanes-transfer']) {
       map.setPaintProperty(id, 'line-color', color)
       map.setPaintProperty(id, 'line-width', width)
@@ -154,7 +180,7 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
     const vis = showProposed ? 'visible' : 'none'
     for (const id of ['proposed-line', 'proposed-label']) map.setLayoutProperty(id, 'visibility', vis)
     for (const id of ['padd-fill', 'padd-label']) map.setLayoutProperty(id, 'visibility', showPadds ? 'visible' : 'none')
-    for (const id of ['refinery-circle', 'refinery-label']) map.setLayoutProperty(id, 'visibility', showRefineries ? 'visible' : 'none')
+    for (const id of ['refinery-circle', 'refinery-label', 'refinery-logo']) map.setLayoutProperty(id, 'visibility', showRefineries ? 'visible' : 'none')
     map.setPaintProperty('padd-fill', 'fill-color', p.origin)
     map.setPaintProperty('padd-label', 'text-color', p.label)
     map.setPaintProperty('padd-label', 'text-halo-color', p.halo)
@@ -268,7 +294,7 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
     const modes = [
       { mode: 'pipe', dash: undefined },
       { mode: 'tanker', dash: [0.6, 1.8] },
-      { mode: 'rail', dash: [2.5, 1.5] },
+      { mode: 'rail', dash: undefined },
       { mode: 'transfer', dash: [0.4, 1.2] },
     ] as const
     for (const { mode, dash } of modes) {
@@ -281,6 +307,15 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
         paint: { 'line-offset': offset, ...(dash ? { 'line-dasharray': [...dash] } : {}) },
       })
     }
+    // Railroad-track ties over the rail line (thick, very short dashes read as cross-ties)
+    map.addLayer({
+      id: 'lanes-rail-ties',
+      type: 'line',
+      source: 'lanes',
+      filter: ['==', ['get', 'mode'], 'rail'],
+      layout: { 'line-cap': 'butt', 'line-join': 'round' },
+      paint: { 'line-width': 7, 'line-dasharray': [0.18, 1.6], 'line-offset': offset },
+    })
     map.addLayer({
       id: 'lanes-hit',
       type: 'line',
@@ -322,7 +357,7 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
         type: 'FeatureCollection',
         features: latest.current.refineries.map((r) => ({
           type: 'Feature' as const,
-          properties: { label: `${r.name.replace(/ \(.*\)/, '').replace(/,.*$/, '')} ${r.crudeKbd}k\n${ticker(r.operator)}`, crude: r.crudeKbd, coke: r.cokeKbd },
+          properties: { label: `${r.name.replace(/ \(.*\)/, '').replace(/,.*$/, '')} ${r.crudeKbd}k\n${ticker(r.operator)}`, crude: r.crudeKbd, coke: r.cokeKbd, logo: logoFor(r.operator) ? `logo-${ticker(r.operator)}` : '' },
           geometry: { type: 'Point' as const, coordinates: r.coord },
         })),
       },
@@ -355,6 +390,19 @@ export default function MapView({ theme, best, active, showAsia, offline, propos
       },
       paint: { 'text-halo-width': 1.5 },
     })
+    // Operator logos above refinery dots (rasterised from SVG: MapLibre can't draw SVG directly)
+    map.addLayer({
+      id: 'refinery-logo',
+      type: 'symbol',
+      source: 'refineries',
+      filter: ['!=', ['get', 'logo'], ''],
+      layout: { visibility: 'none', 'icon-image': ['get', 'logo'], 'icon-anchor': 'bottom', 'icon-offset': [0, -9], 'icon-allow-overlap': false },
+    })
+    for (const r of latest.current.refineries) {
+      const url = logoFor(r.operator)
+      const id = `logo-${ticker(r.operator)}`
+      if (url && !map.hasImage(id)) void addLogo(map, id, url)
+    }
     readyRef.current = true
     restyle()
   }
