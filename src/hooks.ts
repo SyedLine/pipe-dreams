@@ -115,3 +115,34 @@ export function useTween(value: number, ms = 280): number {
   }, [value, ms, reduce])
   return shown
 }
+
+// ── Map layer toggles: kept above the tabs (survive tab switches) and remembered ──
+export interface MapLayers {
+  proposed: boolean
+  padds: boolean
+  refineries: boolean
+}
+const LAYERS_KEY = 'pd-map-layers'
+const NO_LAYERS: MapLayers = { proposed: false, padds: false, refineries: false }
+
+export function useMapLayers(): [MapLayers, (k: keyof MapLayers) => void] {
+  const [layers, setLayers] = useState<MapLayers>(() => {
+    try {
+      return { ...NO_LAYERS, ...JSON.parse(localStorage.getItem(LAYERS_KEY) ?? '{}') }
+    } catch {
+      return NO_LAYERS
+    }
+  })
+  const toggle = useCallback((k: keyof MapLayers) => {
+    setLayers((l) => {
+      const next = { ...l, [k]: !l[k] }
+      try {
+        localStorage.setItem(LAYERS_KEY, JSON.stringify(next))
+      } catch {
+        /* private mode: just won't persist */
+      }
+      return next
+    })
+  }, [])
+  return [layers, toggle]
+}

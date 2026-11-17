@@ -3,7 +3,7 @@ import MapView, { type Padding } from '../components/MapView'
 import { LanePanel, PreviewCard } from '../components/LaneCards'
 import { Delta, floating, header, Money } from '../components/ui'
 import type { Data } from '../data'
-import type { Theme } from '../hooks'
+import type { MapLayers, Theme } from '../hooks'
 import type { LaneId } from '../lanes'
 import { ranked, type Inputs, type LaneResult, type Results } from '../netback'
 
@@ -18,16 +18,18 @@ interface Props {
   setInputs: (fn: (i: Inputs) => Inputs) => void
   isTouch: boolean
   isPhone: boolean
+  layers: MapLayers
+  toggleLayer: (k: keyof MapLayers) => void
 }
 
 type Hover = { id: LaneId; at?: { x: number; y: number } } | null
 
-function Toggle({ on, set, label, dash = false }: { on: boolean; set: (fn: (v: boolean) => boolean) => void; label: string; dash?: boolean }) {
+function Toggle({ on, onClick, label, dash = false }: { on: boolean; onClick: () => void; label: string; dash?: boolean }) {
   return (
     <button
       type="button"
       aria-pressed={on}
-      onClick={() => set((v) => !v)}
+      onClick={onClick}
       className={`inline-flex items-center gap-1.5 rounded border px-1.5 py-0.5 transition-colors ${
         on ? 'border-accent text-accent' : 'border-line-strong text-muted hover:text-fg'
       }`}
@@ -53,12 +55,10 @@ export function RankMove({ now, was }: { now: number | null; was: number | undef
   )
 }
 
-export default function MapTab({ data, theme, results, todayRank, best, inputs, setInputs, isTouch, isPhone }: Props) {
+export default function MapTab({ data, theme, results, todayRank, best, inputs, setInputs, isTouch, isPhone, layers, toggleLayer }: Props) {
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
-  const [showProposed, setShowProposed] = useState(false)
-  const [showPadds, setShowPadds] = useState(false)
-  const [showRefineries, setShowRefineries] = useState(false)
+  const { proposed: showProposed, padds: showPadds, refineries: showRefineries } = layers
   const refineries = [
     ...data.markets.refining.padds.flatMap((p) => p.top),
     ...(data.markets.asia?.refineries ?? []),
@@ -131,9 +131,9 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
           </svg>
           Rail
         </span>
-        <Toggle on={showProposed} set={setShowProposed} label="Proposed" dash />
-        <Toggle on={showPadds} set={setShowPadds} label="PADDs" />
-        <Toggle on={showRefineries} set={setShowRefineries} label="Refineries" />
+        <Toggle on={showProposed} onClick={() => toggleLayer('proposed')} label="Proposed" dash />
+        <Toggle on={showPadds} onClick={() => toggleLayer('padds')} label="PADDs" />
+        <Toggle on={showRefineries} onClick={() => toggleLayer('refineries')} label="Refineries" />
       </div>
 
       {/* Refinery key: only coking refineries are drawn */}

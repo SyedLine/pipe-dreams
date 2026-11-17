@@ -3,7 +3,7 @@ import DrawerContent from './components/Drawer'
 import AppFooter, { SourceList } from './components/Footer'
 import { Delta, Money } from './components/ui'
 import { loadData, type Data } from './data'
-import { tabHref, useMedia, usePathTab, useTheme } from './hooks'
+import { tabHref, useMapLayers, useMedia, usePathTab, useTheme } from './hooks'
 import { bestLane, breakevens, computeAll, defaultInputs, ranked, type Inputs } from './netback'
 import type { LaneId } from './lanes'
 import { matchPreset, PRESETS, type PresetId } from './presets'
@@ -46,6 +46,7 @@ const CLOSE = 'M6 6l12 12M18 6L6 18'
 function Shell({ data }: { data: Data }) {
   const [theme, toggleTheme] = useTheme()
   const [tab, setTab] = usePathTab(TABS, 'map')
+  const [mapLayers, toggleMapLayer] = useMapLayers()
   const defaults = useMemo(() => defaultInputs(data), [data])
   const [inputs, setInputs] = useState<Inputs>(defaults)
   const isPhone = useMedia('(max-width: 767px)')
@@ -169,7 +170,7 @@ function Shell({ data }: { data: Data }) {
         )}
         <main className="relative min-w-0 flex-1">
           {tab === 'map' && (
-            <MapTab data={data} theme={theme} results={results} todayRank={todayRank} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} />
+            <MapTab data={data} theme={theme} results={results} todayRank={todayRank} best={best} inputs={inputs} setInputs={setInputs} isTouch={isTouch} isPhone={isPhone} layers={mapLayers} toggleLayer={toggleMapLayer} />
           )}
           {tab === 'netbacks' && <NetbacksTab results={results} inputs={inputs} theme={theme} />}
           {tab === 'rankings' && <RankingsTab data={data} results={results} theme={theme} />}
