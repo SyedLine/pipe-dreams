@@ -95,3 +95,4 @@ Work step by step: scaffold and deploy a placeholder first, then the map, then t
 - Map shows a "Coking refineries only" key whenever the Refineries toggle is on.
 - Rail is drawn as a railroad track (grey line + `lanes-rail-ties` cross-tie layer), so it can't be confused with dashed proposed (ghost) lines.
 - Map layer toggles (Proposed, PADDs, Refineries) live in App via `useMapLayers` (src/hooks.ts), so they survive tab switches, and are remembered in localStorage (`pd-map-layers`).
+- The WTI–WCS differential is DISPLAYED the market way, as WCS vs WTI (negative, e.g. −$16.94): drawer slider runs −40 → 0, Egress gauge runs −30 → 0, preset text quotes negatives. Internally `Inputs.wcsDiff` and data.json stay positive (WTI − WCS); only the UI negates.

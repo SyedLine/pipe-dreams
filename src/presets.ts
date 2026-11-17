@@ -29,7 +29,7 @@ export const PRESETS: Preset[] = [
   {
     id: 'pipes-full-2023',
     label: 'Pipes full (2023)',
-    blurb: '2023 averages, before the TMX expansion entered service in May 2024: WTI $77.58, Brent +$4.91, diff $18.66.',
+    blurb: '2023 averages, before the TMX expansion entered service in May 2024: WTI $77.58, Brent +$4.91, WCS diff −$18.66.',
     apply: (d) => ({ ...defaultInputs(d), wti: 77.58, brentSpread: 4.91, wcsDiff: 18.66, offline: TMX }),
   },
   {
@@ -45,7 +45,7 @@ export const PRESETS: Preset[] = [
   {
     id: 'wide-diff',
     label: 'Wide diff',
-    blurb: 'Today’s prices with the differential at $28.18, the widest month of 2023.',
+    blurb: 'Today’s prices with the WCS differential at −$28.18, the widest month of 2023.',
     apply: (d) => ({ ...defaultInputs(d), wcsDiff: 28.18 }),
   },
 ]

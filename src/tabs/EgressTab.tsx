@@ -198,7 +198,9 @@ function PipeCard({ name, note, t, color }: { name: string; note: string; t: Thr
 function DiffGauge({ data, diff, pipeParity, railParity }: { data: Data; diff: number; pipeParity: number; railParity: number }) {
   const lo = 0
   const hi = Math.ceil((Math.max(diff, railParity, pipeParity) + 4) / 5) * 5
-  const x = (v: number) => `${((Math.min(hi, Math.max(lo, v)) - lo) / (hi - lo)) * 100}%`
+  // Quoted as negatives (WCS vs WTI): widest discount on the left, $0 on the right
+  const frac = (v: number) => (hi - Math.min(hi, Math.max(lo, v))) / (hi - lo)
+  const x = (v: number) => `${frac(v) * 100}%`
   const span = railParity - pipeParity
   const tight = span > 0 ? Math.min(1, Math.max(0, (diff - pipeParity) / span)) : 0
   const gap = railParity - diff
@@ -225,30 +227,30 @@ function DiffGauge({ data, diff, pipeParity, railParity }: { data: Data; diff: n
         {/* track */}
         <div className="absolute inset-x-0 top-4 h-2 rounded-full bg-sunken" />
         {/* pipe → rail zone */}
-        <div className="absolute top-4 h-2 rounded-full bg-accent-soft" style={{ left: x(Math.min(pipeParity, railParity)), width: `calc(${x(Math.max(pipeParity, railParity))} - ${x(Math.min(pipeParity, railParity))})` }} />
-        <Marker at={x(pipeParity)} frac={(pipeParity - lo) / (hi - lo)} label="Pipe parity" value={pipeParity} tone="muted" below />
-        <Marker at={x(railParity)} frac={(railParity - lo) / (hi - lo)} label="Rail breakeven" value={railParity} tone="accent" />
+        <div className="absolute top-4 h-2 rounded-full bg-accent-soft" style={{ left: x(Math.max(pipeParity, railParity)), width: `calc(${x(Math.min(pipeParity, railParity))} - ${x(Math.max(pipeParity, railParity))})` }} />
+        <Marker at={x(pipeParity)} frac={frac(pipeParity)} label="Pipe parity" value={-pipeParity} tone="muted" below />
+        <Marker at={x(railParity)} frac={frac(railParity)} label="Rail breakeven" value={-railParity} tone="accent" />
         {/* current diff */}
         <div className="absolute top-2.5 -translate-x-1/2 transition-[left] duration-300" style={{ left: x(diff) }}>
           <span className="block h-5 w-5 rounded-full border-2 border-surface bg-fg shadow" data-tip={tipFor(data.wcsDiff)} tabIndex={0} />
         </div>
       </div>
       <div className="num mt-9 flex justify-between text-[11px] text-subtle">
-        <span>{usd(lo, 0)}</span>
-        <span>{usd(hi, 0)} / bbl</span>
+        <span>{usd(-hi, 0)}</span>
+        <span>{usd(lo, 0)} / bbl</span>
       </div>
 
       <dl className="mt-4 grid grid-cols-1 gap-3 border-t border-line pt-4 text-[13px] sm:grid-cols-3">
         <div>
           <dt className="text-muted">Differential now</dt>
           <dd className="mt-0.5 text-[17px] font-semibold">
-            <Money value={diff} source={data.wcsDiff} />
+            <Money value={-diff} source={data.wcsDiff} extra="WCS vs WTI (negative = discount)" />
           </dd>
         </div>
         <div>
           <dt className="text-muted">Rail breakeven</dt>
           <dd className="mt-0.5 text-[17px] font-semibold text-accent">
-            <Money value={railParity} extra="WTI minus the rail netback: rail cost plus the Gulf Coast heavy discount" />
+            <Money value={-railParity} extra="Differential at which rail sets the price: rail cost plus the Gulf Coast heavy discount" />
           </dd>
         </div>
         <div>

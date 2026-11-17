@@ -72,24 +72,25 @@ export default function DrawerContent({ data, inputs, defaults, setInputs, prese
       <section className="space-y-5">
         <Slider label="WTI (Cushing)" value={inputs.wti} min={40} max={150} step={0.25} onChange={set('wti')} defaultValue={defaults.wti} source={data.prices.wti} />
         <div>
+          {/* Quoted the market way: WCS vs WTI, negative = discount. Internally wcsDiff stays positive. */}
           <Slider
-            label="WTI–WCS differential"
-            value={inputs.wcsDiff}
-            min={0}
-            max={40}
+            label="WCS differential to WTI"
+            value={-inputs.wcsDiff}
+            min={-40}
+            max={0}
             step={0.25}
-            onChange={set('wcsDiff')}
-            defaultValue={defaults.wcsDiff}
+            onChange={(v) => setInputs((i) => ({ ...i, wcsDiff: -v }))}
+            defaultValue={-defaults.wcsDiff}
             source={data.wcsDiff}
             markers={[
-              { value: pipeParity, label: 'Pipe parity' },
-              { value: railParity, label: 'Rail breakeven', color: 'var(--accent)' },
+              { value: -pipeParity, label: 'Pipe parity' },
+              { value: -railParity, label: 'Rail breakeven', color: 'var(--accent)' },
             ]}
           />
           <p className="mt-1 text-[12px] leading-snug text-muted">
-            Rail breakeven <span className="num font-medium text-fg">{usd(railParity)}</span>. When pipes are full the diff tends to
+            Rail breakeven <span className="num font-medium text-fg">{usd(-railParity)}</span>. When pipes are full the diff tends to
             widen toward it; today it&rsquo;s <span className="num font-medium text-fg">{Math.round(tight * 100)}%</span> of the way
-            from pipe parity (<span className="num">{usd(pipeParity)}</span>).
+            from pipe parity (<span className="num">{usd(-pipeParity)}</span>).
           </p>
         </div>
         <Slider
