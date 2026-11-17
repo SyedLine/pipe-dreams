@@ -87,7 +87,6 @@ export interface Data {
   projects: { asOf: string; note: string; items: Project[] }
   markets: {
     refining: Sourced & {
-      manual: true
       note: string
       padds: {
         padd: string
@@ -99,6 +98,11 @@ export interface Data {
         cokerSites: number
         top: { site: string; operator: string; crudeKbd: number; cokeKbd: number; coord: [number, number] }[]
       }[]
+    }
+    asia?: Sourced & {
+      manual: true
+      refineries: { site: string; operator: string; crudeKbd: number; cokeKbd: number; cokeNote: string; coord: [number, number] }[]
+      otherBuyers: { site: string; operator: string; crudeKbd: number; note: string }[]
     }
   }
   news?: Sourced & { items: NewsItem[] }

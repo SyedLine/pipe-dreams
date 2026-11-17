@@ -1125,16 +1125,6 @@
               ]
             },
             {
-              "site": "Catlettsburg, KY",
-              "operator": "Marathon Petroleum",
-              "crudeKbd": 307,
-              "cokeKbd": 0,
-              "coord": [
-                -82.6,
-                38.4
-              ]
-            },
-            {
               "site": "Joliet, IL",
               "operator": "ExxonMobil",
               "crudeKbd": 267,
@@ -1142,6 +1132,16 @@
               "coord": [
                 -88.18,
                 41.43
+              ]
+            },
+            {
+              "site": "Robinson, IL",
+              "operator": "Marathon Petroleum",
+              "crudeKbd": 253,
+              "cokeKbd": 31,
+              "coord": [
+                -87.74,
+                39.0
               ]
             }
           ]
@@ -1243,26 +1243,6 @@
               ]
             },
             {
-              "site": "Salt Lake City, UT",
-              "operator": "Marathon Petroleum",
-              "crudeKbd": 70,
-              "cokeKbd": 0,
-              "coord": [
-                -111.92,
-                40.84
-              ]
-            },
-            {
-              "site": "Commerce City, CO",
-              "operator": "Suncor Energy",
-              "crudeKbd": 67,
-              "cokeKbd": 0,
-              "coord": [
-                -104.94,
-                39.81
-              ]
-            },
-            {
               "site": "Laurel, MT",
               "operator": "CHS",
               "crudeKbd": 62,
@@ -1270,6 +1250,26 @@
               "coord": [
                 -108.77,
                 45.67
+              ]
+            },
+            {
+              "site": "Billings, MT",
+              "operator": "Par Pacific",
+              "crudeKbd": 62,
+              "cokeKbd": 10,
+              "coord": [
+                -108.45,
+                45.8
+              ]
+            },
+            {
+              "site": "Salt Lake City, UT",
+              "operator": "Chevron",
+              "crudeKbd": 55,
+              "cokeKbd": 10,
+              "coord": [
+                -111.93,
+                40.83
               ]
             }
           ]
@@ -1306,16 +1306,6 @@
               ]
             },
             {
-              "site": "Richmond, CA",
-              "operator": "Chevron",
-              "crudeKbd": 245,
-              "cokeKbd": 0,
-              "coord": [
-                -122.4,
-                37.94
-              ]
-            },
-            {
               "site": "Cherry Point (Ferndale), WA",
               "operator": "BP",
               "crudeKbd": 238,
@@ -1334,16 +1324,71 @@
                 -118.33,
                 33.85
               ]
+            },
+            {
+              "site": "Martinez, CA",
+              "operator": "PBF Energy",
+              "crudeKbd": 156,
+              "cokeKbd": 49,
+              "coord": [
+                -122.11,
+                38.02
+              ]
             }
           ]
         }
       ],
       "asOf": "2026-01-01",
-      "label": "Operable crude distillation and coking capacity as of January 1, 2026",
+      "label": "Operable crude distillation and coking capacity as of January 1, 2026 (annual report; next edition due June 2027)",
       "source": "U.S. EIA Refinery Capacity Report 2026",
       "sourceUrl": "",
+      "note": "Only refineries with coking capacity are listed: cokers let a refinery run heavy crude like WCS directly. Crude capacity in barrels per calendar day; coking in barrels per stream day. Refinery locations on the map are approximate.",
+      "stale": false
+    },
+    "asia": {
+      "label": "Chinese refineries reported buying TMX heavy crude (Access Western Blend)",
+      "source": "Argus Media (TMX buyers, refinery capacity), Oil & Gas Journal (Maoming cokers), project contractor listing (ZPC coker), Reuters (Yulong)",
+      "sourceUrl": "",
+      "asOf": "2026-04-09",
       "manual": true,
-      "note": "Crude capacity in barrels per calendar day; coking in barrels per stream day. Refinery locations on the map are approximate."
+      "refineries": [
+        {
+          "site": "Zhoushan (ZPC), Zhejiang",
+          "operator": "Rongsheng / Zhejiang Petrochemical",
+          "crudeKbd": 800,
+          "cokeKbd": 55,
+          "cokeNote": "3.2 Mt/y delayed coker (≈55 kb/d); reported shut in Sept 2024, current status unclear",
+          "coord": [
+            -237.82,
+            30.27
+          ]
+        },
+        {
+          "site": "Maoming, Guangdong",
+          "operator": "Sinopec",
+          "crudeKbd": 470,
+          "cokeKbd": 40,
+          "cokeNote": "Two 20 kb/d delayed cokers (Oil & Gas Journal; older figure)",
+          "coord": [
+            -249.07999999999998,
+            21.68
+          ]
+        }
+      ],
+      "otherBuyers": [
+        {
+          "site": "Zhenhai (Ningbo), Zhejiang",
+          "operator": "Sinopec",
+          "crudeKbd": 800,
+          "note": "TMX buyer; coker capacity not confirmed in public sources"
+        },
+        {
+          "site": "Yulong (Yantai), Shandong",
+          "operator": "Shandong Yulong Petrochemical",
+          "crudeKbd": 200,
+          "note": "Bought first TMX cargoes in 2025; 400 kb/d when complete; coker not confirmed"
+        }
+      ]
     }
   }
 }

@@ -38,6 +38,11 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
           </p>
         </header>
 
+        <p className="rounded-md border border-line bg-surface px-3 py-2 text-[12px] leading-snug text-muted">
+          <span className="font-medium text-fg">Coking refineries only.</span> The refineries listed have coking capacity, which lets them run
+          heavy crude like WCS directly; plants without a coker are left out.
+        </p>
+
         <div className="grid gap-3 md:grid-cols-2">
           {ref.padds.map((p) => {
             const imp = imports?.padds[p.padd]
@@ -104,7 +109,7 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
                 <table className="mt-4 w-full text-[12px]">
                   <thead>
                     <tr className="text-left text-[11px] text-subtle">
-                      <th className="pb-1 font-normal">Largest refineries</th>
+                      <th className="pb-1 font-normal">Largest coking refineries</th>
                       <th className="pb-1 text-right font-normal">Crude kb/d</th>
                       <th className="pb-1 text-right font-normal">Coker kb/d</th>
                     </tr>
@@ -118,7 +123,7 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
                         </td>
                         <td className="num py-1.5 text-right">{t.crudeKbd}</td>
                         <td className="num py-1.5 text-right">
-                          {t.cokeKbd > 0 ? t.cokeKbd : <span className="text-subtle">none</span>}
+                          {t.cokeKbd}
                         </td>
                       </tr>
                     ))}
@@ -129,10 +134,12 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
           })}
         </div>
 
+        {data.markets.asia && <ChinaCard data={data} theme={theme} all={all} />}
+
         <section className={`${card} p-4 text-[12px] leading-relaxed text-muted`}>
           <p>
-            <span className="text-fg">Asia</span> is reached by tanker from Westridge (TMX) and isn&rsquo;t a PADD; see Netbacks for Japan,
-            Korea, China and Taiwan. <span className="text-fg">PADD 1</span> (East Coast) isn&rsquo;t served by these lanes.
+            <span className="text-fg">PADD 1</span> (East Coast) isn&rsquo;t served by these lanes. Japan, Korea and Taiwan are priced on the
+            Netbacks tab.
           </p>
           <p className="mt-2">
             Imports are counted by the PADD where the crude is refined, so Canadian barrels that reach the Gulf Coast through the Midwest may
@@ -152,5 +159,71 @@ export default function MarketsTab({ data, theme, results }: { data: Data; theme
         </section>
       </div>
     </div>
+  )
+}
+
+function ChinaCard({ data, theme, all }: { data: Data; theme: Theme; all: { r: LaneResult; d: DestResult }[] }) {
+  const asia = data.markets.asia!
+  const china = all.find((x) => x.d.dest.id === 'china')
+  const lane = laneById['tmx-asia']
+  return (
+    <article className={`${card} p-4`}>
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <div className={header}>Asia</div>
+          <h2 className="text-[17px] font-semibold tracking-tight">China</h2>
+        </div>
+        <div className="text-right">
+          <div className="text-[11px] text-muted">Netback to China</div>
+          {china ? (
+            <Money value={china.d.netback} className="text-[17px] font-semibold text-accent" extra="TMX → Westridge → tanker to Ningbo-Zhoushan" tipPos="left" />
+          ) : (
+            <div className="text-[12px] text-subtle">TMX offline</div>
+          )}
+        </div>
+      </div>
+      <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
+        <span className="inline-flex items-center gap-1 rounded bg-sunken px-1.5 py-0.5 text-muted">
+          <span className="h-2 w-2 rounded-[2px]" style={{ backgroundColor: lane.color[theme] }} />
+          {lane.name}
+        </span>
+        <span className="rounded bg-sunken px-1.5 py-0.5 text-muted">China takes roughly half of seaborne TMX exports</span>
+      </div>
+      <table className="mt-4 w-full text-[12px]">
+        <thead>
+          <tr className="text-left text-[11px] text-subtle">
+            <th className="pb-1 font-normal">Coking refineries buying TMX crude</th>
+            <th className="pb-1 text-right font-normal">Crude kb/d</th>
+            <th className="pb-1 text-right font-normal">Coker kb/d</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-line">
+          {asia.refineries.map((t) => (
+            <tr key={t.site}>
+              <td className="py-1.5 pr-2">
+                <div className="text-fg">{t.site}</div>
+                <div className="text-[11px] text-muted">{t.operator}</div>
+                <div className="text-[11px] text-subtle">{t.cokeNote}</div>
+              </td>
+              <td className="num py-1.5 text-right align-top">{t.crudeKbd}</td>
+              <td className="num py-1.5 text-right align-top">≈{t.cokeKbd}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="mt-3 text-[12px] leading-snug text-muted">
+        Also buying TMX crude, coker capacity not confirmed in public sources:{' '}
+        {asia.otherBuyers.map((b, i) => (
+          <span key={b.site}>
+            {i > 0 && '; '}
+            <span className="text-fg">{b.site}</span> ({b.operator}, {b.crudeKbd} kb/d)
+          </span>
+        ))}
+        .
+      </p>
+      <div className="mt-2 flex flex-wrap gap-x-2">
+        <SourceTag s={asia} /> <span className="text-[11px] text-subtle">{asia.source}</span>
+      </div>
+    </article>
   )
 }

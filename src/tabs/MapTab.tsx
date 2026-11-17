@@ -59,7 +59,10 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
   const [showProposed, setShowProposed] = useState(false)
   const [showPadds, setShowPadds] = useState(false)
   const [showRefineries, setShowRefineries] = useState(false)
-  const refineries = data.markets.refining.padds.flatMap((p) => p.top.map((t) => ({ name: t.site, operator: t.operator, crudeKbd: t.crudeKbd, cokeKbd: t.cokeKbd, coord: t.coord })))
+  const refineries = [
+    ...data.markets.refining.padds.flatMap((p) => p.top),
+    ...(data.markets.asia?.refineries ?? []),
+  ].map((t) => ({ name: t.site, operator: t.operator, crudeKbd: t.crudeKbd, cokeKbd: t.cokeKbd, coord: t.coord }))
   const proposed = data.projects.items.filter((p) => p.route).map((p) => ({ id: p.id, name: p.name.replace(/ \(.*\)$/, ''), route: p.route! }))
   const active = selected ?? hover?.id ?? null
 
