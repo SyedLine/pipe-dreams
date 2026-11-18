@@ -56,16 +56,16 @@ export default function OutlookTab({ data, theme }: { data: Data; theme: Theme }
         </header>
 
         {/* Headline numbers */}
-        <section className="grid gap-2 sm:grid-cols-3">
+        <section className="grid grid-cols-3 gap-2">
           {[
             { k: 'Sanctioned', v: sum(sanctioned), note: sanctioned.map((p) => p.name).join(', ') },
             { k: 'In development', v: sum(developing), note: `${developing.length} projects, not yet sanctioned` },
             { k: 'Postponed', v: sum(postponed), note: postponed.map((p) => p.name).join(', ') || 'none' },
           ].map((s) => (
-            <div key={s.k} className={`${card} p-4`}>
-              <div className={header}>{s.k}</div>
-              <div className="num mt-1 text-[24px] font-semibold">+{kbd(s.v)}</div>
-              <div className="mt-0.5 truncate text-[12px] text-muted">{s.note}</div>
+            <div key={s.k} className={`${card} p-2.5 sm:p-4`}>
+              <div className={`${header} truncate`}>{s.k}</div>
+              <div className="num mt-1 text-[15px] font-semibold sm:text-[24px]">+{kbd(s.v)}</div>
+              <div className="mt-0.5 hidden truncate text-[12px] text-muted sm:block">{s.note}</div>
             </div>
           ))}
         </section>

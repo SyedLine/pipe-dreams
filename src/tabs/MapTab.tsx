@@ -59,6 +59,9 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
   const [hover, setHover] = useState<Hover>(null)
   const [selected, setSelected] = useState<LaneId | null>(null)
   const { proposed: showProposed, padds: showPadds, refineries: showRefineries } = layers
+  // Phone: lane list collapses to one row; legend sits behind a Layers button
+  const [boardOpen, setBoardOpen] = useState(false)
+  const [legendOpen, setLegendOpen] = useState(false)
   const refineries = [
     ...data.markets.refining.padds.flatMap((p) => p.top),
     ...(data.markets.asia?.refineries ?? []),
@@ -81,7 +84,7 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
   }
 
   const padding: Padding = isPhone
-    ? { top: 24, right: 24, bottom: 200, left: 24 }
+    ? { top: 56, right: 16, bottom: selected ? 360 : boardOpen ? 300 : 72, left: 16 }
     : { top: 40, right: selected ? 420 : 460, bottom: 40, left: 40 }
   const hovered = hover && !selected ? results[hover.id] : null
   const order = ranked(results)
@@ -105,9 +108,27 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         onSelect={onSelect}
       />
 
+      {/* Phone: one Layers button instead of a permanent legend */}
+      {isPhone && (
+        <button
+          type="button"
+          aria-expanded={legendOpen}
+          onClick={() => setLegendOpen((o) => !o)}
+          className={`${floating} absolute left-2 top-2 z-20 flex items-center gap-1.5 px-3 py-2 text-[12px] font-medium ${
+            showProposed || showPadds || showRefineries ? 'text-accent' : 'text-fg'
+          }`}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden>
+            <path d="M12 3 2 8l10 5 10-5-10-5ZM2 16l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+          Layers {legendOpen ? '▴' : '▾'}
+        </button>
+      )}
+
       {/* Line-style legend */}
+      {(!isPhone || legendOpen) && (
       <div
-        className={`${floating} absolute z-10 flex flex-wrap items-center gap-x-3 gap-y-1.5 px-2.5 py-1.5 text-[11px] text-muted ${isPhone ? 'left-2 right-24 top-2' : 'bottom-3 left-3'}`}
+        className={`${floating} absolute z-10 flex flex-wrap items-center gap-x-3 gap-y-2 px-2.5 py-2 text-[11px] text-muted ${isPhone ? 'left-2 right-2 top-[3.1rem]' : 'bottom-3 left-3'}`}
       >
         {(
           [
@@ -134,10 +155,16 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
         <Toggle on={showProposed} onClick={() => toggleLayer('proposed')} label="Proposed" dash />
         <Toggle on={showPadds} onClick={() => toggleLayer('padds')} label="PADDs" />
         <Toggle on={showRefineries} onClick={() => toggleLayer('refineries')} label="Refineries" />
+        {isPhone && showRefineries && (
+          <p className="w-full leading-snug">
+            <span className="font-medium text-fg">Coking refineries only.</span> Dot size = crude capacity; amber ring = coker.
+          </p>
+        )}
       </div>
+      )}
 
       {/* Refinery key: only coking refineries are drawn */}
-      {showRefineries && (
+      {showRefineries && !isPhone && (
         <div
           className={`${floating} pointer-events-none absolute z-10 max-w-[19rem] px-2.5 py-2 text-[11px] leading-snug text-muted ${
             isPhone ? 'left-2 right-24 top-[4.6rem]' : 'bottom-[3.6rem] left-3'
@@ -154,16 +181,27 @@ export default function MapTab({ data, theme, results, todayRank, best, inputs, 
       {!selected && (
         <nav
           aria-label="Lanes by netback"
-          className={`${floating} absolute z-10 ${isPhone ? 'inset-x-2 bottom-2 max-h-[188px] overflow-y-auto' : 'right-3 top-3 w-[27rem]'}`}
+          className={`${floating} absolute z-10 ${isPhone ? `inset-x-2 bottom-2 ${boardOpen ? 'max-h-[60%] overflow-y-auto' : ''}` : 'right-3 top-3 w-[27rem]'}`}
         >
-          <div className="grid grid-cols-[2.6rem_1fr_4.6rem_5.4rem] items-center gap-2 border-b border-line px-3 py-1.5">
+          {isPhone && (
+            <button
+              type="button"
+              aria-expanded={boardOpen}
+              onClick={() => setBoardOpen((o) => !o)}
+              className="flex w-full items-center justify-between gap-2 border-b border-line px-3 py-2 text-[12px]"
+            >
+              <span className={header}>All {rows.length} lanes by netback</span>
+              <span className="text-muted">{boardOpen ? 'Hide ▾' : 'Show ▴'}</span>
+            </button>
+          )}
+          <div className={`grid grid-cols-[2.6rem_1fr_4.6rem_5.4rem] items-center gap-2 border-b border-line px-3 py-1.5 ${isPhone && !boardOpen ? 'hidden' : ''}`}>
             <span className={header}>#</span>
             <span className={header}>Lane</span>
             <span className={`${header} text-right`}>Netback</span>
             <span className={`${header} text-right`}>vs Hardisty</span>
           </div>
           <ul className="divide-y divide-line">
-            {rows.map((r) => {
+            {(isPhone && !boardOpen ? rows.slice(0, 1) : rows).map((r) => {
               const rank = r.offline ? null : order.indexOf(r) + 1
               const isBest = r.lane.id === best
               return (

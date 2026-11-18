@@ -96,7 +96,7 @@ function Shell({ data }: { data: Data }) {
   )
 
   const tabsNav = (
-    <nav aria-label="Views" className="no-scrollbar -mx-1 flex overflow-x-auto px-1">
+    <nav aria-label="Views" className="no-scrollbar -mx-1 flex overflow-x-auto px-1 max-md:[mask-image:linear-gradient(to_right,#000_85%,transparent)]">
       <div role="tablist" className="flex gap-1">
         {TABS.map((t) => (
           <a
@@ -125,7 +125,7 @@ function Shell({ data }: { data: Data }) {
     <div className="flex h-dvh flex-col bg-bg pt-[env(safe-area-inset-top)]">
       {/* ── Top bar ── */}
       <header className="z-30 border-b border-line bg-surface">
-        <div className="flex h-14 items-center gap-2 px-3 md:px-4">
+        <div className="flex h-12 items-center gap-2 px-3 md:h-14 md:px-4">
           <div className="flex min-w-0 flex-1 items-center gap-1">
             {!isPhone && (
               <button type="button" onClick={() => setDrawerOpen((o) => !o)} aria-label="Toggle inputs" aria-expanded={drawerOpen} className={iconBtn}>
@@ -134,28 +134,47 @@ function Shell({ data }: { data: Data }) {
             )}
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="truncate text-[16px] font-bold uppercase tracking-[0.06em] text-accent">Pipe Dreams</span>
-              <span className="truncate text-[11px] text-muted">{isPhone ? 'Best netback for a Hardisty barrel' : 'Where a Hardisty WCS barrel earns the best netback'}</span>
+              <span className="hidden truncate text-[11px] text-muted md:block">Where a Hardisty WCS barrel earns the best netback</span>
             </span>
           </div>
           {!isPhone && <div className="flex shrink-0 justify-center">{tabsNav}</div>}
           <div className="flex flex-1 items-center justify-end gap-1">
+            {isPhone && (
+              <button
+                type="button"
+                onClick={() => setDrawerOpen(true)}
+                className="flex items-center gap-1.5 rounded-lg bg-accent px-2.5 py-1.5 text-[12px] font-semibold text-on-accent"
+              >
+                <Icon d={SLIDERS} size={14} /> Inputs
+              </button>
+            )}
             <button type="button" onClick={toggleTheme} aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`} className={iconBtn}>
               <Icon d={theme === 'dark' ? SUN : MOON} />
             </button>
-            <button type="button" onClick={() => setSourcesOpen(true)} className="rounded-lg px-3 py-1.5 text-[13px] font-medium text-muted hover:bg-sunken hover:text-fg">
+            <button type="button" onClick={() => setSourcesOpen(true)} className="rounded-lg px-2 py-1.5 text-[13px] font-medium text-muted hover:bg-sunken hover:text-fg md:px-3">
               Sources
             </button>
           </div>
         </div>
-        {isPhone && <div className="px-3 pb-2">{tabsNav}</div>}
+        {isPhone && <div className="px-2 pb-1">{tabsNav}</div>}
       </header>
 
       {/* Answer strip: the one line the whole app exists to answer */}
-      <div className="border-b border-line bg-surface px-4 py-2 text-[13px] text-muted">
+      <div className="truncate border-b border-line bg-surface px-3 py-1.5 text-[12.5px] text-muted md:px-4 md:py-2 md:text-[13px]">
+        {isPhone ? (
+          <>
+            Best: <span className="font-semibold text-fg">{bestR.lane.short}</span>{' '}
+            <Money value={bestR.best.netback} className="font-semibold text-accent" />{' '}
+            <Delta value={bestR.best.uplift} /> vs Hardisty
+          </>
+        ) : (
+        <>
         Best now: <span className="font-semibold text-fg">{bestR.lane.name}</span>
         {bestR.dests.length > 1 && <> ({bestR.best.dest.name})</>} at{' '}
         <Money value={bestR.best.netback} className="font-semibold text-accent" extra="Best netback to Hardisty, US$/bbl" tipPos="below" />
         /bbl, <Delta value={bestR.best.uplift} extra="vs selling WCS at Hardisty (WTI − diff)" tipPos="below" /> vs Hardisty
+        </>
+        )}
       </div>
 
       {/* ── Body: drawer + view ── */}
@@ -180,16 +199,7 @@ function Shell({ data }: { data: Data }) {
           {tab === 'method' && <MethodTab data={data} inputs={inputs} bestR={bestR} />}
         </main>
 
-        {/* Phone: inputs as a bottom sheet */}
-        {isPhone && !drawerOpen && (
-          <button
-            type="button"
-            onClick={() => setDrawerOpen(true)}
-            className={`absolute ${tab === 'map' ? 'top-3' : 'bottom-4'} right-3 z-20 flex items-center gap-1.5 rounded-full bg-accent px-4 py-2.5 text-[13px] font-medium text-on-accent shadow-lg`}
-          >
-            <Icon d={SLIDERS} size={16} /> Inputs
-          </button>
-        )}
+        {/* Phone: inputs as a bottom sheet (opened from the top-bar button) */}
         {isPhone && drawerOpen && (
           <>
             <div className="absolute inset-0 z-40 bg-scrim" onClick={() => setDrawerOpen(false)} />

@@ -60,15 +60,27 @@ export default function AppFooter({ onFeedback }: { onFeedback: () => void }) {
     </button>
   )
   return (
-    <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 border-t border-line bg-surface px-4 py-2 pb-[calc(env(safe-area-inset-bottom,0px)+0.5rem)] text-center text-[11px] text-subtle md:justify-between md:text-left">
-      <span>
+    <footer className="flex flex-wrap items-center justify-center gap-x-3 gap-y-0.5 border-t border-line bg-surface px-4 py-1.5 pb-[calc(env(safe-area-inset-bottom,0px)+0.375rem)] text-center text-[11px] text-subtle md:justify-between md:py-2 md:text-left">
+      {/* Phone: one compact line */}
+      <span className="md:hidden">
+        © {YEAR}{' '}
+        <a href={LINKEDIN} target="_blank" rel="noreferrer" className="text-muted">
+          Syed Ifraz Ahsan
+        </a>{' '}
+        ·{' '}
+        <button type="button" onClick={onFeedback} className="text-accent">
+          Feedback
+        </button>{' '}
+        · Not investment advice
+      </span>
+      <span className="hidden md:inline">
         © {YEAR}{' '}
         <a href={LINKEDIN} target="_blank" rel="noreferrer" className="text-muted hover:text-accent">
           Syed Ifraz Ahsan
         </a>
         . All rights reserved &amp; all wrongs reversed. I&rsquo;m always learning, and {feedback}.
       </span>
-      <span>
+      <span className="hidden md:inline">
         Public data only. Not investment advice.
       </span>
     </footer>

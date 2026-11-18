@@ -78,7 +78,7 @@ export function LanePanel({ r, theme, isBest, data, inputs, setInputs, onClose }
   return (
     <aside
       aria-label={`${r.lane.name} details`}
-      className={`${floating} pointer-events-auto absolute inset-x-2 bottom-2 z-40 flex max-h-[75%] flex-col md:inset-x-auto md:bottom-3 md:right-3 md:top-3 md:max-h-none md:w-[24rem]`}
+      className={`${floating} pointer-events-auto absolute inset-x-2 bottom-2 z-40 flex max-h-[52%] flex-col md:inset-x-auto md:bottom-3 md:right-3 md:top-3 md:max-h-none md:w-[24rem]`}
     >
       <header className="flex items-start gap-3 border-b border-line p-3.5">
         <div className="min-w-0 flex-1">
