@@ -184,7 +184,9 @@
       "source": "U.S. EIA, series RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RWTC&f=M",
       "fetchedAt": "2026-11-22T19:22:08.278Z",
-      "stale": false
+      "stale": true,
+      "error": "timeout after 30s for https://api.eia.gov/v2/petroleum/pri/spt/data/?api_key=***&frequency=monthly&data[0]=value&facets[series][]=RWTC&sort[0][column]=period&sort[0][direction]=desc&length=12",
+      "lastAttempt": "2026-11-25T21:29:39.632Z"
     },
     "brent": {
       "value": 123.93,
@@ -243,10 +245,10 @@
       "label": "Brent spot (monthly average)",
       "source": "U.S. EIA, series RBRTE",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=RBRTE&f=M",
-      "fetchedAt": "2026-11-22T19:22:08.278Z",
+      "fetchedAt": "2026-11-25T21:29:39.632Z",
       "stale": false,
-      "spreadToWti": 3.27,
-      "spreadMonth": "2026-11-02..2026-11-17"
+      "spreadToWti": 4.6,
+      "spreadMonth": "2026-11-02..2026-11-24"
     },
     "ans": {
       "value": 81.45,
@@ -306,9 +308,11 @@
       "source": "U.S. EIA, series F005071__3",
       "sourceUrl": "https://www.eia.gov/dnav/pet/hist/LeafHandler.ashx?n=PET&s=F005071__3&f=M",
       "fetchedAt": "2026-11-22T19:22:08.278Z",
-      "stale": false,
+      "stale": true,
       "spreadToWti": -2.45,
-      "spreadMonth": "2026-08"
+      "spreadMonth": "2026-08",
+      "error": "HTTP 504 for https://api.eia.gov/v2/petroleum/pri/dfp1/data/?api_key=***&frequency=monthly&data[0]=value&facets[series][]=F005071__3&sort[0][column]=period&sort[0][direction]=desc&length=12",
+      "lastAttempt": "2026-11-25T21:29:39.632Z"
     },
     "imports": {
       "padds": {
@@ -334,7 +338,9 @@
       "source": "U.S. EIA, PAD District Imports by Country of Origin",
       "sourceUrl": "",
       "fetchedAt": "2026-11-22T19:22:08.278Z",
-      "stale": false
+      "stale": true,
+      "error": "timeout after 30s for https://api.eia.gov/v2/petroleum/move/impcp/data/?api_key=***&frequency=annual&data[0]=value&facets[series][]=MCRIPP2CA2&facets[series][]=MCRIPP22&facets[series][]=MCRIPP3CA2&facets[series][]=MCRIPP32&facets[series][]=MCRIPP4CA2&facets[series][]=MCRIPP42&facets[series][]=MCRIPP5CA2&facets[series][]=MCRIPP52&sort[0][column]=period&sort[0][direction]=desc&length=40",
+      "lastAttempt": "2026-11-25T21:29:39.632Z"
     }
   },
   "wcsDiff": {
@@ -356,41 +362,26 @@
     "label": "USD/CAD (monthly average)",
     "source": "Bank of Canada, Valet API series FXMUSDCAD",
     "sourceUrl": "https://www.bankofcanada.ca/rates/exchange/monthly-exchange-rates/",
-    "fetchedAt": "2026-11-22T19:22:08.278Z",
+    "fetchedAt": "2026-11-25T21:29:39.632Z",
     "stale": false
   },
   "quality": {
-    "apiGravity": 20.7,
+    "apiGravity": 21.2,
     "apiGravity5y": 21.1,
-    "sulphurPct": 3.68,
+    "sulphurPct": 3.65,
     "sulphurPct5y": 3.68,
-    "densityKgM3": 929.7,
-    "densityKgM35y": 926.6,
-    "asOf": "2026-10-10",
+    "densityKgM3": 926.3,
+    "densityKgM35y": 926.5,
+    "asOf": "2026-11-06",
     "label": "Western Canadian Select — most recent sample",
     "source": "Crude Quality Inc., CrudeMonitor.ca",
     "sourceUrl": "https://www.crudemonitor.ca/crudes/crude.php?acr=WCS",
-    "fetchedAt": "2026-11-22T19:22:08.278Z",
+    "fetchedAt": "2026-11-25T21:29:39.632Z",
     "stale": false
   },
   "throughput": {
     "mainline": {
       "history": [
-        {
-          "month": "2023-07",
-          "throughputKbd": 2984,
-          "capacityKbd": 3229
-        },
-        {
-          "month": "2023-08",
-          "throughputKbd": 3011,
-          "capacityKbd": 3182
-        },
-        {
-          "month": "2023-09",
-          "throughputKbd": 2996,
-          "capacityKbd": 3182
-        },
         {
           "month": "2023-10",
           "throughputKbd": 3146,
@@ -555,13 +546,28 @@
           "month": "2026-06",
           "throughputKbd": 3094,
           "capacityKbd": 3277
+        },
+        {
+          "month": "2026-07",
+          "throughputKbd": 2918,
+          "capacityKbd": 3294
+        },
+        {
+          "month": "2026-08",
+          "throughputKbd": 2953,
+          "capacityKbd": 3229
+        },
+        {
+          "month": "2026-09",
+          "throughputKbd": 2793,
+          "capacityKbd": 3182
         }
       ],
-      "asOf": "2026-06",
+      "asOf": "2026-09",
       "label": "Enbridge Mainline, ex-Gretna (all products) vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/enbridge-mainline-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-22T19:22:08.278Z",
+      "fetchedAt": "2026-11-25T21:29:39.632Z",
       "stale": false
     },
     "tmx": {
@@ -695,29 +701,44 @@
           "month": "2026-06",
           "throughputKbd": 865,
           "capacityKbd": 899
+        },
+        {
+          "month": "2026-07",
+          "throughputKbd": 873,
+          "capacityKbd": 893
+        },
+        {
+          "month": "2026-08",
+          "throughputKbd": 842,
+          "capacityKbd": 899
+        },
+        {
+          "month": "2026-09",
+          "throughputKbd": 802,
+          "capacityKbd": 912
         }
       ],
-      "asOf": "2026-06",
+      "asOf": "2026-09",
       "label": "Trans Mountain, system throughput vs available capacity",
       "source": "Canada Energy Regulator, Pipeline Throughput and Capacity open data",
       "sourceUrl": "https://www.cer-rec.gc.ca/open/energy/throughput-capacity/trans-mountain-throughput-and-capacity.csv",
-      "fetchedAt": "2026-11-22T19:22:08.278Z",
+      "fetchedAt": "2026-11-25T21:29:39.632Z",
       "stale": false
     }
   },
-  "generatedAt": "2026-11-22T19:22:08.278Z",
+  "generatedAt": "2026-11-25T21:29:39.632Z",
   "spreads": {
     "brentWti": {
-      "value": 3.27,
+      "value": 4.6,
       "unit": "US$/bbl",
-      "asOf": "2026-11-17",
+      "asOf": "2026-11-24",
       "from": "2026-11-02",
-      "to": "2026-11-17",
-      "days": 12,
-      "label": "Brent − WTI, average of 12 daily spreads 2026-11-02 to 2026-11-17",
+      "to": "2026-11-24",
+      "days": 17,
+      "label": "Brent − WTI, average of 17 daily spreads 2026-11-02 to 2026-11-24",
       "source": "U.S. EIA daily spot prices, series RBRTE − RWTC",
       "sourceUrl": "https://www.eia.gov/dnav/pet/pet_pri_spt_s1_d.htm",
-      "fetchedAt": "2026-11-22T19:22:08.278Z",
+      "fetchedAt": "2026-11-25T21:29:39.632Z",
       "stale": false
     }
   },
@@ -981,6 +1002,18 @@
         "date": "2026-11-06"
       },
       {
+        "projectId": "prairie-connector",
+        "title": "South Bow advances Prairie Connector due diligence ahead of mid-2027 decision",
+        "outlet": "Yahoo Finance Canada",
+        "date": "2026-11-05"
+      },
+      {
+        "projectId": "pacific-link",
+        "title": "First Nations chiefs challenge federal Pacific Link pipeline listing",
+        "outlet": "Richmond News",
+        "date": "2026-11-02"
+      },
+      {
         "projectId": "pacific-link",
         "title": "British Columbia First Nation files court challenge over Pacific Link oil pipeline consultations",
         "outlet": "Mining Weekly",
@@ -994,15 +1027,15 @@
       },
       {
         "projectId": "pacific-link",
-        "title": "Canada Approves Pacific Link Pipeline; South Korea Must Wait Until 2032 for More Oil",
-        "outlet": "techtimes",
-        "date": "2026-10-05"
+        "title": "Is Pacific Link’s National-Interest Status Reshaping The Investment Case For Pembina Pipeline (TSX:PPL)?",
+        "outlet": "Yahoo Finance",
+        "date": "2026-10-07"
       },
       {
         "projectId": "pacific-link",
-        "title": "Pacific Link Welcomes Project of National Interest Listing as Next Step to Connect Canada to Global Energy Markets",
-        "outlet": "Yahoo Finance",
-        "date": "2026-10-01"
+        "title": "Canada Approves Pacific Link Pipeline; South Korea Must Wait Until 2032 for More Oil",
+        "outlet": "techtimes",
+        "date": "2026-10-05"
       },
       {
         "projectId": "pacific-link",
@@ -1023,23 +1056,17 @@
         "date": "2026-08-22"
       },
       {
-        "projectId": "prairie-connector",
-        "title": "South Bow on track for mid-2027 decision on Prairie Connector investment",
-        "outlet": "MSN",
-        "date": "2026-08-05"
-      },
-      {
-        "projectId": "mlo1",
+        "projectId": "mlo2",
         "title": "Canada's Enbridge postpones plans for second phase of Mainline oil pipeline expansion",
         "outlet": "Reuters",
         "date": "2026-07-31"
       }
     ],
-    "asOf": "2026-11-22",
+    "asOf": "2026-11-25",
     "label": "Recent headlines about proposed egress projects",
     "source": "Bing News search, filtered by project",
     "sourceUrl": "",
-    "fetchedAt": "2026-11-22T19:22:08.278Z",
+    "fetchedAt": "2026-11-25T21:29:39.632Z",
     "stale": false
   },
   "markets": {
